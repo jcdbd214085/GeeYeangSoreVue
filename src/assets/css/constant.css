@@ -1,0 +1,27 @@
+/* 全域變數 */
+:root {
+    --main-color: #3CDDD2;
+    --main-hover: #24B4A8;
+    --bg-light: #F0F9F8;
+    --text-main: #222222;
+    --text-subtle: #666666;
+    --accent: #007A75;
+}
+
+/* 獅尾四季春字型定義 */
+@font-face {
+    font-family: SweiSpringCJKtc-Regular;
+    src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2"), url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
+}
+
+body {
+    font-family: 'SweiSpringCJKtc-Regular', 'Noto Sans TC', sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
+    padding-top: 0;
+}
+
+.form-select {
+    height: 50px;
+    border-radius: 8px;
+}
