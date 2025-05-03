@@ -14,6 +14,12 @@ const router = createRouter({
       name: 'chat',
       component: () => import('@/views/chat/ChatView.vue')
     },
+    //註冊畫面 測試用
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/components/login/LoginModal.vue')
+    }
   ],
 })
 
