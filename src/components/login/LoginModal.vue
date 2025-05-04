@@ -121,6 +121,7 @@ const handleRegister = () => {
 </script>
 
 <style>
+/* 🐥 基本通用樣式初始化 */
 * {
     margin: 0;
     padding: 0;
@@ -129,6 +130,7 @@ const handleRegister = () => {
     list-style: none;
 }
 
+/* 🐥 設定整體頁面背景與置中 */
 body {
     display: flex;
     justify-content: center;
@@ -137,6 +139,7 @@ body {
     background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
 }
 
+/* 🐥 整個表單容器 */
 .container {
     position: relative;
     width: 850px;
@@ -148,20 +151,24 @@ body {
     overflow: hidden;
 }
 
+/* 🐥 表單內 h1 標題大小 */
 .container h1 {
     font-size: 36px;
     margin: -10px 0;
 }
 
+/* 🐥 表單內 p 說明文字 */
 .container p {
     font-size: 14.5px;
     margin: 15px 0;
 }
 
+/* 🐥 表單本體 */
 form {
     width: 100%;
 }
 
+/* 🐥 登入/註冊表單框架 */
 .form-box {
     position: absolute;
     right: 0;
@@ -177,27 +184,32 @@ form {
     transition: .6s ease-in-out 1.2s, visibility 0s 1s;
 }
 
+/* 🐥 當 container 加上 active 類別時，表單往左移 */
 .container.active .form-box {
     right: 50%;
 }
 
+/* 🐥 預設註冊表單隱藏 */
 .form-box.register {
     visibility: hidden;
 }
 
+/* 🐥 切換為註冊模式後顯示註冊表單 */
 .container.active .form-box.register {
     visibility: visible;
 }
 
+/* 🐥 單一輸入區塊容器 */
 .input-box {
     position: relative;
     margin: 30px 0;
 }
 
+/* 🐥 文字輸入框 */
 .input-box input {
     width: 100%;
     padding: 13px 50px 13px 20px;
-    background: #eee;
+    background: #ffffff; /* 🐥 改成白底 */
     border-radius: 8px;
     border: none;
     outline: none;
@@ -206,11 +218,13 @@ form {
     font-weight: 500;
 }
 
+/* 🐥 placeholder 樣式 */
 .input-box input::placeholder {
     color: #888;
     font-weight: 400;
 }
 
+/* 🐥 icon 圖示位置與大小 */
 .input-box i {
     position: absolute;
     right: 20px;
@@ -219,21 +233,30 @@ form {
     font-size: 20px;
 }
 
+/* 🐥 忘記密碼連結容器 */
 .forgot-link {
     margin: -15px 0 15px;
     text-align: right;
-    /* 文字靠右對齊 */
 }
 
+/* 🐥 忘記密碼連結樣式 */
 .forgot-link a {
     font-size: 14.5px;
-    color: #333;
+    color: #4ecdc4;
+    font-weight: 500;
+    transition: color 0.3s;
 }
 
+/* 🐥 滑鼠移上忘記密碼變橘色 */
+.forgot-link a:hover {
+    color: #ff9800;
+}
+
+/* 🐥 共用按鈕樣式 */
 .btn {
     width: 100%;
     height: 48px;
-    background: #4ecdc4;
+    background: #32a49c;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
     border: none;
@@ -243,18 +266,19 @@ form {
     font-weight: 600;
 }
 
+/* 🐥 按鈕滑鼠懸停變橘色 */
 .btn:hover {
     background-color: #ff9800;
-    /* 滑鼠懸停變橘色 */
     color: #ffffff;
-    /* 文字保持白色 */
 }
 
+/* 🐥 第三方登入圖示容器 */
 .social-icons {
     display: flex;
     justify-content: center;
 }
 
+/* 🐥 第三方登入圖示樣式 */
 .social-icons a {
     display: inline-flex;
     padding: 10px;
@@ -265,12 +289,14 @@ form {
     margin: 0 8px;
 }
 
+/* 🐥 註冊/登入 切換背景框 */
 .toggle-box {
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
+/* 🐥 切換動畫圓形背景 */
 .toggle-box::before {
     content: '';
     position: absolute;
@@ -278,21 +304,21 @@ form {
     width: 300%;
     height: 100%;
     background: #4ecdc4;
-    /* border: 2px solid red; */
     border-radius: 150px;
     z-index: 2;
     transition: 1.8s ease-in-out;
 }
 
+/* 🐥 切換時背景移動 */
 .container.active .toggle-box::before {
     left: 50%;
 }
 
+/* 🐥 左右切換面板（內含 logo、標語、按鈕） */
 .toggle-panel {
     position: absolute;
     width: 50%;
     height: 100%;
-    /* background: seagreen; */
     color: #f0f9f8;
     display: flex;
     flex-direction: column;
@@ -302,30 +328,38 @@ form {
     transition: .6s ease-in-out;
 }
 
+/* 🐥 左面板定位 */
 .toggle-panel.toggle-left {
     left: 0;
     transition-delay: 1.2s;
 }
 
+/* 🐥 左面板切換時移出畫面 */
 .container.active .toggle-panel.toggle-left {
     left: -50%;
     transition-delay: .6s;
 }
 
+/* 🐥 右面板定位 */
 .toggle-panel.toggle-right {
     right: -50%;
     transition-delay: .6s;
 }
 
+/* 🐥 右面板切換時移入畫面 */
 .container.active .toggle-panel.toggle-right {
     right: 0;
     transition-delay: 1.2s;
 }
 
+/* 🐥 面板內標語字體調整 */
 .toggle-panel p {
+    font-size: 20px;
+    font-weight: 500;
     margin-bottom: 20px;
 }
 
+/* 🐥 面板內的切換按鈕 */
 .toggle-panel .btn {
     width: 160px;
     height: 46px;
@@ -334,25 +368,40 @@ form {
     box-shadow: none;
 }
 
-/* Google 登入icon樣式 */
-/* 整體按鈕：紅底白字 */
+/* 🐥 註冊 / 登入切換按鈕 hover：白底藍綠字 */
+.toggle-panel .btn:hover {
+    background-color: #ffffff;     /* 白底 */
+    color: #4ecdc4;                /* 藍綠字 */
+    border: 2px solid #4ecdc4;     /* 邊框也改成藍綠 */
+    transition: all 0.3s ease;
+}
+
+/* 🐥 Google 登入按鈕 */
 .google-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center; /* 🐥 垂直置中補強 */
+    height: 48px;            /* 🐥 統一高度為 48px */
     gap: 10px;
-    background-color: #DB4437;
-    /* Google 紅 */
-    color: #fff;
-    border: none;
+    background-color: #f0f9f8;
+    color: #DB4437;
+    border: 2px solid #DB4437;
     border-radius: 6px;
-    padding: 10px 16px;
+    padding: 0 16px;          /* 🐥 左右 padding 固定，高度由 height 控制 */
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
 }
 
-/* icon 外圈白底 */
+
+/* 🐥 Google 按鈕 hover 效果 */
+.google-btn:hover {
+    background-color: #DB4437;
+    color: #ffffff;
+}
+
+/* 🐥 Google icon 圓形樣式 */
 .icon-circle {
     display: flex;
     align-items: center;
@@ -365,29 +414,24 @@ form {
     font-size: 16px;
 }
 
-/* hover 效果（可選） */
-.google-btn:hover {
-    background-color: #c1351d;
-}
-
-/* 🐥 驗證碼欄位：橫向排列 */
+/* 🐥 驗證碼欄位容器（輸入+按鈕） */
 .input-box.verify-box {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* 🐥 驗證碼輸入欄位：佔比 2/3 */
+/* 🐥 驗證碼輸入欄 */
 .input-box.verify-box input {
     flex: 2;
     padding: 13px 20px;
 }
 
-/* 🐥 發送按鈕：佔比 1/3 */
+/* 🐥 發送驗證碼按鈕 */
 .verify-btn {
     flex: 1;
     height: 46px;
-    background-color: #4ecdc4;
+    background-color: #32a49c;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -397,12 +441,18 @@ form {
     transition: background-color 0.3s;
 }
 
+/* 🐥 發送驗證碼按鈕 hover */
 .verify-btn:hover {
     background-color: #ff9800;
 }
 
+/* 🐥 所有 fa-solid 圖示（如鎖頭、信封、人頭等）設定橘色 */
+.fa-solid {
+    color: #32a49c;
+}
 
 
+/* 🐥 響應式設計：中小尺寸調整 */
 @media screen and (max-width: 650px) {
     .container {
         height: calc(100vh - 40px);
@@ -454,10 +504,9 @@ form {
     .container.active .toggle-panel.toggle-right {
         bottom: 0;
     }
-
-
 }
 
+/* 🐥 響應式設計：超小尺寸標題縮小 */
 @media screen and (max-width: 400px) {
     .form-box {
         padding: 20px;
@@ -467,4 +516,5 @@ form {
         font-size: 30px;
     }
 }
+
 </style>
