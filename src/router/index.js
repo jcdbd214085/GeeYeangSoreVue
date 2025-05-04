@@ -9,6 +9,7 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/views/HomeView.vue')
     },
+    //聊天室
     {
       path: '/chat',
       name: 'chat',
@@ -33,6 +34,12 @@ const router = createRouter({
       path: '/inputmodel',
       name: 'inputmodel',
       component: () => import('@/components/login/InputModal.vue')
+    },
+    //個人頁面
+    {
+      path: '/userhome',
+      name: 'userhome',
+      component: () => import('@/views/UserHome/UserHome.vue')
     }
 
   ],
