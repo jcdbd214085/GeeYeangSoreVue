@@ -19,7 +19,15 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/components/login/LoginModal.vue')
+    },
+
+    //側邊欄 測試用
+    {
+      path: '/sidemenu',
+      name: 'sidemenu',
+      component: () => import('@/components/login/SideMenu.vue')
     }
+    
   ],
 })
 
