@@ -25,6 +25,7 @@
             <li class="nav-item">
               <Button color="primary" class="me-2" @click="loginAsTenant">登入/註冊</Button>
             </li>
+
           </template>
           <template v-else>
             <li class="nav-item nav-icon-item">
@@ -90,43 +91,48 @@ function openChatPopup(e) {
 }
 </script>
 <style scoped>
+/* 導覽列主區塊樣式 */
 #mainNav {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%);
-    transition: all 0.4s ease;
-    padding: 1.2rem 0;
-    position: fixed;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%); /* 淡出漸層背景 */
+    transition: all 0.4s ease;     /* 平滑過渡效果 */
+    padding: 1.2rem 0;             /* 上下內距 */
+    position: fixed;              /* 固定在畫面上方 */
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1030;
+    z-index: 1030;                /* 層級優先顯示 */
 }
 
+/* 滾動後的導覽列樣式（變為實體背景） */
 #mainNav.navbar-scrolled {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    padding: 0.8rem 0;
+    background: rgba(255, 255, 255, 0.98); /* 幾乎實心白背景 */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); /* 陰影效果 */
+    padding: 0.8rem 0; /* 縮小內距 */
 }
 
+/* 導覽列左上圖標（Logo） */
 .nav-logo {
-    height: 60px;
-    width: 60px;
+    height: 66px;
+    width: 66px;
     padding: 0;
-    border-radius: 50%;
-    border: 3px solid var(--main-color);
+    border-radius: 50%;                        /* 圓形邊角 */
+    border: 3px solid var(--main-color);       /* 外框主色 */
     background: none;
     box-shadow: none;
-    aspect-ratio: 1;
+    aspect-ratio: 1;                           /* 長寬等比 */
     object-fit: contain;
     transition: all 0.4s ease;
 }
 
+/* 滑鼠懸停 Logo 特效 */
 .nav-logo:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* 微微上移 */
     box-shadow:
         0 6px 20px rgba(60, 221, 210, 0.3),
-        0 0 0 3px rgba(60, 221, 210, 0.2);
+        0 0 0 3px rgba(60, 221, 210, 0.2); /* 發光效果 */
 }
 
+/* 滾動時縮小 Logo */
 #mainNav.navbar-scrolled .nav-logo {
     height: 50px;
     width: 50px;
@@ -135,46 +141,54 @@ function openChatPopup(e) {
     box-shadow: none;
 }
 
+/* 導覽列內選單區域（整體 ul） */
 .navbar-nav {
-    gap: 0.5rem;
+    gap: 0.5rem; /* 選單間距 */
 }
 
+/* 每一個選單連結樣式 */
 .navbar-nav .nav-link {
-    color: var(--text-main);
+    color: var(--text-main);       /* 主要文字色 */
     font-weight: 500;
-    padding: 0.6rem 1.2rem;
-    transition: all 0.3s ease;
+    padding: 0.6rem 1.2rem;        /* 上下左右內距 */
+    transition: all 0.3s ease;     /* 滑入平滑效果 */
     position: relative;
-    text-transform: uppercase;
-    font-size: 18px;
-    letter-spacing: 1px;
+    text-transform: uppercase;     /* 英文大寫 */
+    font-size: 1.1rem;
+    letter-spacing: 1px;           /* 字距 */
 }
 
+/* 滑鼠懸停變色 */
 .navbar-nav .nav-link:hover {
-    color: var(--main-color);
+    color: var(--main-color); /* 主色 */
 }
 
+/* 當前頁面連結高亮 */
 .navbar-nav .nav-link.active {
     color: var(--main-color);
 }
 
+/* 選單內的 icon 大小與間距設定 */
 .navbar-nav .nav-link i {
     margin-right: 6px;
     font-size: 1.1em;
     transition: all 0.3s ease;
 }
 
+/* 導覽列展開按鈕（行動裝置用） */
 .navbar-toggler {
     border: none;
     padding: 0.5rem;
     transition: all 0.3s ease;
 }
 
+/* 當按鈕聚焦時移除藍框 */
 .navbar-toggler:focus {
     box-shadow: none;
     outline: none;
 }
 
+/* 三條線漢堡 icon 主體 */
 .navbar-toggler-icon {
     background-image: none;
     position: relative;
@@ -184,6 +198,7 @@ function openChatPopup(e) {
     transition: all 0.3s ease;
 }
 
+/* 上下兩條線 */
 .navbar-toggler-icon::before,
 .navbar-toggler-icon::after {
     content: '';
@@ -202,6 +217,7 @@ function openChatPopup(e) {
     bottom: -8px;
 }
 
+/* 點擊展開後的旋轉效果（變叉叉） */
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
     background-color: transparent;
 }
@@ -216,6 +232,7 @@ function openChatPopup(e) {
     bottom: 0;
 }
 
+/* RWD：平板寬度以下導覽列內容樣式 */
 @media (max-width: 991.98px) {
     .navbar-collapse {
         background-color: rgba(255, 255, 255, 0.98);
@@ -224,49 +241,65 @@ function openChatPopup(e) {
         margin-top: 1rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
+
     .navbar-nav .nav-link {
         padding: 0.8rem 1.2rem;
     }
 }
 
+/* RWD：手機寬度樣式 */
 @media (max-width: 767.98px) {
     #mainNav {
         padding: 0.8rem 0;
         background: rgba(255, 255, 255, 0.98);
     }
+
     .nav-logo {
         height: 40px;
         width: 40px;
         padding: 0;
     }
+
     #mainNav.navbar-scrolled .nav-logo {
         height: 32px;
         width: 32px;
         padding: 0;
     }
+
     .navbar-nav .nav-link {
         color: var(--text-main);
     }
 }
 
+/* icon + badge 包裝外層，調整對齊 */
 .nav-icon-item {
-  display: flex;
-  align-items: center;
-  height: 48px;
+    display: flex;
+    align-items: center;
+    height: 48px;
 }
+
+/* 聊天室、收藏等 icon 對齊設定 */
 .nav-icon-item .nav-link {
-  display: flex;
-  align-items: center;
-  padding: 0.6rem 1.2rem;
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
 }
+
+/* icon 外圍圓形區塊 */
 .icon-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  width: 32px;
-  margin-right: 6px;
-  vertical-align: middle;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    margin-right: 6px;
+    vertical-align: middle;
 }
+
+/* 品牌名稱（居研所）字體大小 */
+.navbar-brand {
+    font-size: 28px;
+}
+
 </style>
