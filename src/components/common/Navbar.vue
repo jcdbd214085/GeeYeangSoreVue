@@ -23,10 +23,7 @@
         <ul class="navbar-nav">
           <template v-if="!userStore.isLogin">
             <li class="nav-item">
-              <Button color="primary" class="me-2" @click="loginAsTenant">登入</Button>
-            </li>
-            <li class="nav-item">
-              <Button color="primary" @click="loginAsTenant">註冊</Button>
+              <Button color="primary" class="me-2" @click="loginAsTenant">登入/註冊</Button>
             </li>
           </template>
           <template v-else>
@@ -149,7 +146,7 @@ function openChatPopup(e) {
     transition: all 0.3s ease;
     position: relative;
     text-transform: uppercase;
-    font-size: 0.9rem;
+    font-size: 18px;
     letter-spacing: 1px;
 }
 
