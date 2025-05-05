@@ -180,7 +180,7 @@ function openChatPopup(e) {
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%); /* 淡出漸層背景 */
+    background: #ffffff; /* 改為實心白色背景 */
     transition: all 0.4s ease;     /* 平滑過渡效果 */
     padding: 1.2rem 0;             /* 上下內距 */
     position: fixed;              /* 固定在畫面上方 */
@@ -192,7 +192,7 @@ function openChatPopup(e) {
 
 /* 滾動後的導覽列樣式（變為實體背景） */
 #mainNav.navbar-scrolled {
-    background: rgba(255, 255, 255, 0.98); /* 幾乎實心白背景 */
+    background: #ffffff; /* 改為實心白色背景 */
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); /* 陰影效果 */
     padding: 0.8rem 0; /* 縮小內距 */
 }
