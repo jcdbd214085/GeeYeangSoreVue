@@ -33,7 +33,7 @@ const router = createRouter({
     {
       path: '/inputmodel',
       name: 'inputmodel',
-      component: () => import('@/components/login/InputModal.vue')
+      component: () => import('@/components/InputModal.vue')
     },
     //個人頁面
     {
