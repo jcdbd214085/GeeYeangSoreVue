@@ -1,37 +1,34 @@
 <template>
-    <!-- 側邊欄外層包裹容器 -->
-    <div class="side-menu-wrapper">
-      <ul class="ul">
-        <li class="li">
-          <button class="button">
-            <p class="p"></p>
-          </button>
-        </li>
-        <li class="li">
-          <button class="button">
-            <p class="p">個人資料</p>
-          </button>
-        </li>
-        <li class="li">
-          <button class="button">
-            <p class="p">收藏</p>
-          </button>
-        </li>
-        <li class="li">
-          <button class="button">
-            <p class="p">聊天室</p>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </template>
-  
-  
-  <script setup>
-  // 引入 Composition API
-  import { ref } from 'vue'
-  
-  </script>
+  <!-- 側邊欄外層包裹容器 -->
+  <div class="side-menu-wrapper">
+    <ul class="ul">
+      <li class="li">
+        <button class="button" @click="goTo('userCenter')">
+          <p class="p">個人資料</p>
+        </button>
+      </li>
+      <li class="li">
+        <button class="button" @click="goTo('favorite')">
+          <p class="p">收藏</p>
+        </button>
+      </li>
+      <li class="li">
+        <button class="button" @click="goTo('chat')">
+          <p class="p">聊天室</p>
+        </button>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script setup>
+const emit = defineEmits(['change-view']) // 宣告可發出的事件
+
+function goTo(viewName) {
+  emit('change-view', viewName) // 傳遞字串名稱給父層
+}
+</script>
+
   
   <style>
   /* 管理整體側邊列 UL 容器 */

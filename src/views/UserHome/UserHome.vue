@@ -1,99 +1,53 @@
 <template>
   <div class="profile-page">
-    <!-- 側邊選單 -->
-    <userSideMenu />
-    <userCenter />
+    <!-- 側邊選單：傳入切換函式與目前選單 -->
+    <userSideMenu @change-view="changeMainView" :activeItem="currentView" />
+    
+    <!-- 主內容區：根據目前選擇元件顯示 -->
+    <component :is="currentComponent" class="main-content" />
+
   </div>
 </template>
 
 <script setup>
-// 引入側邊欄元件
+import { ref, computed } from 'vue'
+
+// 匯入元件
 import userSideMenu from '@/components/userhome/user_sidemenu.vue'
-import userCenter from '@/components/userhome/usercenter.vue'
+import userCenter from '@/views/UserHome/usercenter.vue'
+import ChatView from '@/views/chat/ChatView.vue'
+
+// 建立目前頁面名稱（預設是 userCenter）
+const currentView = ref('userCenter')
+
+// 建立元件對應表（字串對應元件實體）
+const componentMap = {
+  userCenter,
+  chat: ChatView
+}
+
+// 根據目前頁面名稱動態取得元件
+const currentComponent = computed(() => componentMap[currentView.value])
+
+// 切換主內容方法（由側邊欄 emit）
+function changeMainView(viewName) {
+  currentView.value = viewName
+}
 </script>
 
 <style scoped>
-/* 頁面整體排版 */
 .profile-page {
   display: flex;
-  min-height: 100vh;               /* 頁面撐滿畫面高度 */
-  background-color: #f0f9f8;       /* 企業背景色 */
+  min-height: 100vh;
+  background-color: #f0f9f8;
 }
 
-/* 主內容區塊（右邊） */
 .main-content {
-  flex: 1;
-  display: flex;
-  justify-content: center;         /* 水平置中 */
-  align-items: center;             /* 垂直置中 */
-}
-
-/* 中央歡迎區塊 */
-.welcome-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  animation: fadeInUp 0.8s ease-out forwards;
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-/* LOGO 漸入動畫 */
-.logo {
-  width: 250px;
-  height: auto;
-  margin-bottom: 8px;
-
-  animation: fadeInUp 0.6s ease-out forwards;
-  animation-delay: 0.2s;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* 主標題動畫 */
-.welcome-title {
-  font-size: 28px;
-  color: #3da19a;
-  font-weight: bold;
-  margin-bottom: 8px;
-
-  animation: fadeInUp 0.6s ease-out forwards;
-  animation-delay: 0.4s;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* 副標題動畫 */
-.welcome-subtitle {
-  font-size: 24px;
-  color: #3da19a;
-  margin-bottom: 6px;
-
-  animation: fadeInUp 0.6s ease-out forwards;
-  animation-delay: 0.6s;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* 說明文字動畫 */
-.welcome-description {
-  font-size: 18px;
-  color: #3da19a;
-
-  animation: fadeInUp 0.6s ease-out forwards;
-  animation-delay: 0.8s;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* 動畫定義 */
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  flex: 1;                      /* 佔滿除側邊欄外所有空間 */
+  display: flex;                /* 若有內部要置中也方便 */
+  flex-direction: column;       /* 保持直向排版 */
+  padding: 24px;                /* 可視需要添加內距 */
+  overflow-y: auto;             /* 內容超出時可滾動 */
 }
 
 </style>
