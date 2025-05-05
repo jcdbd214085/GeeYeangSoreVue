@@ -16,6 +16,7 @@ import { ref, computed } from 'vue'
 import userSideMenu from '@/components/userhome/user_sidemenu.vue'
 import userCenter from '@/views/UserHome/usercenter.vue'
 import ChatView from '@/views/chat/ChatView.vue'
+import UserProfile from '@/views/UserHome/UserProfile.vue'
 
 // 建立目前頁面名稱（預設是 userCenter）
 const currentView = ref('userCenter')
@@ -23,7 +24,8 @@ const currentView = ref('userCenter')
 // 建立元件對應表（字串對應元件實體）
 const componentMap = {
   userCenter,
-  chat: ChatView
+  chat: ChatView,
+  profile: UserProfile
 }
 
 // 根據目前頁面名稱動態取得元件

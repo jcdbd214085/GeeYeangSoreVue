@@ -3,7 +3,7 @@
   <div class="side-menu-wrapper">
     <ul class="ul">
       <li class="li">
-        <button class="button" @click="goTo('userCenter')">
+        <button class="button" @click="goTo('profile')">
           <p class="p">個人資料</p>
         </button>
       </li>
