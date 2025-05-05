@@ -26,7 +26,7 @@ const router = createRouter({
     {
       path: '/sidemenu',
       name: 'sidemenu',
-      component: () => import('@/components/login/SideMenu.vue')
+      component: () => import('@/components/SideMenu.vue')
     },
 
     //彈窗 測試用

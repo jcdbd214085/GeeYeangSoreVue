@@ -17,7 +17,7 @@
 
 <script setup>
 // 引入側邊欄元件
-import SideMenu from '@/components/login/SideMenu.vue'
+import SideMenu from '@/components/login/user_sidemenu.vue'
 </script>
 
 <style scoped>
