@@ -1,93 +1,91 @@
 <template>
-    <div class="container">
-      <div class="form-box">
-        <form @submit.prevent="handleRegister">
-          <h1>房東註冊</h1>
-  
-          <!-- 本名欄位 -->
-          <div class="input-box">
-            <label for="username">本名</label>
-            <input
-              id="username"
-              v-model="register.username"
-              type="text"
-              placeholder="請輸入本名"
-              required />
-            <i class="fa-solid fa-user"></i>
-          </div>
-  
-          <!-- 銀行欄位 -->
-          <div class="input-box">
-            <label for="bank">銀行帳戶</label>
-            <input
-              id="bank"
-              v-model="register.bank"
-              type="text"
-              placeholder="請輸入銀行帳戶"
-              required />
-            <i class="fa-solid fa-piggy-bank"></i>
-          </div>
-  
-          <!-- 身分證圖片上傳區塊（橫向置中） -->
-          <div class="upload-row">
-            <!-- 身分證正面 -->
-            <div class="file-upload">
-              <label for="idFront">身分證（正面）</label>
-              <div class="image-upload-wrap">
-                <div class="drag-text">
-                  <h5>未上傳圖片</h5>
-                  <input id="idFront" type="file" hidden @change="handleImageUpload" />
-                  <label for="idFront" class="upload-btn">點我上傳圖片</label>
-                </div>
-              </div>
-            </div>
-  
-            <!-- 身分證反面 -->
-            <div class="file-upload">
-              <label for="idBack">身分證（反面）</label>
-              <div class="image-upload-wrap">
-                <div class="drag-text">
-                  <h5>未上傳圖片</h5>
-                  <input id="idBack" type="file" hidden @change="handleImageUpload" />
-                  <label for="idBack" class="upload-btn">點我上傳圖片</label>
-                </div>
+  <div class="container">
+    <div class="form-box">
+      <!-- 關閉按鈕 -->
+      <button class="close-btn" @click="handleClose">×</button>
+
+      <form @submit.prevent="handleRegister">
+        <h1>房東註冊</h1>
+
+        <!-- 本名欄位 -->
+        <div class="input-box">
+          <label for="username">本名</label>
+          <input id="username" v-model="register.username" type="text" placeholder="請輸入本名" required />
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <!-- 銀行欄位 -->
+        <div class="input-box">
+          <label for="bank">銀行帳戶</label>
+          <input id="bank" v-model="register.bank" type="text" placeholder="請輸入銀行帳戶" required />
+          <i class="fa-solid fa-piggy-bank"></i>
+        </div>
+
+        <!-- 上傳圖片 -->
+        <div class="upload-row">
+          <!-- 身分證正面 -->
+          <div class="file-upload">
+            <label for="idFront">身分證（正面）</label>
+            <div class="image-upload-wrap">
+              <div class="drag-text">
+                <h5>未上傳圖片</h5>
+                <input id="idFront" type="file" hidden @change="handleImageUpload" />
+                <label for="idFront" class="upload-btn">點我上傳圖片</label>
               </div>
             </div>
           </div>
-  
-          <!-- 註冊按鈕 -->
-          <button class="btn">註冊</button>
-        </form>
-      </div>
+
+          <!-- 身分證反面 -->
+          <div class="file-upload">
+            <label for="idBack">身分證（反面）</label>
+            <div class="image-upload-wrap">
+              <div class="drag-text">
+                <h5>未上傳圖片</h5>
+                <input id="idBack" type="file" hidden @change="handleImageUpload" />
+                <label for="idBack" class="upload-btn">點我上傳圖片</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn">註冊</button>
+      </form>
     </div>
-  </template>
+  </div>
+</template>
+
+
   
-  <script setup>
-  // 引入 Composition API
-  import { ref } from 'vue'
-  
-  // 註冊表單資料
-  const register = ref({
-    username: '',
-    bank: '',
-    verificationCode: ''
-  })
-  
-  // 圖片上傳處理函式
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      console.log('上傳檔案：', file.name)
-      // 可在此加入預覽或其他處理
-    }
+<script setup>
+import { ref } from 'vue'
+
+// 表單資料
+const register = ref({
+  username: '',
+  bank: '',
+  verificationCode: ''
+})
+
+// 圖片上傳
+const handleImageUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    console.log('上傳檔案：', file.name)
   }
-  
-  // 表單送出處理
-  const handleRegister = () => {
-    console.log('註冊資料', register.value)
-    // TODO: 呼叫 API 處理註冊
-  }
-  </script>
+}
+
+// 表單送出
+const handleRegister = () => {
+  console.log('註冊資料', register.value)
+}
+
+// 關閉事件（可 emit 或控制外層狀態）
+const handleClose = () => {
+  console.log('關閉註冊視窗')
+  // TODO: emit('close') 或控制父層 v-if
+}
+</script>
+
   
   <style>
   /* 全域設定 */
@@ -117,8 +115,10 @@
   
   /* 表單主體 */
   .form-box {
-    color: #333;
-  }
+  position: relative; /* 為了讓 close-btn 定位於其內部 */
+  color: #333;
+}
+
   
   /* 輸入框區塊 */
   .input-box {
@@ -213,7 +213,7 @@
     display: inline-block;
     margin-top: 10px;
     padding: 10px 20px;
-    background-color: #32a49c;
+    background-color: #ffb26ef5;
     color: #fff;
     border-radius: 6px;
     cursor: pointer;
@@ -226,6 +226,32 @@
   .upload-btn:hover {
     background-color: #ff9800;
   }
+
+  /* 關閉按鈕樣式 */
+.close-btn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 28px;
+  height: 28px;
+  background: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: bold;
+  color: #32a49c;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.close-btn:hover {
+  color: #ff9800;
+}
 
 
   </style>
