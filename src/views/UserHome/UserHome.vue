@@ -49,7 +49,9 @@ function changeMainView(viewName) {
   display: flex;                /* 若有內部要置中也方便 */
   flex-direction: column;       /* 保持直向排版 */
   padding: 24px;                /* 可視需要添加內距 */
-  overflow-y: auto;             /* 內容超出時可滾動 */
+  overflow: hidden;             /* 防止內容溢出 */
+  max-width: calc(100% - 240px); /* 確保不會超出側邊欄的範圍 */
+  height: calc(100vh - 17px);   /* 設定高度，減去上方導覽列的高度 */
 }
 
 </style>
