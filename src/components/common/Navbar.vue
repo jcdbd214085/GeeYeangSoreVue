@@ -3,7 +3,6 @@
   <nav
     class="navbar navbar-expand-lg fixed-top"
     id="mainNav"
-    :class="{ 'navbar-scrolled': isScrolled }"
     style="z-index:1030;"
   >
     <div class="container">
@@ -132,8 +131,6 @@
   </nav>
 </template>
 
-
-
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '@/stores/user';
@@ -143,24 +140,14 @@ import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
 const userStore = useUserStore();
 const chatPopup = useChatPopupStore();
-const isScrolled = ref(false);
 const menuOpen = ref(false);
 
-function handleScroll() {
-  isScrolled.value = window.scrollY > 100;
-}
 function toggleMenu() {
   menuOpen.value = !menuOpen.value;
 }
 function closeMenu() {
   if (window.innerWidth < 992) menuOpen.value = false;
 }
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-});
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
 function loginAsTenant() {
   userStore.login('tenant', '房客A');
 }
@@ -176,31 +163,23 @@ function openChatPopup(e) {
 }
 </script>
 
-
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
     background: #ffffff; /* 改為實心白色背景 */
-    transition: all 0.4s ease;     /* 平滑過渡效果 */
     padding: 1.2rem 0;             /* 上下內距 */
     position: fixed;              /* 固定在畫面上方 */
     top: 0;
     left: 0;
     right: 0;
     z-index: 1030;                /* 層級優先顯示 */
-}
-
-/* 滾動後的導覽列樣式（變為實體背景） */
-#mainNav.navbar-scrolled {
-    background: #ffffff; /* 改為實心白色背景 */
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); /* 陰影效果 */
-    padding: 0.8rem 0; /* 縮小內距 */
 }
 
 /* 導覽列左上圖標（Logo） */
 .nav-logo {
-    height: 66px;
-    width: 66px;
+    height: 50px;
+    width: 50px;
     padding: 0;
     border-radius: 50%;                        /* 圓形邊角 */
     border: 3px solid var(--main-color);       /* 外框主色 */
@@ -209,23 +188,6 @@ function openChatPopup(e) {
     aspect-ratio: 1;                           /* 長寬等比 */
     object-fit: contain;
     transition: all 0.4s ease;
-}
-
-/* 滑鼠懸停 Logo 特效 */
-.nav-logo:hover {
-    transform: translateY(-2px); /* 微微上移 */
-    box-shadow:
-        0 6px 20px rgba(60, 221, 210, 0.3),
-        0 0 0 3px rgba(60, 221, 210, 0.2); /* 發光效果 */
-}
-
-/* 滾動時縮小 Logo */
-#mainNav.navbar-scrolled .nav-logo {
-    height: 50px;
-    width: 50px;
-    border: 3px solid var(--main-color);
-    background: none;
-    box-shadow: none;
 }
 
 /* 導覽列內選單區域（整體 ul） */

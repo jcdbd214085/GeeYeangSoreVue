@@ -26,6 +26,6 @@ const loadingStore = useLoadingStore()
 
 <style scoped>
 .main-content {
-  padding-top: 120px; /* 根據 Navbar 實際高度調整 */
+  padding-top: 80px; /* 根據 Navbar 實際高度調整 */
 }
 </style>
