@@ -35,8 +35,12 @@
     height: fit-content;                   /* 自動適應內容高度 */
     background-color: #4ecdc4;             /* 背景色（藍綠色） */
     list-style: none;                      /* 移除列表圓點 */
+    flex: 1;                              /* 撐滿父層高度 */
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
-  
+
   /* 管理每一列選單項目 LI */
   .li {
     margin-bottom: 0px;                    /* 每個項目之間沒有垂直間距 */
@@ -108,13 +112,7 @@
     flex-direction: column;
   }
   
-  /* 內層選單 ul 的高度撐滿父層 */
-  .ul {
-    flex: 1;                  /* 撐滿父層高度 */
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+
   
   
   </style>
