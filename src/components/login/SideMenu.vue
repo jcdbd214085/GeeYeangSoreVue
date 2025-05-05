@@ -9,7 +9,7 @@
       </li>
       <li class="li">
         <button class="button">
-          <p class="p">房源收藏</p>
+          <p class="p">收藏</p>
         </button>
       </li>
       <li class="li">
