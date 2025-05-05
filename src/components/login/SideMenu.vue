@@ -1,24 +1,26 @@
 <template>
-    <!-- 頁面 HTML 結構 -->
-    <!-- From Uiverse.io by asgardOP -->
+  <!-- 側邊欄外層包裹容器 -->
+  <div class="side-menu-wrapper">
     <ul class="ul">
-        <li class="li">
-            <button class="button">
-                <p class="p">個人資料</p>
-            </button>
-        </li>
-        <li class="li">
-            <button class="button">
-                <p class="p">房源收藏</p>
-            </button>
-        </li>
-        <li class="li">
-            <button class="button">
-                <p class="p">聊天室</p>
-            </button>
-        </li>
+      <li class="li">
+        <button class="button">
+          <p class="p">個人資料</p>
+        </button>
+      </li>
+      <li class="li">
+        <button class="button">
+          <p class="p">房源收藏</p>
+        </button>
+      </li>
+      <li class="li">
+        <button class="button">
+          <p class="p">聊天室</p>
+        </button>
+      </li>
     </ul>
+  </div>
 </template>
+
 
 <script setup>
 // 引入 Composition API
@@ -97,5 +99,22 @@ import { ref } from 'vue'
 .button:active {
   color: #ffffff;                        /* 點擊時文字改成白色 */
 }
+
+/* 側邊欄外層容器：撐滿整個畫面高度 */
+.side-menu-wrapper {
+  height: 100vh;            /* 高度填滿整個瀏覽器視窗 */
+  background-color: #4ecdc4; /* 背景與選單一致 */
+  display: flex;            /* 若需要置中 ul 可加 align-items */
+  flex-direction: column;
+}
+
+/* 內層選單 ul 的高度撐滿父層 */
+.ul {
+  flex: 1;                  /* 撐滿父層高度 */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 
 </style>
