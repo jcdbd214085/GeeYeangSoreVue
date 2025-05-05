@@ -1,47 +1,129 @@
 <template>
   <!-- 導航列元件 -->
-  <nav class="navbar navbar-expand-lg fixed-top" id="mainNav" :class="{ 'navbar-scrolled': isScrolled }"
-    style="z-index:1030;">
+  <nav
+    class="navbar navbar-expand-lg fixed-top"
+    id="mainNav"
+    :class="{ 'navbar-scrolled': isScrolled }"
+    style="z-index:1030;"
+  >
     <div class="container">
+      <!-- 左側 Logo 與名稱 -->
       <a class="navbar-brand" href="#">
-        <img src="/image/logo2.png" alt="租屋平台" class="nav-logo" style="height:48px;width:48px;" />
+        <img
+          src="/image/logo2.png"
+          alt="租屋平台"
+          class="nav-logo"
+          style="height:48px;width:48px;"
+        />
       </a>
       <span class="navbar-brand">居研所</span>
+
+      <!-- 手機版展開按鈕 -->
       <button class="navbar-toggler" type="button" @click="toggleMenu">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
+
+      <!-- 導覽列選單 -->
+      <div
+        class="collapse navbar-collapse"
+        :class="{ show: menuOpen }"
+        id="navbarNav"
+      >
+        <!-- 左側主選單 -->
         <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link active" href="#" @click="closeMenu">首頁</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">搜尋房源</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">我要出租</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">聯絡我們</a></li>
-          <li v-if="userStore.isLogin && userStore.role === 'both'" class="nav-item">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" @click="closeMenu">首頁</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="closeMenu">搜尋房源</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="closeMenu">聯絡我們</a>
+          </li>
+          <li
+            v-if="userStore.isLogin && userStore.role === 'both'"
+            class="nav-item"
+          >
             <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
           </li>
         </ul>
+
+        <!-- 右側登入區 -->
         <ul class="navbar-nav">
+          <!-- 未登入 -->
           <template v-if="!userStore.isLogin">
             <li class="nav-item">
-              <Button color="primary" class="me-2" @click="loginAsTenant">登入/註冊</Button>
+              <Button
+                color="primary"
+                class="me-2"
+                @click="loginAsTenant"
+              >登入/註冊</Button>
             </li>
-
           </template>
+
+          <!-- 已登入 -->
           <template v-else>
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="openChatPopup">
                 <span class="icon-wrapper">
                   <i class="fa-solid fa-comments"></i>
-                  <Badge isDot color="#ff9800" :size="10" :top="'-2px'" :right="'-6px'" />
+                  <Badge
+                    isDot
+                    color="#ff9800"
+                    :size="10"
+                    :top="'-2px'"
+                    :right="'-6px'"
+                  />
                 </span>
                 聊天室
               </a>
             </li>
-            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span> 收藏</a></li>
-            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span> 通知</a></li>
-            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span class="icon-wrapper"><Avatar :src="userStore.avatar" alt="個人頭像" :size="32" /></span> 個人頁面</a></li>
+
+            <li class="nav-item nav-icon-item">
+              <a class="nav-link" href="#" @click="closeMenu">
+                <span class="icon-wrapper">
+                  <i class="fa-solid fa-heart"></i>
+                </span>
+                收藏
+              </a>
+            </li>
+
+            <li class="nav-item nav-icon-item">
+              <a class="nav-link" href="#" @click="closeMenu">
+                <span class="icon-wrapper">
+                  <i class="fa-solid fa-bell"></i>
+                </span>
+                通知
+              </a>
+            </li>
+
+            <!-- 個人頁面 -->
+            <li class="nav-item nav-icon-item">
+              <router-link
+                class="nav-link"
+                to="/userhome"
+                @click="closeMenu"
+              >
+                <span class="icon-wrapper">
+                  <Avatar
+                    :src="userStore.avatar"
+                    alt="個人頭像"
+                    :size="32"
+                  />
+                </span>
+                個人頁面
+              </router-link>
+            </li>
+
             <li class="nav-item">
-              <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
+              <Button
+                color="outline-secondary"
+                class="ms-2"
+                @click="logout"
+              >登出</Button>
             </li>
           </template>
         </ul>
@@ -49,6 +131,9 @@
     </div>
   </nav>
 </template>
+
+
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '@/stores/user';
@@ -90,6 +175,8 @@ function openChatPopup(e) {
   chatPopup.open();
 }
 </script>
+
+
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
