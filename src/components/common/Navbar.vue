@@ -199,11 +199,11 @@ function openChatPopup(e) {
 .navbar-nav .nav-link {
     color: var(--text-main);       /* 主要文字色 */
     font-weight: 500;
-    padding: 0.6rem 1.2rem;        /* 上下左右內距 */
+    padding: 0.6rem 0.6rem;        /* 上下左右內距 */
     transition: all 0.3s ease;     /* 滑入平滑效果 */
     position: relative;
     text-transform: uppercase;     /* 英文大寫 */
-    font-size: 1.1rem;
+    font-size: 1rem;
     letter-spacing: 1px;           /* 字距 */
 }
 
@@ -348,7 +348,7 @@ function openChatPopup(e) {
 
 /* 品牌名稱（居研所）字體大小 */
 .navbar-brand {
-    font-size: 28px;
+    font-size: 24px;
 }
 
 </style>
