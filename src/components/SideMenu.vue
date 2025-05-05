@@ -58,12 +58,14 @@ import { ref } from 'vue'
   z-index: 1;                            /* 為了讓偽元素背景在下層 */
   width: 100%;                           /* 每個 button 撐滿 li 與 ul */
   display: block;                        /* 讓 button 撐滿寬度 */
+  text-align: left;                     /* 將文字改為靠左對齊 */
 }
 
 /* 管理按鈕內文字 P */
 .p {
   z-index: 2;                            /* 保持在背景偽元素之上 */
   position: relative;                    /* 為了 z-index 生效 */
+  text-indent: 1em;                      /* 每段開頭縮排一個字元寬度 */
 }
 
 /* 滑鼠懸停按鈕時的文字顏色變化 */
