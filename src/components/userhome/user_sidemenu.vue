@@ -9,7 +9,7 @@
       </li>
       <li class="li">
         <button class="button" @click="goTo('favorite')">
-          <p class="p">收藏</p>
+          <p class="p">我的收藏</p>
         </button>
       </li>
       <li class="li">

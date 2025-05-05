@@ -40,6 +40,8 @@ function changeMainView(viewName) {
   display: flex;
   min-height: 100vh;
   background-color: #f0f9f8;
+  padding-top: 17px;  /* 設定與上方導覽列相同的高度 */
+  box-sizing: border-box;  /* 確保 padding 不會增加元素總高度 */
 }
 
 .main-content {
