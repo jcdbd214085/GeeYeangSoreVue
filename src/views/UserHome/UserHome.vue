@@ -1,23 +1,15 @@
 <template>
   <div class="profile-page">
     <!-- 側邊選單 -->
-    <SideMenu />
-
-    <!-- 主內容區 -->
-    <div class="main-content">
-      <div class="welcome-center">
-        <img src="/image/logo2.png" alt="Logo" class="logo" />
-        <h1 class="welcome-title">歡迎回來！</h1>
-        <p class="welcome-subtitle">這是你的專屬個人頁面。</p>
-        <p class="welcome-description">在這裡你可以查看個人資料、收藏的房源、聊天紀錄等資訊。</p>
-      </div>
-    </div>
+    <userSideMenu />
+    <userCenter />
   </div>
 </template>
 
 <script setup>
 // 引入側邊欄元件
-import SideMenu from '@/components/login/user_sidemenu.vue'
+import userSideMenu from '@/components/userhome/user_sidemenu.vue'
+import userCenter from '@/components/userhome/usercenter.vue'
 </script>
 
 <style scoped>
