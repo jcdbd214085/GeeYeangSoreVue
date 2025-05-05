@@ -41,19 +41,20 @@ function changeMainView(viewName) {
 .profile-page {
   display: flex;
   min-height: 100vh;
-  background-color: #f0f9f8;
+  /* background-color: #f0f9f8; */
+  padding-top: 0;  /* 移除上方間距 */
+  box-sizing: border-box;
   padding-top: 17px;  /* 設定與上方導覽列相同的高度 */
-  box-sizing: border-box;  /* 確保 padding 不會增加元素總高度 */
 }
 
 .main-content {
-  flex: 1;                      /* 佔滿除側邊欄外所有空間 */
-  display: flex;                /* 若有內部要置中也方便 */
-  flex-direction: column;       /* 保持直向排版 */
-  padding: 24px;                /* 可視需要添加內距 */
-  overflow: hidden;             /* 防止內容溢出 */
-  max-width: calc(100% - 240px); /* 確保不會超出側邊欄的範圍 */
-  height: calc(100vh - 17px);   /* 設定高度，減去上方導覽列的高度 */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;  /* 移除內距 */
+  overflow: hidden;
+  max-width: calc(100% - 240px);
+  height: 100vh;  /* 使用完整視窗高度 */
 }
 
 </style>
