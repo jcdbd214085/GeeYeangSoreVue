@@ -48,7 +48,15 @@ const router = createRouter({
       path: '/pagination',
       name: 'pagination',
       component: () => import('@/components/Pagination/Pagination.vue')
+    },
+
+    //房屋搜尋
+    {
+      path: '/PropertySearch',
+      name: 'property-search-view',
+      component: () => import('@/views/PropertySearch/PropertySearchView.vue')
     }
+
   ],
 })
 

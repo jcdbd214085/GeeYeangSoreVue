@@ -37,9 +37,9 @@
 </template>
 
 <script setup>
-import img1 from '@/assets/images/carousel/Carousel1.jpg'
-import img2 from '@/assets/images/carousel/Carousel2.jpg'
-import img3 from '@/assets/images/carousel/Carousel3.jpg'
+import img1 from '@/assets/images/carousel/首頁展示圖(1).jpg'
+import img2 from '@/assets/images/carousel/首頁展示圖(2).jpg'
+import img3 from '@/assets/images/carousel/首頁展示圖(3).jpg'
 </script>
 
 <style scoped>
