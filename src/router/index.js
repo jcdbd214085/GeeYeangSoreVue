@@ -15,6 +15,7 @@ const router = createRouter({
       name: 'chat',
       component: () => import('@/views/chat/ChatView.vue')
     },
+    
     //註冊畫面 測試用
     {
       path: '/login',
@@ -41,7 +42,6 @@ const router = createRouter({
       name: 'userhome',
       component: () => import('@/views/UserHome/UserHome.vue')
     }
-
   ],
 })
 

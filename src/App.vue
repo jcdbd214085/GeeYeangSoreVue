@@ -1,6 +1,11 @@
 <script setup>
-import { RouterView } from 'vue-router'
-import ChatPopup from '@/components/chat/ChatPopup.vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.js'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import { RouterLink, RouterView } from 'vue-router'
+import ChatPopup from '@/components/chat/ChatPopup.vue';
+
 import FullScreenLoading from '@/components/common/FullScreenLoading.vue'
 import Navbar from '@/components/common/Navbar.vue'
 

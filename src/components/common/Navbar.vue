@@ -30,11 +30,12 @@
       >
         <!-- 左側主選單 -->
         <ul class="navbar-nav me-auto">
+
           <li class="nav-item">
             <a class="nav-link active" href="#" @click="closeMenu">首頁</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" @click="closeMenu">搜尋房源</a>
+            <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
@@ -89,7 +90,7 @@
                 收藏
               </a>
             </li>
-
+            
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="closeMenu">
                 <span class="icon-wrapper">
@@ -166,6 +167,7 @@ function openChatPopup(e) {
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
+
     background: #ffffff; /* 改為實心白色背景 */
     padding: 1.2rem 0;             /* 上下內距 */
     position: fixed;              /* 固定在畫面上方 */
@@ -193,6 +195,7 @@ function openChatPopup(e) {
 /* 導覽列內選單區域（整體 ul） */
 .navbar-nav {
     gap: 0.5rem; /* 選單間距 */
+
 }
 
 /* 每一個選單連結樣式 */
@@ -214,75 +217,76 @@ function openChatPopup(e) {
 
 /* 當前頁面連結高亮 */
 .navbar-nav .nav-link.active {
-    color: var(--main-color);
+  color: var(--main-color);
 }
 
 /* 選單內的 icon 大小與間距設定 */
 .navbar-nav .nav-link i {
-    margin-right: 6px;
-    font-size: 1.1em;
-    transition: all 0.3s ease;
+  margin-right: 6px;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
 }
 
 /* 導覽列展開按鈕（行動裝置用） */
 .navbar-toggler {
-    border: none;
-    padding: 0.5rem;
-    transition: all 0.3s ease;
+  border: none;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 /* 當按鈕聚焦時移除藍框 */
 .navbar-toggler:focus {
-    box-shadow: none;
-    outline: none;
+  box-shadow: none;
+  outline: none;
 }
 
 /* 三條線漢堡 icon 主體 */
 .navbar-toggler-icon {
-    background-image: none;
-    position: relative;
-    width: 24px;
-    height: 2px;
-    background-color: var(--text-main);
-    transition: all 0.3s ease;
+  background-image: none;
+  position: relative;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-main);
+  transition: all 0.3s ease;
 }
 
 /* 上下兩條線 */
 .navbar-toggler-icon::before,
 .navbar-toggler-icon::after {
-    content: '';
-    position: absolute;
-    width: 24px;
-    height: 2px;
-    background-color: var(--text-main);
-    transition: all 0.3s ease;
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-main);
+  transition: all 0.3s ease;
 }
 
 .navbar-toggler-icon::before {
-    top: -8px;
+  top: -8px;
 }
 
 .navbar-toggler-icon::after {
-    bottom: -8px;
+  bottom: -8px;
 }
 
 /* 點擊展開後的旋轉效果（變叉叉） */
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
-    transform: rotate(45deg);
-    top: 0;
+  transform: rotate(45deg);
+  top: 0;
 }
 
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
-    transform: rotate(-45deg);
-    bottom: 0;
+  transform: rotate(-45deg);
+  bottom: 0;
 }
 
 /* RWD：平板寬度以下導覽列內容樣式 */
 @media (max-width: 991.98px) {
+
     .navbar-collapse {
         background-color: rgba(255, 255, 255, 0.98);
         padding: 1rem;
@@ -326,6 +330,7 @@ function openChatPopup(e) {
     align-items: center;
     height: 48px;
 }
+
 
 /* 聊天室、收藏等 icon 對齊設定 */
 .nav-icon-item .nav-link {
