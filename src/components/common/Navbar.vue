@@ -16,6 +16,21 @@
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">搜尋房源</a></li>
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">我要出租</a></li>
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">聯絡我們</a></li>
+          <li class="nav-item dropdown" v-if="userStore.isLogin">
+            <template v-if="userStore.role === 'landlord' || userStore.role === 'both'">
+              <a class="nav-link dropdown-toggle" href="#" @click.prevent="isLandlordAccordionOpen = !isLandlordAccordionOpen">
+                房東專區
+              </a>
+              <div class="accordion-menu" v-show="isLandlordAccordionOpen">
+                <a class="dropdown-item" href="#" @click="closeMenu">物件管理</a>
+                <a class="dropdown-item" href="#" @click="closeMenu">刊登管理</a>
+                <a class="dropdown-item" href="#" @click="closeMenu">刊登成效追蹤</a>
+              </div>
+            </template>
+            <template v-else>
+              <a class="nav-link" href="#" @click="goToLandlordRegister">成為房東</a>
+            </template>
+          </li>
           <li v-if="userStore.isLogin && userStore.role === 'both'" class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
           </li>
@@ -58,10 +73,15 @@ import { useChatPopupStore } from '@/stores/chatPopup';
 import Button from '@/components/buttons/button.vue';
 import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const userStore = useUserStore();
 const chatPopup = useChatPopupStore();
 const isScrolled = ref(false);
 const menuOpen = ref(false);
+const showLandlordMenu = ref(false);
+const isLandlordAccordionOpen = ref(false);
 
 function handleScroll() {
   isScrolled.value = window.scrollY > 100;
@@ -79,7 +99,9 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
 function loginAsTenant() {
-  userStore.login('tenant', '房客A');
+  userStore.login('landlord', '房東A');
+  //userStore.login('tenant', '房東房客A');
+  // 這邊用來改變是房東或是房客
 }
 function loginAsBoth() {
   userStore.login('tenant', '房東房客A');
@@ -90,6 +112,12 @@ function logout() {
 function openChatPopup(e) {
   e.preventDefault();
   chatPopup.open();
+}
+function goToLandlordRegister() {
+  router.push('/landlord');
+}
+function toggleLandlordMenu() {
+  showLandlordMenu.value = !showLandlordMenu.value;
 }
 </script>
 <style scoped>
@@ -271,5 +299,62 @@ function openChatPopup(e) {
   width: 32px;
   margin-right: 6px;
   vertical-align: middle;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 0.8rem 1.2rem;
+  color: var(--text-main);
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(60, 221, 210, 0.1);
+  color: var(--main-color);
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+.accordion-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 1000;
+  animation: fadeInAccordion 0.3s;
+}
+@keyframes fadeInAccordion {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
