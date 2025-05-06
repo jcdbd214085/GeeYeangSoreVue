@@ -14,6 +14,11 @@ const router = createRouter({
       name: 'chat',
       component: () => import('@/views/chat/ChatView.vue')
     },
+    {
+      path: '/PropertySearch',
+      name: 'property-search-view',
+      component: () => import('@/views/PropertySearch/PropertySearchView.vue')
+    },
   ],
 })
 

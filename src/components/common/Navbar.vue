@@ -13,7 +13,7 @@
       <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item"><a class="nav-link active" href="#" @click="closeMenu">首頁</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">搜尋房源</a></li>
+          <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">我要出租</a></li>
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">聯絡我們</a></li>
           <li v-if="userStore.isLogin && userStore.role === 'both'" class="nav-item">
@@ -39,9 +39,14 @@
                 聊天室
               </a>
             </li>
-            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span> 收藏</a></li>
-            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span> 通知</a></li>
-            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span class="icon-wrapper"><Avatar :src="userStore.avatar" alt="個人頭像" :size="32" /></span> 個人頁面</a></li>
+            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span
+                  class="icon-wrapper"><i class="fa-solid fa-heart"></i></span> 收藏</a></li>
+            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span
+                  class="icon-wrapper"><i class="fa-solid fa-bell"></i></span> 通知</a></li>
+            <li class="nav-item nav-icon-item"><a class="nav-link" href="#" @click="closeMenu"><span
+                  class="icon-wrapper">
+                  <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
+                </span> 個人頁面</a></li>
             <li class="nav-item">
               <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
             </li>
@@ -94,162 +99,166 @@ function openChatPopup(e) {
 </script>
 <style scoped>
 #mainNav {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%);
-    transition: all 0.4s ease;
-    padding: 1.2rem 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%);
+  transition: all 0.4s ease;
+  padding: 1.2rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
 }
 
 #mainNav.navbar-scrolled {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    padding: 0.8rem 0;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  padding: 0.8rem 0;
 }
 
 .nav-logo {
-    height: 60px;
-    width: 60px;
-    padding: 0;
-    border-radius: 50%;
-    border: 3px solid var(--main-color);
-    background: none;
-    box-shadow: none;
-    aspect-ratio: 1;
-    object-fit: contain;
-    transition: all 0.4s ease;
+  height: 60px;
+  width: 60px;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid var(--main-color);
+  background: none;
+  box-shadow: none;
+  aspect-ratio: 1;
+  object-fit: contain;
+  transition: all 0.4s ease;
 }
 
 .nav-logo:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 6px 20px rgba(60, 221, 210, 0.3),
-        0 0 0 3px rgba(60, 221, 210, 0.2);
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(60, 221, 210, 0.3),
+    0 0 0 3px rgba(60, 221, 210, 0.2);
 }
 
 #mainNav.navbar-scrolled .nav-logo {
-    height: 50px;
-    width: 50px;
-    border: 3px solid var(--main-color);
-    background: none;
-    box-shadow: none;
+  height: 50px;
+  width: 50px;
+  border: 3px solid var(--main-color);
+  background: none;
+  box-shadow: none;
 }
 
 .navbar-nav {
-    gap: 0.5rem;
+  gap: 0.5rem;
 }
 
 .navbar-nav .nav-link {
-    color: var(--text-main);
-    font-weight: 500;
-    padding: 0.6rem 1.2rem;
-    transition: all 0.3s ease;
-    position: relative;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
+  color: var(--text-main);
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
 }
 
 .navbar-nav .nav-link:hover {
-    color: var(--main-color);
+  color: var(--main-color);
 }
 
 .navbar-nav .nav-link.active {
-    color: var(--main-color);
+  color: var(--main-color);
 }
 
 .navbar-nav .nav-link i {
-    margin-right: 6px;
-    font-size: 1.1em;
-    transition: all 0.3s ease;
+  margin-right: 6px;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
 }
 
 .navbar-toggler {
-    border: none;
-    padding: 0.5rem;
-    transition: all 0.3s ease;
+  border: none;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 .navbar-toggler:focus {
-    box-shadow: none;
-    outline: none;
+  box-shadow: none;
+  outline: none;
 }
 
 .navbar-toggler-icon {
-    background-image: none;
-    position: relative;
-    width: 24px;
-    height: 2px;
-    background-color: var(--text-main);
-    transition: all 0.3s ease;
+  background-image: none;
+  position: relative;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-main);
+  transition: all 0.3s ease;
 }
 
 .navbar-toggler-icon::before,
 .navbar-toggler-icon::after {
-    content: '';
-    position: absolute;
-    width: 24px;
-    height: 2px;
-    background-color: var(--text-main);
-    transition: all 0.3s ease;
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background-color: var(--text-main);
+  transition: all 0.3s ease;
 }
 
 .navbar-toggler-icon::before {
-    top: -8px;
+  top: -8px;
 }
 
 .navbar-toggler-icon::after {
-    bottom: -8px;
+  bottom: -8px;
 }
 
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
-    transform: rotate(45deg);
-    top: 0;
+  transform: rotate(45deg);
+  top: 0;
 }
 
 .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
-    transform: rotate(-45deg);
-    bottom: 0;
+  transform: rotate(-45deg);
+  bottom: 0;
 }
 
 @media (max-width: 991.98px) {
-    .navbar-collapse {
-        background-color: rgba(255, 255, 255, 0.98);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-    .navbar-nav .nav-link {
-        padding: 0.8rem 1.2rem;
-    }
+  .navbar-collapse {
+    background-color: rgba(255, 255, 255, 0.98);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.8rem 1.2rem;
+  }
 }
 
 @media (max-width: 767.98px) {
-    #mainNav {
-        padding: 0.8rem 0;
-        background: rgba(255, 255, 255, 0.98);
-    }
-    .nav-logo {
-        height: 40px;
-        width: 40px;
-        padding: 0;
-    }
-    #mainNav.navbar-scrolled .nav-logo {
-        height: 32px;
-        width: 32px;
-        padding: 0;
-    }
-    .navbar-nav .nav-link {
-        color: var(--text-main);
-    }
+  #mainNav {
+    padding: 0.8rem 0;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .nav-logo {
+    height: 40px;
+    width: 40px;
+    padding: 0;
+  }
+
+  #mainNav.navbar-scrolled .nav-logo {
+    height: 32px;
+    width: 32px;
+    padding: 0;
+  }
+
+  .navbar-nav .nav-link {
+    color: var(--text-main);
+  }
 }
 
 .nav-icon-item {
@@ -257,11 +266,13 @@ function openChatPopup(e) {
   align-items: center;
   height: 48px;
 }
+
 .nav-icon-item .nav-link {
   display: flex;
   align-items: center;
   padding: 0.6rem 1.2rem;
 }
+
 .icon-wrapper {
   position: relative;
   display: inline-flex;
