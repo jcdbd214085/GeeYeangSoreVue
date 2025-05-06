@@ -6,27 +6,56 @@
     </div>
     <img :src="image" alt="房源圖片" class="card-img-top">
     <div class="card-body">
-      <h5 class="card-title">{{ title }}</h5>
-      <p class="card-text">{{ location }}</p>
-      <div class="tags">
-        <span v-for="(tag, i) in tags" :key="i" class="badge bg-light text-dark">{{ tag }}</span>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="rent">
+          NT$ {{ new Intl.NumberFormat().format(rentPrice) }} / 月
+
+        </div>
+        <button class="follow-btn" @click="toggleFavorite">
+          <i :class="['fa-heart', isFavorited ? 'fa-solid' : 'fa-regular']"
+            :style="{ color: isFavorited ? '#ff9800' : '' }"></i>
+        </button>
+      </div>
+      <hr class="rent-hr" />
+      <div class="location">
+        <i class="fa-solid fa-location-dot me-1"></i>
+        {{ city }} {{ district }} {{ address }}
+      </div>
+      <div class="type-title">
+        <span>{{ propertyType }}</span> |
+        <span>{{ title }}</span>
+      </div>
+      <div class="room-info">
+        <i class="fa-solid fa-bed me-1"></i> {{ roomCount }} 房
+        <i class="fa-solid fa-bath ms-3 me-1"></i> {{ bathroomCount }} 衛
       </div>
     </div>
   </div>
 </template>
 <script setup>
+import { ref } from 'vue'
 const props = defineProps({
   image: { type: String, required: true },
+  rentPrice: { type: Number, required: true },
+  propertyType: { type: String, required: true },
   title: { type: String, required: true },
-  location: { type: String, required: true },
-  tags: { type: Array, default: () => [] }
+  city: { type: String, required: true },
+  district: { type: String, required: true },
+  address: { type: String, required: true },
+  roomCount: { type: Number, required: true },
+  bathroomCount: { type: Number, required: true },
 });
+const isFavorited = ref(false)
+
+function toggleFavorite() {
+  isFavorited.value = !isFavorited.value
+}
 
 </script>
 <style scoped>
 .card-img-top {
   width: 100%;
-  height: 200px;
+  height: auto;
   object-fit: cover;
   border-radius: 8px 8px 0 0;
   display: block;
@@ -56,7 +85,7 @@ const props = defineProps({
 }
 
 .property-card img {
-  height: 200px;
+  height: 230px;
   object-fit: cover;
   transition: all 0.4s ease;
 }
@@ -76,18 +105,65 @@ const props = defineProps({
   padding: 1.5rem;
 }
 
-.card-title {
+.rent {
   color: var(--accent);
-  font-weight: 700;
+  font-weight: bold;
+  font-size: 1.3rem;
 }
 
-.tags {
-  margin-top: 1rem;
+.rent-hr {
+  border: none;
+  border-bottom: 3px solid var(--accent);
+  width: 40%;
+  margin: 0.3rem 0;
 }
+
+.location {
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+  color: #666;
+}
+
+.type-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.room-info {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.follow-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 1.4rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.follow-btn:hover {
+  color: #24B4A8;
+  transform: scale(1.2);
+}
+
+.follow-btn:active {
+  transform: scale(0.9);
+}
+
 
 .badge {
   margin-right: 0.5rem;
   padding: 0.5rem 1rem;
   font-weight: 500;
+}
+
+.no-animation.property-card {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
 }
 </style>
