@@ -9,16 +9,39 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/views/HomeView.vue')
     },
+    //聊天室
     {
       path: '/chat',
       name: 'chat',
       component: () => import('@/views/chat/ChatView.vue')
     },
+    
+    //註冊畫面 測試用
     {
-      path: '/PropertySearch',
-      name: 'property-search-view',
-      component: () => import('@/views/PropertySearch/PropertySearchView.vue')
+      path: '/login',
+      name: 'login',
+      component: () => import('@/components/login/LoginModal.vue')
     },
+
+    //側邊欄 測試用
+    {
+      path: '/sidemenu',
+      name: 'sidemenu',
+      component: () => import('@/components/SideMenu.vue')
+    },
+
+    //彈窗 測試用
+    {
+      path: '/inputmodel',
+      name: 'inputmodel',
+      component: () => import('@/components/InputModal.vue')
+    },
+    //個人頁面
+    {
+      path: '/userhome',
+      name: 'userhome',
+      component: () => import('@/views/UserHome/UserHome.vue')
+    }
   ],
 })
 

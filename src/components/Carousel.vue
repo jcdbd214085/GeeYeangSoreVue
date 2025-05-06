@@ -4,22 +4,30 @@
     <div class="carousel-slide" v-for="(img, i) in images" :key="i" :class="{ active: current === i }">
       <img :src="img" class="d-block w-100" :alt="`輪播圖${i + 1}`">
     </div>
-    <Button class="carousel-control-prev" @click="prev">
+    <!-- <Button class="carousel-control-prev" @click="prev">
       <i class="fa-solid fa-chevron-left"></i>
     </Button>
     <Button class="carousel-control-next" @click="next">
       <i class="fa-solid fa-chevron-right"></i>
-    </Button>
+    </Button> -->
   </div>
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import Button from '@/components/buttons/button.vue';
-import Carousel1 from '@/assets/images/carousel/Carousel1.jpg';
-import Carousel2 from '@/assets/images/carousel/Carousel2.jpg';
+import Carousel1 from '@/assets/images/carousel/首頁展示圖(1).jpg';
+import Carousel2 from '@/assets/images/carousel/首頁展示圖(2).jpg';
+import Carousel3 from '@/assets/images/carousel/首頁展示圖(3).jpg';
+import Carousel4 from '@/assets/images/carousel/首頁展示圖(4).jpg';
+import Carousel5 from '@/assets/images/carousel/首頁展示圖(5).jpg';
+import Carousel6 from '@/assets/images/carousel/首頁展示圖(6).jpg';
 const images = [
   Carousel1,
-  Carousel2
+  Carousel2,
+  Carousel3,
+  Carousel4,
+  Carousel5,
+  Carousel6
 ];
 const current = ref(0);
 let timer = null;
