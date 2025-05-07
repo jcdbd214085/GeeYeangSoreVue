@@ -50,7 +50,6 @@
             <label>居住地</label>
             <select v-model="userData.city" required>
               <option value="">請選擇縣市</option>
-              <!-- 各縣市 -->
               <option>台北市</option>
               <option>新北市</option>
               <option>桃園市</option>
@@ -74,7 +73,6 @@
               <option>金門縣</option>
               <option>連江縣</option>
             </select>
-            <!-- 詳細地址輸入欄 -->
             <input type="text" v-model="userData.address" placeholder="請輸入詳細地址" required>
           </div>
 
@@ -84,30 +82,42 @@
             <input type="tel" v-model="userData.phone" pattern="[0-9]{10}" required>
           </div>
 
-          <!-- 信箱 -->
+          <!-- 信箱欄，若是 Google 登入顯示標籤與唯讀 -->
           <div class="form-group">
-            <label>信箱</label>
-            <input type="email" v-model="userData.email" required>
+            <label>
+              信箱
+              <span v-if="userData.isGoogleLogin" style="color: #888; font-size: 14px;">（Google 登入）</span>
+            </label>
+            <input
+              type="email"
+              v-model="userData.email"
+              :disabled="userData.isGoogleLogin"
+              required
+            >
           </div>
 
-          <!-- 密碼：點擊「我要更改」才顯示欄位 -->
-          <div class="form-group">
+          <!-- 密碼與確認密碼：僅本地帳號顯示 -->
+          <div class="form-group" v-if="!userData.isGoogleLogin">
             <label>
               密碼 
               <button type="button" class="change-password-btn" @click="showPassword = !showPassword">
                 我要更改
               </button>
             </label>
-            <input v-if="showPassword" type="password" v-model="userData.password" placeholder="輸入新密碼">
+            <input
+              v-if="showPassword"
+              type="password"
+              v-model="userData.password"
+              placeholder="輸入新密碼"
+            >
           </div>
 
-          <!-- 確認密碼：僅在顯示修改時才出現 -->
-          <div class="form-group" v-if="showPassword">
+          <div class="form-group" v-if="!userData.isGoogleLogin && showPassword">
             <label>確認密碼</label>
             <input type="password" v-model="userData.confirmPassword" placeholder="再次輸入新密碼">
           </div>
 
-          <!-- 表單按鈕 -->
+          <!-- 表單操作按鈕 -->
           <div class="form-actions">
             <button type="submit" class="save-btn">儲存變更</button>
             <button type="button" class="cancel-btn" @click="resetForm">重設</button>
@@ -118,6 +128,7 @@
     </div>
   </div>
 </template>
+
 
 
 <script setup>
