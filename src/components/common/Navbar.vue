@@ -115,9 +115,9 @@
                 個人頁面
               </a>
               <div class="accordion-menu" v-show="isProfileAccordionOpen">
-                <a class="dropdown-item" href="#" @click="goToProfile">個人資料</a>
+                <router-link class="dropdown-item" to="/UserHome/UserProfile" @click="closeMenu">個人資料</router-link>
                 <a class="dropdown-item" href="#" @click="goToFavorite">我的收藏</a>
-                <a class="dropdown-item" href="#" @click="openChatPopup">聊天室</a>
+                <router-link class="dropdown-item" to="/chat" @click="closeMenu">聊天室</router-link>
               </div>
             </li>
 
