@@ -1,83 +1,99 @@
 <template>
     <!-- 單一根元素：用 isRegister 狀態切換 class -->
     <div class="container" :class="{ active: isRegister }">
-<!-- 關閉按鈕 -->
-<button v-if="showCloseBtn" class="close-btn" @click="handleClose">×</button>
-
-        <!-- 登入表單 -->
-        <div class="form-box login">
-            <form @submit.prevent="handleLogin">
-                <h1>會員登入</h1>
-                <div class="input-box">
-                    <input v-model="login.username" type="text" placeholder="電子信箱" required />
-                    <i class="fa-solid fa-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="login.password" type="password" placeholder="密碼" required />
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="forgot-link"><a href="#">忘記密碼?</a></div>
-                <button class="btn">登入</button>
-                <p>——使用其他方式登入——</p>
-                <div class="social-icons">
-                    <!-- Google登入icon -->
-                    <button class="social-btn google-btn">
-                        <span class="icon-circle">
-                            <i class="fa-brands fa-google"></i>
-                        </span>
-                        <span class="btn-text">使用 Google 登入</span>
-                    </button>
-
-                </div>
-            </form>
-        </div>
-
-        <!-- 註冊表單 -->
-        <div class="form-box register">
-            <form @submit.prevent="handleRegister">
-                <h1>會員註冊</h1>
-                <div class="input-box">
-                    <input v-model="register.username" type="text" placeholder="姓名" required />
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="register.userphone" type="text" placeholder="手機" required />
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="register.email" type="email" placeholder="電子信箱" required />
-                    <i class="fa-solid fa-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="register.password" type="password" placeholder="密碼" required />
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <!-- 驗證碼欄位與發送按鈕：並排放置 -->
-                <div class="input-box verify-box">
-                    <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
-                    <button type="button" class="verify-btn" @click="sendVerificationCode">發送驗證碼</button>
-                </div>
-
-
-                <button class="btn">註冊</button>
-            </form>
-        </div>
-
-        <!-- 切換面板 -->
-        <div class="toggle-box">
-            <div class="toggle-panel toggle-left">
-                <h1>居研所</h1>
-                <p>用心研究每一個家的可能性。</p>
-                <button class="btn" @click="showRegister">註冊會員</button>
+      <!-- 關閉按鈕 -->
+      <button v-if="showCloseBtn" class="close-btn" @click="handleClose">×</button>
+  
+      <!-- 登入表單 -->
+      <div class="form-box login">
+        <form @submit.prevent="handleLogin">
+          <h1>會員登入</h1>
+          <div class="input-box">
+            <input v-model="login.username" type="text" placeholder="電子信箱" required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <div class="input-box">
+            <input
+              v-model="login.password"
+              :type="showLoginPassword ? 'text' : 'password'"
+              placeholder="密碼"
+              required
+            />
+            <div class="eye-icon-wrapper" @click="showLoginPassword = !showLoginPassword">
+              <i :class="showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </div>
-            <div class="toggle-panel toggle-right">
-                <h1>居研所</h1>
-                <p>讓數據，帶你回家。</p>
-                <button class="btn" @click="showLogin">登入會員</button>
+          </div>
+  
+          <div class="forgot-link"><a href="#">忘記密碼?</a></div>
+          <button class="btn">登入</button>
+          <p>——使用其他方式登入——</p>
+          <div class="social-icons">
+            <!-- Google登入icon -->
+            <button class="social-btn google-btn">
+              <span class="icon-circle">
+                <i class="fa-brands fa-google"></i>
+              </span>
+              <span class="btn-text">使用 Google 登入</span>
+            </button>
+          </div>
+        </form>
+      </div>
+  
+      <!-- 註冊表單 -->
+      <div class="form-box register">
+        <form @submit.prevent="handleRegister">
+          <h1>會員註冊</h1>
+          <div class="input-box">
+            <input v-model="register.username" type="text" placeholder="姓名" required />
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="input-box">
+            <input v-model="register.userphone" type="text" placeholder="手機" required />
+            <i class="fa-solid fa-phone"></i>
+          </div>
+          <div class="input-box">
+            <input v-model="register.email" type="email" placeholder="電子信箱" required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <div class="input-box">
+            <input
+              v-model="register.password"
+              :type="showRegisterPassword ? 'text' : 'password'"
+              placeholder="密碼"
+              required
+            />
+            <div class="eye-icon-wrapper" @click="showRegisterPassword = !showRegisterPassword">
+              <i :class="showRegisterPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </div>
+          </div>
+  
+          <!-- 驗證碼欄位與發送按鈕：並排放置 -->
+          <div class="input-box verify-box">
+            <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
+            <button type="button" class="verify-btn" @click="sendVerificationCode">發送驗證碼</button>
+          </div>
+  
+          <button class="btn">註冊</button>
+        </form>
+      </div>
+  
+      <!-- 切換面板 -->
+      <div class="toggle-box">
+        <div class="toggle-panel toggle-left">
+          <h1>居研所</h1>
+          <p>用心研究每一個家的可能性。</p>
+          <button class="btn" @click="showRegister">註冊會員</button>
         </div>
+        <div class="toggle-panel toggle-right">
+          <h1>居研所</h1>
+          <p>讓數據，帶你回家。</p>
+          <button class="btn" @click="showLogin">登入會員</button>
+        </div>
+      </div>
     </div>
-</template>
+  </template>
+  
+  
 
 <script setup>
 // 引入 Composition API
@@ -88,6 +104,10 @@ const isRegister = ref(false)
 
 // 控制是否顯示右上角關閉按鈕
 const showCloseBtn = ref(false)
+
+// 密碼顯示切換
+const showLoginPassword = ref(false)
+const showRegisterPassword = ref(false)
 
 // 登入表單資料
 const login = ref({
@@ -133,6 +153,8 @@ const handleRegister = () => {
   console.log('註冊資料', register.value)
   // TODO: 呼叫 API 處理註冊
 }
+
+
 
 // 發送驗證碼事件
 const sendVerificationCode = () => {
@@ -251,6 +273,40 @@ form {
     color: #333;
     font-weight: 500;
 }
+
+/* 密碼眼睛 icon 的小網底容器 */
+.eye-icon-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 60px; /* 依需要調整寬度 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(163, 222, 215, 0.5); /* 白色半透明網底 */
+  cursor: pointer;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.eye-icon-wrapper:hover {
+  background-color: #f8dfc6; /* 滑過時淡黃色提示 */
+}
+
+.eye-icon-wrapper i {
+  font-size: 18px;
+  color: #32a49c;
+}
+
+
+/* 調整 icon 顏色 */
+.eye-icon-wrapper i {
+  color: #32a49c;
+  font-size: 18px;
+}
+
 
 /*  placeholder 樣式 */
 .input-box input::placeholder {
