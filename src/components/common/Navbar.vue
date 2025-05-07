@@ -30,7 +30,7 @@
         <!-- 左側主選單 -->
         <ul class="navbar-nav me-auto">
           <li class="nav-item"><a class="nav-link active" href="#" @click="closeMenu">首頁</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">搜尋房源</a></li>
+          <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">我要出租</a></li>
           <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">聯絡我們</a></li>
           <li class="nav-item dropdown" v-if="userStore.isLogin">
