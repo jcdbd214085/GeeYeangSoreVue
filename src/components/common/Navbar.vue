@@ -22,15 +22,17 @@
           
           <!-- 靜態選單項目 -->
           <li class="nav-item">
-            <a class="nav-link active" href="#" @click="closeMenu">首頁</a>
+            <router-link class="nav-link" to="/" exact-active-class="active" @click="closeMenu">首頁</router-link>
           </li>
-          <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
+          <li class="nav-item">
+  <router-link class="nav-link" to="/PropertySearch" exact-active-class="active" @click="closeMenu">搜尋房源</router-link>
+</li>
           <li class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
           </li>
 
           <!-- 聯絡我們（滑鼠移入展開） -->
-          <li class="nav-item nav-icon-item dropdown"
+          <li class="nav-item  dropdown"
               @mouseenter="isHelpAccordionOpen = true"
               @mouseleave="isHelpAccordionOpen = false">
             <a class="nav-link dropdown-toggle" href="#">聯絡我們</a>
@@ -44,7 +46,7 @@
 
           <!-- 房東專區 或 成為房東 -->
           <li v-if="userStore.isLogin"
-              class="nav-item nav-icon-item dropdown"
+              class="nav-item dropdown"
               @mouseenter="isLandlordAccordionOpen = true"
               @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.role === 'landlord' || userStore.role === 'both'">
