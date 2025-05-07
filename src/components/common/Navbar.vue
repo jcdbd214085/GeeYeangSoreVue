@@ -1,18 +1,13 @@
 <template>
   <!-- 導航列元件 -->
   <nav class="navbar navbar-expand-lg fixed-top" 
-  id="mainNav" 
-  :class="{ 'navbar-scrolled': isScrolled }">
-
+       id="mainNav" 
+       :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
+
       <!-- 左側 Logo 與名稱 -->
       <a class="navbar-brand" href="#">
-        <img
-          src="/image/logo2.png"
-          alt="租屋平台"
-          class="nav-logo"
-          style="height:48px;width:48px;"
-        />
+        <img src="/image/logo2.png" alt="租屋平台" class="nav-logo" style="height:48px;width:48px;" />
       </a>
       <span class="navbar-brand">居研所</span>
 
@@ -21,23 +16,39 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- 導覽列選單 -->
-      <div
-        class="collapse navbar-collapse"
-        :class="{ show: menuOpen }"
-        id="navbarNav"
-      >
-        <!-- 左側主選單 -->
+      <!-- 導覽列內容（主選單與登入區） -->
+      <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link active" href="#" @click="closeMenu">首頁</a></li>
+          
+          <!-- 靜態選單項目 -->
+          <li class="nav-item">
+            <a class="nav-link active" href="#" @click="closeMenu">首頁</a>
+          </li>
           <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">我要出租</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" @click="closeMenu">聯絡我們</a></li>
-          <li class="nav-item dropdown" v-if="userStore.isLogin">
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
+          </li>
+
+          <!-- 聯絡我們（滑鼠移入展開） -->
+          <li class="nav-item nav-icon-item dropdown"
+              @mouseenter="isHelpAccordionOpen = true"
+              @mouseleave="isHelpAccordionOpen = false">
+            <a class="nav-link dropdown-toggle" href="#">聯絡我們</a>
+            <div class="accordion-menu" v-show="isHelpAccordionOpen">
+              <a class="dropdown-item" href="#" @click="goToNotice">最新公告</a>
+              <a class="dropdown-item" href="#" @click="goToGuide">使用介紹</a>
+              <a class="dropdown-item" href="#" @click="goToFAQ">常見問題</a>
+              <a class="dropdown-item" href="#" @click="goToAbout">關於居研所</a>
+            </div>
+          </li>
+
+          <!-- 房東專區 或 成為房東 -->
+          <li v-if="userStore.isLogin"
+              class="nav-item nav-icon-item dropdown"
+              @mouseenter="isLandlordAccordionOpen = true"
+              @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.role === 'landlord' || userStore.role === 'both'">
-              <a class="nav-link dropdown-toggle" href="#" @click.prevent="isLandlordAccordionOpen = !isLandlordAccordionOpen">
-                房東專區
-              </a>
+              <a class="nav-link dropdown-toggle" href="#">房東專區</a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
                 <a class="dropdown-item" href="#" @click="closeMenu">物件管理</a>
                 <a class="dropdown-item" href="#" @click="closeMenu">刊登管理</a>
@@ -48,84 +59,71 @@
               <a class="nav-link" href="#" @click="goToLandlordRegister">成為房東</a>
             </template>
           </li>
+
+          <!-- 房源管理（雙重身分顯示） -->
           <li v-if="userStore.isLogin && userStore.role === 'both'" class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
           </li>
         </ul>
 
-        <!-- 右側登入區 -->
+        <!-- 右側登入與個人區域 -->
         <ul class="navbar-nav">
-          <!-- 未登入 -->
+          <!-- 未登入狀態 -->
           <template v-if="!userStore.isLogin">
             <li class="nav-item">
-              <Button
-                color="primary"
-                class="me-2"
-                @click="loginAsTenant"
-              >登入/註冊</Button>
+              <Button color="primary" class="me-2" @click="loginAsTenant">登入/註冊</Button>
             </li>
           </template>
 
-          <!-- 已登入 -->
+          <!-- 已登入狀態 -->
           <template v-else>
+            <!-- 聊天室 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="openChatPopup">
                 <span class="icon-wrapper">
                   <i class="fa-solid fa-comments"></i>
-                  <Badge
-                    isDot
-                    color="#ff9800"
-                    :size="10"
-                    :top="'-2px'"
-                    :right="'-6px'"
-                  />
+                  <Badge isDot color="#ff9800" :size="10" :top="'-2px'" :right="'-6px'" />
                 </span>
                 聊天室
               </a>
             </li>
 
+            <!-- 收藏 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="closeMenu">
-                <span class="icon-wrapper">
-                  <i class="fa-solid fa-heart"></i>
-                </span>
+                <span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span>
                 收藏
               </a>
             </li>
-            
+
+            <!-- 通知 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="closeMenu">
-                <span class="icon-wrapper">
-                  <i class="fa-solid fa-bell"></i>
-                </span>
+                <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
             </li>
 
-            <!-- 個人頁面 -->
-            <li class="nav-item nav-icon-item">
-              <router-link
-                class="nav-link"
-                to="/userhome"
-                @click="closeMenu"
-              >
+            <!-- 個人頁面（滑鼠移入展開） -->
+            <li class="nav-item nav-icon-item dropdown"
+                @mouseenter="isProfileAccordionOpen = true"
+                @mouseleave="isProfileAccordionOpen = false">
+              <a class="nav-link dropdown-toggle" href="#">
                 <span class="icon-wrapper">
-                  <Avatar
-                    :src="userStore.avatar"
-                    alt="個人頭像"
-                    :size="32"
-                  />
+                  <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
                 </span>
                 個人頁面
-              </router-link>
+              </a>
+              <div class="accordion-menu" v-show="isProfileAccordionOpen">
+                <a class="dropdown-item" href="#" @click="goToProfile">個人資料</a>
+                <a class="dropdown-item" href="#" @click="goToFavorite">我的收藏</a>
+                <a class="dropdown-item" href="#" @click="openChatPopup">聊天室</a>
+              </div>
             </li>
 
+            <!-- 登出按鈕 -->
             <li class="nav-item">
-              <Button
-                color="outline-secondary"
-                class="ms-2"
-                @click="logout"
-              >登出</Button>
+              <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
             </li>
           </template>
         </ul>
@@ -133,6 +131,7 @@
     </div>
   </nav>
 </template>
+
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
@@ -149,6 +148,7 @@ const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
+
 
 const isScrolled = ref(false);
 function handleScroll() {
@@ -188,6 +188,40 @@ function goToLandlordRegister() {
 function toggleLandlordMenu() {
   showLandlordMenu.value = !showLandlordMenu.value;
 }
+
+const isProfileAccordionOpen = ref(false);
+
+
+function goToProfile() {
+  router.push('/user/profile');
+  closeMenu();
+}
+function goToFavorite() {
+  router.push('/user/favorite');
+  closeMenu();
+}
+
+const isHelpAccordionOpen = ref(false);
+
+function goToNotice() {
+  router.push('/notice');
+  closeMenu();
+}
+function goToGuide() {
+  router.push('/guide');
+  closeMenu();
+}
+function goToFAQ() {
+  router.push('/faq');
+  closeMenu();
+}
+function goToAbout() {
+  router.push('/about');
+  closeMenu();
+}
+
+
+
 </script>
 
 <style scoped>
