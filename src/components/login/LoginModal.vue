@@ -70,7 +70,22 @@
           <!-- 驗證碼欄位與發送按鈕：並排放置 -->
           <div class="input-box verify-box">
             <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
-            <button type="button" class="verify-btn" @click="sendVerificationCode">發送驗證碼</button>
+            <button
+  type="button"
+  class="verify-btn"
+  :class="{ 'disabled-btn': countdown > 0 }"
+  :disabled="countdown > 0"
+  @click="sendVerificationCode"
+>
+<span v-if="countdown > 0">
+  <div>{{ countdown }} 秒後</div>
+  <div>可重新發送</div>
+</span>
+<span v-else>
+  {{ resendText }}
+</span>
+
+</button>
           </div>
   
           <button class="btn">註冊</button>
@@ -95,84 +110,97 @@
   
   
 
-<script setup>
-// 引入 Composition API
-import { ref, onMounted } from 'vue'
-
-// 控制是否顯示註冊頁面（切換用）
-const isRegister = ref(false)
-
-// 控制是否顯示右上角關閉按鈕
-const showCloseBtn = ref(false)
-
-// 密碼顯示切換
-const showLoginPassword = ref(false)
-const showRegisterPassword = ref(false)
-
-// 登入表單資料
-const login = ref({
-  username: '',
-  password: ''
-})
-
-// 註冊表單資料
-const register = ref({
-  username: '',
-  email: '',
-  password: '',
-  userphone: '',
-  verificationCode: ''
-})
-
-// 點擊切換至註冊畫面
-const showRegister = () => {
-  isRegister.value = true
-  showCloseBtn.value = false
-  setTimeout(() => {
+  <script setup>
+  // 引入 Composition API
+  import { ref, onMounted } from 'vue'
+  
+  // 控制是否顯示註冊頁面（切換用）
+  const isRegister = ref(false)
+  
+  // 控制是否顯示右上角關閉按鈕
+  const showCloseBtn = ref(false)
+  
+  // 密碼顯示切換
+  const showLoginPassword = ref(false)
+  const showRegisterPassword = ref(false)
+  
+  // 驗證碼倒數
+  const countdown = ref(0) // 初始為 0 表示可按
+  const resendText = ref('發送驗證碼')
+  let timer = null
+  
+  // 登入表單資料
+  const login = ref({
+    username: '',
+    password: ''
+  })
+  
+  // 註冊表單資料
+  const register = ref({
+    username: '',
+    email: '',
+    password: '',
+    userphone: '',
+    verificationCode: ''
+  })
+  
+  // 點擊切換至註冊畫面
+  const showRegister = () => {
+    isRegister.value = true
+    showCloseBtn.value = false
+    setTimeout(() => {
+      showCloseBtn.value = true
+    }, 1800)
+  }
+  
+  // 點擊切換至登入畫面
+  const showLogin = () => {
+    isRegister.value = false
+    showCloseBtn.value = false
+    setTimeout(() => {
+      showCloseBtn.value = true
+    }, 1800)
+  }
+  
+  // 登入事件處理
+  const handleLogin = () => {
+    console.log('登入資料', login.value)
+    // TODO: 呼叫 API 處理登入
+  }
+  
+  // 註冊事件處理
+  const handleRegister = () => {
+    console.log('註冊資料', register.value)
+    // TODO: 呼叫 API 處理註冊
+  }
+  
+  // 發送驗證碼事件
+  const sendVerificationCode = () => {
+    if (countdown.value > 0) return // 防止重複點擊
+  
+    console.log('發送驗證碼至', register.value.email)
+    resendText.value = '重新發送'
+    countdown.value = 30
+  
+    timer = setInterval(() => {
+      countdown.value--
+      if (countdown.value <= 0) {
+        clearInterval(timer)
+      }
+    }, 1000)
+  }
+  
+  // 關閉彈窗事件
+  const handleClose = () => {
+    console.log('關閉彈窗')
+    // TODO: emit('close') 或控制外層變數
+  }
+  
+  onMounted(() => {
     showCloseBtn.value = true
-  }, 1800) // 與動畫時間一致
-}
-
-// 點擊切換至登入畫面
-const showLogin = () => {
-  isRegister.value = false
-  showCloseBtn.value = false
-  setTimeout(() => {
-    showCloseBtn.value = true
-  }, 1800)
-}
-
-// 登入事件處理
-const handleLogin = () => {
-  console.log('登入資料', login.value)
-  // TODO: 呼叫 API 處理登入
-}
-
-// 註冊事件處理
-const handleRegister = () => {
-  console.log('註冊資料', register.value)
-  // TODO: 呼叫 API 處理註冊
-}
-
-
-
-// 發送驗證碼事件
-const sendVerificationCode = () => {
-  console.log('發送驗證碼至', register.value.email)
-  // TODO: 呼叫 API 實作
-}
-
-// 關閉彈窗事件（可 emit 或控制外層變數）
-const handleClose = () => {
-  console.log('關閉彈窗')
-  // TODO: emit('close') 或設定顯示狀態
-}
-
-// 頁面載入完成後顯示關閉按鈕（非切換狀態）
-onMounted(() => {
-  showCloseBtn.value = true
-})
-</script>
+  })
+  </script>
+  
 
 
 
@@ -290,6 +318,15 @@ form {
   border-bottom-right-radius: 8px;
   transition: background-color 0.3s;
 }
+
+/* 驗證碼倒數按鈕呈現唯讀狀態 */
+.verify-btn.disabled-btn {
+  background-color: #ccc;           /* 改成灰色背景 */
+  cursor: not-allowed;              /* 滑鼠顯示禁止 */
+  pointer-events: none;             /* 避免 hover 效果 */
+  color: #727171;
+}
+
 
 .eye-icon-wrapper:hover {
   background-color: #f8dfc6; /* 滑過時淡黃色提示 */
