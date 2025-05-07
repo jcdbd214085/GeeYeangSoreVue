@@ -10,12 +10,18 @@
 
 /* 獅尾四季春字型定義 */
 @font-face {
-    font-family: SweiSpringCJKtc-Regular;
-    src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2"), url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
+    font-family: 'SweiSpringCJKtc-Regular';
+    src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2"),
+        url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
+    font-display: swap;
+}
+
+/* 全域字型設定 */
+* {
+    font-family: 'SweiSpringCJKtc-Regular', 'Noto Sans TC', sans-serif;
 }
 
 body {
-    font-family: 'SweiSpringCJKtc-Regular', 'Noto Sans TC', sans-serif;
     color: var(--text-main);
     line-height: 1.6;
     padding-top: 0;
