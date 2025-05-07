@@ -1,18 +1,13 @@
 <template>
   <!-- 導航列元件 -->
   <nav class="navbar navbar-expand-lg fixed-top" 
-  id="mainNav" 
-  :class="{ 'navbar-scrolled': isScrolled }">
-
+       id="mainNav" 
+       :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
+
       <!-- 左側 Logo 與名稱 -->
       <a class="navbar-brand" href="#">
-        <img
-          src="/image/logo2.png"
-          alt="租屋平台"
-          class="nav-logo"
-          style="height:48px;width:48px;"
-        />
+        <img src="/image/logo2.png" alt="租屋平台" class="nav-logo" style="height:48px;width:48px;" />
       </a>
       <span class="navbar-brand">居研所</span>
 
@@ -21,108 +16,114 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- 導覽列選單 -->
-      <div
-        class="collapse navbar-collapse"
-        :class="{ show: menuOpen }"
-        id="navbarNav"
-      >
-        <!-- 左側主選單 -->
+      <!-- 導覽列內容（主選單與登入區） -->
+      <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
         <ul class="navbar-nav me-auto">
-
+          
+          <!-- 靜態選單項目 -->
           <li class="nav-item">
             <a class="nav-link active" href="#" @click="closeMenu">首頁</a>
           </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
-          </li>
+          <router-link class="nav-link" to="/PropertySearch" @click="closeMenu">搜尋房源</router-link>
           <li class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" @click="closeMenu">聯絡我們</a>
+
+          <!-- 聯絡我們（滑鼠移入展開） -->
+          <li class="nav-item nav-icon-item dropdown"
+              @mouseenter="isHelpAccordionOpen = true"
+              @mouseleave="isHelpAccordionOpen = false">
+            <a class="nav-link dropdown-toggle" href="#">聯絡我們</a>
+            <div class="accordion-menu" v-show="isHelpAccordionOpen">
+              <a class="dropdown-item" href="#" @click="goToNotice">最新公告</a>
+              <a class="dropdown-item" href="#" @click="goToGuide">使用介紹</a>
+              <a class="dropdown-item" href="#" @click="goToFAQ">常見問題</a>
+              <a class="dropdown-item" href="#" @click="goToAbout">關於居研所</a>
+            </div>
           </li>
-          <li
-            v-if="userStore.isLogin && userStore.role === 'both'"
-            class="nav-item"
-          >
+
+          <!-- 房東專區 或 成為房東 -->
+          <li v-if="userStore.isLogin"
+              class="nav-item nav-icon-item dropdown"
+              @mouseenter="isLandlordAccordionOpen = true"
+              @mouseleave="isLandlordAccordionOpen = false">
+            <template v-if="userStore.role === 'landlord' || userStore.role === 'both'">
+              <a class="nav-link dropdown-toggle" href="#">房東專區</a>
+              <div class="accordion-menu" v-show="isLandlordAccordionOpen">
+                <a class="dropdown-item" href="#" @click="closeMenu">物件管理</a>
+                <a class="dropdown-item" href="#" @click="closeMenu">刊登管理</a>
+                <a class="dropdown-item" href="#" @click="closeMenu">刊登成效追蹤</a>
+              </div>
+            </template>
+            <template v-else>
+              <a class="nav-link" href="#" @click="goToLandlordRegister">成為房東</a>
+            </template>
+          </li>
+
+          <!-- 房源管理（雙重身分顯示） -->
+          <li v-if="userStore.isLogin && userStore.role === 'both'" class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
           </li>
         </ul>
 
-        <!-- 右側登入區 -->
+        <!-- 右側登入與個人區域 -->
         <ul class="navbar-nav">
-          <!-- 未登入 -->
+          <!-- 未登入狀態 -->
           <template v-if="!userStore.isLogin">
             <li class="nav-item">
-              <Button
-                color="primary"
-                class="me-2"
-                @click="loginAsTenant"
-              >登入/註冊</Button>
+              <Button color="primary" class="me-2" @click="loginAsTenant">登入/註冊</Button>
             </li>
           </template>
 
-          <!-- 已登入 -->
+          <!-- 已登入狀態 -->
           <template v-else>
+            <!-- 聊天室 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="openChatPopup">
                 <span class="icon-wrapper">
                   <i class="fa-solid fa-comments"></i>
-                  <Badge
-                    isDot
-                    color="#ff9800"
-                    :size="10"
-                    :top="'-2px'"
-                    :right="'-6px'"
-                  />
+                  <Badge isDot color="#ff9800" :size="10" :top="'-2px'" :right="'-6px'" />
                 </span>
                 聊天室
               </a>
             </li>
 
+            <!-- 收藏 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="closeMenu">
-                <span class="icon-wrapper">
-                  <i class="fa-solid fa-heart"></i>
-                </span>
+                <span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span>
                 收藏
               </a>
             </li>
-            
+
+            <!-- 通知 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="closeMenu">
-                <span class="icon-wrapper">
-                  <i class="fa-solid fa-bell"></i>
-                </span>
+                <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
             </li>
 
-            <!-- 個人頁面 -->
-            <li class="nav-item nav-icon-item">
-              <router-link
-                class="nav-link"
-                to="/userhome"
-                @click="closeMenu"
-              >
+            <!-- 個人頁面（滑鼠移入展開） -->
+            <li class="nav-item nav-icon-item dropdown"
+                @mouseenter="isProfileAccordionOpen = true"
+                @mouseleave="isProfileAccordionOpen = false">
+              <a class="nav-link dropdown-toggle" href="#">
                 <span class="icon-wrapper">
-                  <Avatar
-                    :src="userStore.avatar"
-                    alt="個人頭像"
-                    :size="32"
-                  />
+                  <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
                 </span>
                 個人頁面
-              </router-link>
+              </a>
+              <div class="accordion-menu" v-show="isProfileAccordionOpen">
+                <a class="dropdown-item" href="#" @click="goToProfile">個人資料</a>
+                <a class="dropdown-item" href="#" @click="goToFavorite">我的收藏</a>
+                <a class="dropdown-item" href="#" @click="openChatPopup">聊天室</a>
+              </div>
             </li>
 
+            <!-- 登出按鈕 -->
             <li class="nav-item">
-              <Button
-                color="outline-secondary"
-                class="ms-2"
-                @click="logout"
-              >登出</Button>
+              <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
             </li>
           </template>
         </ul>
@@ -131,6 +132,7 @@
   </nav>
 </template>
 
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '@/stores/user';
@@ -138,9 +140,15 @@ import { useChatPopupStore } from '@/stores/chatPopup';
 import Button from '@/components/buttons/button.vue';
 import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const userStore = useUserStore();
 const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
+const showLandlordMenu = ref(false);
+const isLandlordAccordionOpen = ref(false);
+
 
 const isScrolled = ref(false);
 function handleScroll() {
@@ -160,7 +168,9 @@ function closeMenu() {
   if (window.innerWidth < 992) menuOpen.value = false;
 }
 function loginAsTenant() {
-  userStore.login('tenant', '房客A');
+  userStore.login('landlord', '房東A');
+  //userStore.login('tenant', '房東房客A');
+  // 這邊用來改變是房東或是房客
 }
 function loginAsBoth() {
   userStore.login('tenant', '房東房客A');
@@ -172,6 +182,46 @@ function openChatPopup(e) {
   e.preventDefault();
   chatPopup.open();
 }
+function goToLandlordRegister() {
+  router.push('/landlord');
+}
+function toggleLandlordMenu() {
+  showLandlordMenu.value = !showLandlordMenu.value;
+}
+
+const isProfileAccordionOpen = ref(false);
+
+
+function goToProfile() {
+  router.push('/user/profile');
+  closeMenu();
+}
+function goToFavorite() {
+  router.push('/user/favorite');
+  closeMenu();
+}
+
+const isHelpAccordionOpen = ref(false);
+
+function goToNotice() {
+  router.push('/notice');
+  closeMenu();
+}
+function goToGuide() {
+  router.push('/guide');
+  closeMenu();
+}
+function goToFAQ() {
+  router.push('/faq');
+  closeMenu();
+}
+function goToAbout() {
+  router.push('/about');
+  closeMenu();
+}
+
+
+
 </script>
 
 <style scoped>
@@ -373,6 +423,62 @@ function openChatPopup(e) {
     vertical-align: middle;
 }
 
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 0.8rem 1.2rem;
+  color: var(--text-main);
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(60, 221, 210, 0.1);
+  color: var(--main-color);
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+.accordion-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 1000;
+  animation: fadeInAccordion 0.3s;
+}
+@keyframes fadeInAccordion {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 /* 品牌名稱（居研所）字體大小 */
 .navbar-brand {
     font-size: 24px;
