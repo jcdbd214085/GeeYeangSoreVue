@@ -72,7 +72,13 @@ const router = createRouter({
       path: '/PropertySearch',
       name: 'property-search-view',
       component: () => import('@/views/PropertySearch/PropertySearchView.vue')
-    }
+    },
+        //個人頁面
+        {
+          path: '/UserHome/UserProfile',
+          name: 'UserProfile',
+          component: () => import('@/views/UserHome/UserProfile.vue')
+        }
 
   ],
 })
