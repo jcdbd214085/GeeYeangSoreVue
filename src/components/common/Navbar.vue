@@ -1,10 +1,9 @@
 <template>
   <!-- 導航列元件 -->
-  <nav
-    class="navbar navbar-expand-lg fixed-top"
-    id="mainNav"
-    style="z-index:1030;"
-  >
+  <nav class="navbar navbar-expand-lg fixed-top" 
+  id="mainNav" 
+  :class="{ 'navbar-scrolled': isScrolled }">
+
     <div class="container">
       <!-- 左側 Logo 與名稱 -->
       <a class="navbar-brand" href="#">
@@ -151,6 +150,17 @@ const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
 
+const isScrolled = ref(false);
+function handleScroll() {
+  isScrolled.value = window.scrollY > 100;
+}
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
 function toggleMenu() {
   menuOpen.value = !menuOpen.value;
 }
@@ -183,16 +193,23 @@ function toggleLandlordMenu() {
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
-
-    background: #ffffff; /* 改為實心白色背景 */
-    padding: 1.2rem 0;             /* 上下內距 */
-    position: fixed;              /* 固定在畫面上方 */
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;                /* 層級優先顯示 */
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); /* 陰影效果 */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 40%, rgba(255, 255, 255, 0) 100%);
+  transition: all 0.4s ease;
+  padding: 1.2rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
 }
+
+#mainNav.navbar-scrolled {
+  background: rgba(255,255,255,0.98);
+  padding: 0.8rem 0;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+}
+
+
 
 /* 導覽列左上圖標（Logo） */
 .nav-logo {
@@ -207,6 +224,12 @@ function toggleLandlordMenu() {
     object-fit: contain;
     transition: all 0.4s ease;
 }
+
+.nav-logo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(60, 221, 210, 0.3), 0 0 0 3px rgba(60, 221, 210, 0.2);
+}
+
 
 /* 導覽列內選單區域（整體 ul） */
 .navbar-nav {
@@ -316,24 +339,23 @@ function toggleLandlordMenu() {
     }
 }
 
+
 /* RWD：手機寬度樣式 */
 @media (max-width: 767.98px) {
     #mainNav {
         padding: 0.8rem 0;
-        background: rgba(255, 255, 255, 0.98);
+        /* background: rgba(255, 255, 255, 0.98); */
+        background: none;
     }
 
     .nav-logo {
-        height: 40px;
-        width: 40px;
-        padding: 0;
-    }
-
-    #mainNav.navbar-scrolled .nav-logo {
-        height: 32px;
-        width: 32px;
-        padding: 0;
-    }
+  height: 60px;
+  width: 60px;
+}
+#mainNav.navbar-scrolled .nav-logo {
+  height: 50px;
+  width: 50px;
+}
 
     .navbar-nav .nav-link {
         color: var(--text-main);
