@@ -62,6 +62,13 @@ const router = createRouter({
           name: 'UserProfile',
           component: () => import('@/views/UserHome/UserProfile.vue')
         }
+    ,
+    //最新公告
+    {
+      path: '/notice',
+      name: 'notice',
+      component: () => import('@/views/notice/Notice.vue')
+    },
 
   ],
 })
