@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useLoadingStore } from '@/stores/loadingStore'
+import AlertDemo from '@/views/alert/AlertDemo.vue'
+import InputDemo from '@/views/input/InputDemo.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +16,21 @@ const router = createRouter({
       path: '/chat',
       name: 'chat',
       component: () => import('@/views/chat/ChatView.vue')
+    },
+    {
+      path: '/alert-demo',
+      name: 'AlertDemo',
+      component: AlertDemo
+    },
+    {
+      path: '/input-demo',
+      name: 'InputDemo',
+      component: InputDemo
+    },
+    {
+      path: '/landlord',
+      name: 'Landlord',
+      component: () => import('@/views/landlord/landlord.vue')
     },
 
     //註冊畫面 測試用
@@ -62,13 +79,6 @@ const router = createRouter({
           name: 'UserProfile',
           component: () => import('@/views/UserHome/UserProfile.vue')
         }
-    ,
-    //最新公告
-    {
-      path: '/notice',
-      name: 'notice',
-      component: () => import('@/views/notice/Notice.vue')
-    },
 
   ],
 })
