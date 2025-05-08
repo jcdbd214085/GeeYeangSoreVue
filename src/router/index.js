@@ -27,11 +27,7 @@ const router = createRouter({
       name: 'InputDemo',
       component: InputDemo
     },
-    {
-      path: '/landlord',
-      name: 'Landlord',
-      component: () => import('@/views/landlord/landlord.vue')
-    },
+
 
     //註冊畫面 測試用
     {
@@ -73,12 +69,27 @@ const router = createRouter({
       name: 'property-search-view',
       component: () => import('@/views/PropertySearch/PropertySearchView.vue')
     },
-        //個人頁面
-        {
-          path: '/UserHome/UserProfile',
-          name: 'UserProfile',
-          component: () => import('@/views/UserHome/UserProfile.vue')
-        }
+    //個人頁面
+    {
+      path: '/UserHome/UserProfile',
+      name: 'UserProfile',
+      component: () => import('@/views/UserHome/UserProfile.vue')
+    },
+    {
+      path: '/landlord/property-manage',
+      name: 'landlord-property-manage',
+      component: () => import('@/views/landlord/PropertyManage.vue')
+    },
+    {
+      path: '/landlord/property-create',
+      name: 'landlord-property-create',
+      component: () => import('@/views/landlord/PropertyCreate.vue')
+    },
+    {
+      path: '/landlord/property-detail-form',
+      name: 'landlord-property-detail-form',
+      component: () => import('@/views/landlord/PropertyDetailForm.vue')
+    }
 
   ],
 })
