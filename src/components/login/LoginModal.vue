@@ -1,156 +1,285 @@
 <template>
+
+    <!-- 隱私權政策 Modal -->
+<div class="modal-overlay" v-if="showPrivacyModal">
+  <div class="modal-content">
+    <h2>隱私權政策</h2>
+    <div class="modal-body">
+      <p>歡迎您使用【居研所租屋平台】（以下簡稱「本平台」）所提供的各項服務。為了保護您的個人資料與隱私權，本平台依據《個人資料保護法》制定本政策，請您詳閱下列內容。</p>
+
+      <h3>一、資料蒐集目的與使用範圍</h3>
+      <ul>
+        <li>建立與管理會員帳號</li>
+        <li>供租屋刊登、搜尋與交易聯繫</li>
+        <li>驗證身分與防範詐騙</li>
+        <li>推薦合適物件與提供客服服務</li>
+        <li>法律或主管機關要求之配合事項</li>
+      </ul>
+
+      <h3>二、蒐集之個人資料種類</h3>
+      <ul>
+        <li>基本資料：姓名、手機、電子信箱、居住地</li>
+        <li>身分驗證資料：身分證影本、房東證明、房客合約</li>
+        <li>交易資訊：租賃紀錄、付款紀錄、訊息往來紀錄</li>
+        <li>裝置資訊：IP 位址、裝置類型、瀏覽器、作業系統等</li>
+      </ul>
+
+      <h3>三、資料保存與保護措施</h3>
+      <p>您的個人資料將保存在本平台及其委託廠商設立的資料庫中，並採用防火牆、加密與存取控制等資訊安全技術加以保護。</p>
+
+      <h3>四、資料揭露對象與方式</h3>
+      <p>僅於以下情況揭露您的個人資料：經您同意、法律要求、完成租賃服務所需。</p>
+
+      <h3>五、Cookie 之使用</h3>
+      <p>本平台可能使用 Cookie 技術來記錄與追蹤您的偏好與操作行為。</p>
+
+      <h3>六、您的權利</h3>
+      <ul>
+        <li>查詢或請求閱覽</li>
+        <li>請求製給複製本</li>
+        <li>請求補充或更正</li>
+        <li>請求停止蒐集、處理或利用</li>
+        <li>請求刪除</li>
+      </ul>
+      <p>如需行使權利請聯繫：<strong>support@ju-yan.com</strong></p>
+
+      <h3>七、政策修訂</h3>
+      <p>本平台保留隨時修改本政策內容之權利，建議定期查閱。</p>
+
+      <p class="text-sm text-gray-500">更新日期：2025 年 5 月 7 日</p>
+    </div>
+    <button class="modal-close" @click="showPrivacyModal = false">關閉</button>
+  </div>
+</div>
+
+
     <!-- 單一根元素：用 isRegister 狀態切換 class -->
     <div class="container" :class="{ active: isRegister }">
-<!-- 關閉按鈕 -->
-<button v-if="showCloseBtn" class="close-btn" @click="handleClose">×</button>
-
-        <!-- 登入表單 -->
-        <div class="form-box login">
-            <form @submit.prevent="handleLogin">
-                <h1>會員登入</h1>
-                <div class="input-box">
-                    <input v-model="login.username" type="text" placeholder="電子信箱" required />
-                    <i class="fa-solid fa-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="login.password" type="password" placeholder="密碼" required />
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="forgot-link"><a href="#">忘記密碼?</a></div>
-                <button class="btn">登入</button>
-                <p>——使用其他方式登入——</p>
-                <div class="social-icons">
-                    <!-- Google登入icon -->
-                    <button class="social-btn google-btn">
-                        <span class="icon-circle">
-                            <i class="fa-brands fa-google"></i>
-                        </span>
-                        <span class="btn-text">使用 Google 登入</span>
-                    </button>
-
-                </div>
-            </form>
-        </div>
-
-        <!-- 註冊表單 -->
-        <div class="form-box register">
-            <form @submit.prevent="handleRegister">
-                <h1>會員註冊</h1>
-                <div class="input-box">
-                    <input v-model="register.username" type="text" placeholder="姓名" required />
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="register.userphone" type="text" placeholder="手機" required />
-                    <i class="fa-solid fa-phone"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="register.email" type="email" placeholder="電子信箱" required />
-                    <i class="fa-solid fa-envelope"></i>
-                </div>
-                <div class="input-box">
-                    <input v-model="register.password" type="password" placeholder="密碼" required />
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <!-- 驗證碼欄位與發送按鈕：並排放置 -->
-                <div class="input-box verify-box">
-                    <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
-                    <button type="button" class="verify-btn" @click="sendVerificationCode">發送驗證碼</button>
-                </div>
-
-
-                <button class="btn">註冊</button>
-            </form>
-        </div>
-
-        <!-- 切換面板 -->
-        <div class="toggle-box">
-            <div class="toggle-panel toggle-left">
-                <h1>居研所</h1>
-                <p>用心研究每一個家的可能性。</p>
-                <button class="btn" @click="showRegister">註冊會員</button>
+      <!-- 關閉按鈕 -->
+      <button v-if="showCloseBtn" class="close-btn" @click="handleClose">×</button>
+  
+      <!-- 登入表單 -->
+      <div class="form-box login">
+        <form @submit.prevent="handleLogin">
+          <h1>會員登入</h1>
+          <div class="input-box">
+            <input v-model="login.username" type="text" placeholder="電子信箱" required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <div class="input-box">
+            <input
+              v-model="login.password"
+              :type="showLoginPassword ? 'text' : 'password'"
+              placeholder="密碼"
+              required
+            />
+            <div class="eye-icon-wrapper" @click="showLoginPassword = !showLoginPassword">
+              <i :class="showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </div>
-            <div class="toggle-panel toggle-right">
-                <h1>居研所</h1>
-                <p>讓數據，帶你回家。</p>
-                <button class="btn" @click="showLogin">登入會員</button>
+          </div>
+  
+          <div class="forgot-link"><a href="#">忘記密碼?</a></div>
+          <button class="btn">登入</button>
+          <p>——使用其他方式登入——</p>
+          <div class="social-icons">
+            <!-- Google登入icon -->
+            <button class="social-btn google-btn">
+              <span class="icon-circle">
+                <i class="fa-brands fa-google"></i>
+              </span>
+              <span class="btn-text">使用 Google 登入</span>
+            </button>
+          </div>
+        </form>
+      </div>
+  
+      <!-- 註冊表單 -->
+      <div class="form-box register">
+        <form @submit.prevent="handleRegister">
+          <h1>會員註冊</h1>
+          <div class="input-box">
+            <input v-model="register.username" type="text" placeholder="姓名" required />
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="input-box">
+            <input v-model="register.userphone" type="text" placeholder="手機" required />
+            <i class="fa-solid fa-phone"></i>
+          </div>
+          <div class="input-box">
+            <input v-model="register.email" type="email" placeholder="電子信箱" required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <div class="input-box">
+            <input
+              v-model="register.password"
+              :type="showRegisterPassword ? 'text' : 'password'"
+              placeholder="密碼"
+              required
+            />
+            <div class="eye-icon-wrapper" @click="showRegisterPassword = !showRegisterPassword">
+              <i :class="showRegisterPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </div>
+          </div>
+
+<!-- 同意條款勾選 -->
+<div class="input-box agree-box">
+  <label class="agree-label">
+    <input type="checkbox" v-model="agreePolicy" />
+    <span>
+      我已閱讀並同意
+      <a href="#" @click.prevent="showPrivacyModal = true">隱私權政策</a>
+    </span>
+  </label>
+</div>
+
+
+          <!-- 驗證碼欄位與發送按鈕：並排放置 -->
+          <div class="input-box verify-box">
+            <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
+            <button
+  type="button"
+  class="verify-btn"
+  :class="{ 'disabled-btn': countdown > 0 }"
+  :disabled="countdown > 0"
+  @click="sendVerificationCode"
+>
+<span v-if="countdown > 0">
+  <div>{{ countdown }} 秒後</div>
+  <div>可重新發送</div>
+</span>
+<span v-else>
+  {{ resendText }}
+</span>
+
+</button>
+          </div>
+  
+          <button class="btn">註冊</button>
+        </form>
+      </div>
+  
+      <!-- 切換面板 -->
+      <div class="toggle-box">
+        <div class="toggle-panel toggle-left">
+          <h1>居研所</h1>
+          <p>用心研究每一個家的可能性。</p>
+          <button class="btn" @click="showRegister">註冊會員</button>
         </div>
+        <div class="toggle-panel toggle-right">
+          <h1>居研所</h1>
+          <p>讓數據，帶你回家。</p>
+          <button class="btn" @click="showLogin">登入會員</button>
+        </div>
+      </div>
     </div>
-</template>
+  </template>
+  
+  
 
-<script setup>
-// 引入 Composition API
-import { ref, onMounted } from 'vue'
+  <script setup>
+  // 引入 Composition API
+  import { ref, onMounted } from 'vue'
+  
+  // 控制是否顯示註冊頁面（切換用）
+  const isRegister = ref(false)
+  
+  // 控制是否顯示右上角關閉按鈕
+  const showCloseBtn = ref(false)
+  
+  // 密碼顯示切換
+  const showLoginPassword = ref(false)
+  const showRegisterPassword = ref(false)
+  
+  // 驗證碼倒數
+  const countdown = ref(0) // 初始為 0 表示可按
+  const resendText = ref('發送驗證碼')
+  let timer = null
+  
+  // 登入表單資料
+  const login = ref({
+    username: '',
+    password: ''
+  })
+  
+  // 註冊表單資料
+  const register = ref({
+    username: '',
+    email: '',
+    password: '',
+    userphone: '',
+    verificationCode: ''
+  })
+  
+  // 點擊切換至註冊畫面
+  const showRegister = () => {
+    isRegister.value = true
+    showCloseBtn.value = false
+    setTimeout(() => {
+      showCloseBtn.value = true
+    }, 1800)
+  }
+  
+  // 點擊切換至登入畫面
+  const showLogin = () => {
+    isRegister.value = false
+    showCloseBtn.value = false
+    setTimeout(() => {
+      showCloseBtn.value = true
+    }, 1800)
+  }
+  
+  // 登入事件處理
+  const handleLogin = () => {
+    console.log('登入資料', login.value)
+    // TODO: 呼叫 API 處理登入
+  }
+  
+  // 註冊事件處理
+  const handleRegister = () => {
+  if (!agreePolicy.value) {
+    alert('請勾選同意隱私權政策')
+    return
+  }
 
-// 控制是否顯示註冊頁面（切換用）
-const isRegister = ref(false)
-
-// 控制是否顯示右上角關閉按鈕
-const showCloseBtn = ref(false)
-
-// 登入表單資料
-const login = ref({
-  username: '',
-  password: ''
-})
-
-// 註冊表單資料
-const register = ref({
-  username: '',
-  email: '',
-  password: '',
-  userphone: '',
-  verificationCode: ''
-})
-
-// 點擊切換至註冊畫面
-const showRegister = () => {
-  isRegister.value = true
-  showCloseBtn.value = false
-  setTimeout(() => {
-    showCloseBtn.value = true
-  }, 1800) // 與動畫時間一致
-}
-
-// 點擊切換至登入畫面
-const showLogin = () => {
-  isRegister.value = false
-  showCloseBtn.value = false
-  setTimeout(() => {
-    showCloseBtn.value = true
-  }, 1800)
-}
-
-// 登入事件處理
-const handleLogin = () => {
-  console.log('登入資料', login.value)
-  // TODO: 呼叫 API 處理登入
-}
-
-// 註冊事件處理
-const handleRegister = () => {
   console.log('註冊資料', register.value)
   // TODO: 呼叫 API 處理註冊
 }
 
-// 發送驗證碼事件
-const sendVerificationCode = () => {
-  console.log('發送驗證碼至', register.value.email)
-  // TODO: 呼叫 API 實作
-}
+  
+  // 發送驗證碼事件
+  const sendVerificationCode = () => {
+    if (countdown.value > 0) return // 防止重複點擊
+  
+    console.log('發送驗證碼至', register.value.email)
+    resendText.value = '重新發送'
+    countdown.value = 30
+  
+    timer = setInterval(() => {
+      countdown.value--
+      if (countdown.value <= 0) {
+        clearInterval(timer)
+      }
+    }, 1000)
+  }
+  
+  // 關閉彈窗事件
+  const handleClose = () => {
+    console.log('關閉彈窗')
+    // TODO: emit('close') 或控制外層變數
+  }
+  
+// 是否同意隱私權政策
+const agreePolicy = ref(false)
+const showPrivacy = ref(false)
+const showPrivacyModal = ref(false)
 
-// 關閉彈窗事件（可 emit 或控制外層變數）
-const handleClose = () => {
-  console.log('關閉彈窗')
-  // TODO: emit('close') 或設定顯示狀態
-}
 
-// 頁面載入完成後顯示關閉按鈕（非切換狀態）
-onMounted(() => {
-  showCloseBtn.value = true
-})
-</script>
+
+  onMounted(() => {
+    showCloseBtn.value = true
+  })
+  </script>
+  
 
 
 
@@ -236,7 +365,7 @@ form {
 /*  單一輸入區塊容器 */
 .input-box {
     position: relative;
-    margin: 30px 0;
+    margin: 16px 0;
 }
 
 /*  文字輸入框 */
@@ -251,6 +380,44 @@ form {
     color: #333;
     font-weight: 500;
 }
+
+/* 密碼眼睛 icon 的小網底容器 */
+.eye-icon-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 60px; /* 依需要調整寬度 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(163, 222, 215, 0.5); /* 白色半透明網底 */
+  cursor: pointer;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+/* 驗證碼倒數按鈕呈現唯讀狀態 */
+.verify-btn.disabled-btn {
+  background-color: #ccc;           /* 改成灰色背景 */
+  cursor: not-allowed;              /* 滑鼠顯示禁止 */
+  pointer-events: none;             /* 避免 hover 效果 */
+  color: #727171;
+}
+
+/* 當滑鼠滑過 .eye-icon-wrapper 時的樣式 */
+.eye-icon-wrapper:hover {
+  background-color: #f8dfc6; /* 滑過時淡黃色提示 */
+}
+
+
+/* 設定 .eye-icon-wrapper 裡面的 <i> 標籤樣式 */
+.eye-icon-wrapper i {
+  font-size: 18px;
+  color: #32a49c;
+}
+
 
 /*  placeholder 樣式 */
 .input-box input::placeholder {
@@ -310,17 +477,6 @@ form {
 .social-icons {
     display: flex;
     justify-content: center;
-}
-
-/*  第三方登入圖示樣式 */
-.social-icons a {
-    display: inline-flex;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 24px;
-    color: #333;
-    margin: 0 8px;
 }
 
 /*  註冊/登入 切換背景框 */
@@ -453,6 +609,8 @@ form {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 /*  驗證碼輸入欄 */
@@ -507,8 +665,109 @@ form {
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* 當滑鼠滑過 .close-btn 時的樣式 */
 .close-btn:hover {
   color: #ff9800;
+}
+
+/* 勾選隱私權條款區塊樣式 */
+.input-box.agree-box {
+  text-align: left;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* 包裹整個 checkbox 與文字 */
+.agree-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.6;
+}
+
+/* checkbox 本體樣式 */
+.agree-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* 條款連結樣式 */
+.agree-label a {
+  color: #4e87cd;
+  text-decoration: underline;
+}
+
+.agree-label a:hover {
+  color: #ff9800;
+}
+
+/* Modal 內容區塊樣式 */
+.modal-content {
+  background: white;
+  padding: 24px;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Modal 區塊子標題 */
+.modal-content p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Modal 背景遮罩樣式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+
+.modal-content h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.modal-body h3 {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-body ul {
+  padding-left: 20px;
+  margin-top: 8px;
+  font-size: 14px; /* ← 自訂字體大小 */
+  line-height: 1.6; /* 建議加入行高，讓段落更清楚 */
+}
+
+/* 關閉按鈕效果 */
+.modal-close {
+  margin-top: 20px;
+  background-color: #32a49c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background-color: #ff9800;
 }
 
 
