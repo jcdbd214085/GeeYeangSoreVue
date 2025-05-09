@@ -13,8 +13,8 @@
         </div>
       </div>
       <div class="form-actions">
-        <Button color="outline-secondary" type="button" @click="onSaveExit">儲存退出</Button>
         <Button color="outline-secondary" type="button" @click="goBack">返回</Button>
+        <Button color="outline-secondary" type="button" @click="onSaveExit">儲存退出</Button>
         <Button color="primary" type="submit">下一步</Button>
       </div>
     </form>
@@ -123,6 +123,41 @@ input, select {
   grid-template-columns: repeat(6, 1fr);
   gap: 1.3rem;
 }
+@media (max-width: 1100px) {
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .property-create-container {
+    padding: 1rem 0.5rem;
+  }
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+}
+.form-actions {
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 1rem;
+  margin-top: 2rem;
+  position: static;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.7rem;
+    margin-top: 1.2rem;
+  }
+}
 .feature-item {
   display: flex;
   flex-direction: column;
@@ -151,21 +186,5 @@ input, select {
   height: 60px;
   object-fit: contain;
   margin-bottom: 1rem;
-}
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  position: static;
-  background: none;
-  box-shadow: none;
-  border-radius: 0;
-  padding: 0;
-}
-@media (max-width: 700px) {
-  .property-create-container {
-    padding: 1rem 0.5rem;
-  }
 }
 </style> 

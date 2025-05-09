@@ -37,9 +37,11 @@
             <label>照片上傳<span class="required">*</span></label>
             <input type="file" multiple @change="onFileChange" />
             <div class="upload-tip">最少2張，最多15張，拖曳可調整順序。</div>
-            <div class="photo-preview">
-              <img v-for="(img, idx) in form.photos" :key="idx" :src="img" class="preview-img" />
-            </div>
+            <draggable v-model="form.photos" class="photo-preview" item-key="idx" :animation="200">
+              <template #item="{element, index}">
+                <img :src="element" class="preview-img" />
+              </template>
+            </draggable>
           </div>
         </div>
       </section>
@@ -136,7 +138,7 @@
           <div class="form-group">
             <label>車位</label>
             <div class="tag-group">
-              <span v-for="type in parkingTypes" :key="type" :class="['tag', {selected: form.parking === type}]" @click="form.parking = type">{{ type }}</span>
+              <span v-for="type in parkingTypes" :key="type" :class="['tag', {selected: form.parking === type}]" @click="toggleParking(type)">{{ type }}</span>
             </div>
           </div>
           <div class="form-group">
@@ -193,6 +195,15 @@
         <Button color="outline-secondary" type="button" @click="onSaveExit">儲存退出</Button>
         <Button color="primary" type="submit">下一步</Button>
       </div>
+      <Alert
+        v-model:show="showAlert"
+        title="儲存提示"
+        message="已儲存並退出"
+        type="success"
+        :confirmText="'確認'"
+        :cancelText="'取消'"
+        @confirm="handleAlertConfirm"
+      />
     </form>
   </div>
 </template>
@@ -200,6 +211,9 @@
 <script setup>
 import { ref } from 'vue';
 import Button from '@/components/buttons/button.vue';
+import Alert from '@/components/alert/Alert.vue';
+import draggable from 'vuedraggable';
+import { useRouter } from 'vue-router';
 
 const form = ref({
   city: '',
@@ -247,6 +261,9 @@ const usageTypes = ['住家用', '商業用', '辦公用'];
 const leaseTerms = ['一年', '半年', '三個月'];
 const rentIncludes = ['電費', '水費', '瓦斯費', '第四台', '網路費', '管理費', '清潔費'];
 
+const showAlert = ref(false);
+const router = useRouter();
+
 function toggleRentInclude(val) {
   const idx = form.value.rentIncludes.indexOf(val);
   if (idx === -1) form.value.rentIncludes.push(val);
@@ -267,12 +284,17 @@ function goBack() {
   window.history.back();
 }
 function onSaveExit() {
-  // 儲存退出邏輯
-  alert('已儲存並退出');
+  showAlert.value = true;
+}
+function handleAlertConfirm() {
+  window.history.back();
+}
+function toggleParking(type) {
+  form.value.parking = (form.value.parking === type) ? '' : type;
 }
 function onSubmit() {
-  // 送出表單邏輯
-  alert('送出成功！\n' + JSON.stringify(form.value, null, 2));
+  // 跳轉到曝光方案選擇頁面
+  router.push('/landlord/property-plan-select');
 }
 </script>
 
@@ -427,6 +449,12 @@ textarea {
   }
   .full-width {
     grid-column: 1 / 2;
+  }
+  .form-actions.center {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+    margin-top: 1.2rem;
   }
 }
 </style> 

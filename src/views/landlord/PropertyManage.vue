@@ -55,11 +55,27 @@
         </template>
       </PropertyCard>
     </div>
+    <div v-if="currentTab === 'draft' && drafts.length > 0" class="property-list">
+      <div v-for="item in drafts" :key="item.created" class="property-card">
+        <img :src="item.cover" class="property-cover" />
+        <div class="property-info">
+          <div class="property-title">{{ item.title }}</div>
+        </div>
+      </div>
+    </div>
+    <div v-if="currentTab === 'active' && activeProperties.length > 0" class="property-list">
+      <div v-for="item in activeProperties" :key="item.created" class="property-card">
+        <img :src="item.cover" class="property-cover" />
+        <div class="property-info">
+          <div class="property-title">{{ item.title }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import PropertyCard from '@/components/cards/PropertyCard.vue';
 import Button from '@/components/buttons/button.vue';
 
@@ -77,6 +93,15 @@ const sort = ref('updated');
 const properties = ref([
   
 ]);
+
+// 新增：草稿資料
+const drafts = ref([]);
+// 新增：刊登中資料
+const activeProperties = ref([]);
+onMounted(() => {
+  drafts.value = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
+  activeProperties.value = JSON.parse(localStorage.getItem('propertyActive') || '[]');
+});
 
 const filteredProperties = computed(() => {
   let list = properties.value.filter(p => p.status === currentTab.value);
@@ -229,9 +254,42 @@ function onActivate(item) {
   }
   .tab-row {
     gap: 0.5rem;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+  .tab-btn {
+    font-size: 1rem;
+    padding: 0.4rem 0.7rem;
+  }
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+  }
+  .search-input, .filter-select {
+    width: 100%;
+    font-size: 0.98rem;
+    padding: 0.5rem 0.8rem;
   }
   .property-list {
     grid-template-columns: 1fr;
+    gap: 1.2rem 0.7rem;
+  }
+  .card-actions {
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+  }
+  .add-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem 0.7rem;
+  }
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.2rem 0.7rem;
+    margin-right: 0.3rem;
   }
 }
 </style> 

@@ -89,6 +89,11 @@ const router = createRouter({
       path: '/landlord/property-detail-form',
       name: 'landlord-property-detail-form',
       component: () => import('@/views/landlord/PropertyDetailForm.vue')
+    },
+    {
+      path: '/landlord/property-plan-select',
+      name: 'landlord-property-plan-select',
+      component: () => import('@/views/landlord/PropertyPlanSelect.vue')
     }
 
   ],
