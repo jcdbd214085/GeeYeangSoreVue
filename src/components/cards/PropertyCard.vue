@@ -1,6 +1,6 @@
 <template>
   <!-- 房源卡片元件 -->
-  <div class="property-card" v-intersect>
+  <div class="property-card" v-intersect="intersectAnimation">
     <div v-if="$slots.badge" class="card-badge">
       <slot name="badge"></slot>
     </div>
@@ -44,6 +44,7 @@ const props = defineProps({
   address: { type: String, required: true },
   roomCount: { type: Number, required: true },
   bathroomCount: { type: Number, required: true },
+  intersectAnimation: { type: String, default: 'fadeInLeft' }
 });
 const isFavorited = ref(false)
 
@@ -85,7 +86,8 @@ function toggleFavorite() {
 }
 
 .property-card img {
-  height: 230px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   transition: all 0.4s ease;
 }
@@ -114,7 +116,7 @@ function toggleFavorite() {
 .rent-hr {
   border: none;
   border-bottom: 3px solid var(--accent);
-  width: 40%;
+  width: 150px;
   margin: 0.3rem 0;
 }
 
@@ -165,5 +167,25 @@ function toggleFavorite() {
   opacity: 1 !important;
   transform: none !important;
   transition: none !important;
+}
+
+.property-card.small-card .rent {
+  font-size: 1.1rem;
+}
+
+.property-card.small-card .type-title {
+  font-size: 1rem;
+}
+
+.property-card.small-card .room-info {
+  font-size: 0.75rem;
+}
+
+.property-card.small-card .location {
+  font-size: 0.75rem;
+}
+
+.property-card.small-card .card-body {
+  padding: 1rem;
 }
 </style>
