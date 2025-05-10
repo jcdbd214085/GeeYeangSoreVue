@@ -168,8 +168,8 @@ function closeMenu() {
   if (window.innerWidth < 992) menuOpen.value = false;
 }
 function loginAsTenant() {
-  //userStore.login('landlord', '房東A');
-  userStore.login('tenant', '房東房客A');
+  userStore.login('landlord', '房東A');
+  // userStore.login('tenant', '房東房客A');
   // 這邊用來改變是房東或是房客
 }
 function loginAsBoth() {

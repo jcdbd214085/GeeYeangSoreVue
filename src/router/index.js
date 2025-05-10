@@ -27,13 +27,6 @@ const router = createRouter({
             name: 'InputDemo',
             component: InputDemo
         },
-        {
-            path: '/landlord',
-            name: 'Landlord',
-            component: () => import('@/views/landlord/landlord.vue')
-        },
-
-
         //註冊畫面 測試用
         {
             path: '/login',
