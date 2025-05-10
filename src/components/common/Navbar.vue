@@ -48,8 +48,8 @@
             <template v-if="userStore.role === 'landlord' || userStore.role === 'both'">
               <a class="nav-link dropdown-toggle" href="#">房東專區</a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
-                <a class="dropdown-item" href="#" @click="goToPropertyManage">物件管理</a>
-                <a class="dropdown-item" href="#" @click="goToPropertyStats">刊登成效追蹤</a>
+                <router-link class="dropdown-item" to="/landlord/property-manage" @click="closeMenu">物件管理</router-link>
+                <router-link class="dropdown-item" to="/landlord/property-stats" @click="closeMenu">刊登成效追蹤</router-link>
               </div>
             </template>
             <template v-else>
@@ -168,8 +168,8 @@ function closeMenu() {
   if (window.innerWidth < 992) menuOpen.value = false;
 }
 function loginAsTenant() {
-  userStore.login('landlord', '房東A');
-  //userStore.login('tenant', '房東房客A');
+  //userStore.login('landlord', '房東A');
+  userStore.login('tenant', '房東房客A');
   // 這邊用來改變是房東或是房客
 }
 function loginAsBoth() {

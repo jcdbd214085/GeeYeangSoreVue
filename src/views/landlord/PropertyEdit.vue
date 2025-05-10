@@ -9,10 +9,15 @@
           <div class="form-grid">
             <div class="form-group">
               <label>縣市<span class="required">*</span></label>
-              <select v-model="form.city">
+              <select 
+                v-model="form.city" 
+                :class="{ 'error': formErrors.city }"
+                @blur="validateField('city')"
+              >
                 <option disabled value="">請選擇縣市</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
               </select>
+              <span class="error-message" v-if="formErrors.city">{{ formErrors.city }}</span>
             </div>
             <div class="form-group">
               <label>區域</label>
@@ -27,17 +32,36 @@
               <input v-model="form.address" placeholder="請填寫地址" />
             </div>
             <div class="form-group">
-              <label>標題</label>
-              <input v-model="form.title" placeholder="請輸入標題" />
+              <label>標題<span class="required">*</span></label>
+              <input 
+                v-model="form.title" 
+                placeholder="請輸入標題" 
+                :class="{ 'error': formErrors.title }"
+                @blur="validateField('title')"
+              />
+              <span class="error-message" v-if="formErrors.title">{{ formErrors.title }}</span>
             </div>
             <div class="form-group full-width">
-              <label>簡介</label>
-              <textarea v-model="form.description" placeholder="可在此填寫關於出租物件的描述"></textarea>
+              <label>簡介<span class="required">*</span></label>
+              <textarea 
+                v-model="form.description" 
+                placeholder="可在此填寫關於出租物件的描述" 
+                :class="{ 'error': formErrors.description }"
+                @blur="validateField('description')"
+              ></textarea>
+              <span class="error-message" v-if="formErrors.description">{{ formErrors.description }}</span>
             </div>
             <div class="form-group full-width">
               <label>照片上傳<span class="required">*</span></label>
-              <input type="file" multiple @change="onFileChange" />
+              <input 
+                type="file" 
+                multiple 
+                @change="onFileChange" 
+                :class="{ 'error': formErrors.photos }"
+                @blur="validateField('photos')"
+              />
               <div class="upload-tip">最少2張，最多15張，拖曳可調整順序。</div>
+              <span class="error-message" v-if="formErrors.photos">{{ formErrors.photos }}</span>
               <draggable v-model="form.photos" class="photo-preview" item-key="idx" :animation="200">
                 <template #item="{element, index}">
                   <img :src="element" class="preview-img" />
@@ -52,19 +76,29 @@
           <div class="form-grid">
             <div class="form-group">
               <label>空間<span class="required">*</span></label>
-              <div class="radio-group">
+              <div 
+                class="radio-group" 
+                :class="{ 'error': formErrors.spaceType }"
+                @blur="validateField('spaceType')"
+              >
                 <label v-for="type in spaceTypes" :key="type" class="radio-label">
                   <input type="radio" v-model="form.spaceType" :value="type" /> {{ type }}
                 </label>
               </div>
+              <span class="error-message" v-if="formErrors.spaceType">{{ formErrors.spaceType }}</span>
             </div>
             <div class="form-group">
-              <label>建物</label>
-              <div class="radio-group">
+              <label>建物<span class="required">*</span></label>
+              <div 
+                class="radio-group" 
+                :class="{ 'error': formErrors.buildingType }"
+                @blur="validateField('buildingType')"
+              >
                 <label v-for="type in buildingTypes" :key="type" class="radio-label">
                   <input type="radio" v-model="form.buildingType" :value="type" /> {{ type }}
                 </label>
               </div>
+              <span class="error-message" v-if="formErrors.buildingType">{{ formErrors.buildingType }}</span>
             </div>
             <div class="form-group">
               <label>樓層</label>
@@ -79,9 +113,17 @@
               </div>
             </div>
             <div class="form-group">
-              <label>坪數</label>
-              <input v-model="form.ping" placeholder="坪數" type="number" min="0" />
+              <label>坪數<span class="required">*</span></label>
+              <input 
+                v-model="form.ping" 
+                placeholder="坪數" 
+                type="number" 
+                min="0" 
+                :class="{ 'error': formErrors.ping }"
+                @blur="validateField('ping')"
+              />
               <span>坪</span>
+              <span class="error-message" v-if="formErrors.ping">{{ formErrors.ping }}</span>
             </div>
             <div class="form-group full-width">
               <label>格局</label>
@@ -124,11 +166,16 @@
           <div class="form-grid">
             <div class="form-group">
               <label>身分<span class="required">*</span></label>
-              <div class="radio-group">
+              <div 
+                class="radio-group" 
+                :class="{ 'error': formErrors.identity }"
+                @blur="validateField('identity')"
+              >
                 <label v-for="type in identityTypes" :key="type" class="radio-label">
                   <input type="radio" v-model="form.identity" :value="type" /> {{ type }}
                 </label>
               </div>
+              <span class="error-message" v-if="formErrors.identity">{{ formErrors.identity }}</span>
             </div>
             <div class="form-group">
               <label>LINE ID</label>
@@ -137,7 +184,13 @@
             </div>
             <div class="form-group">
               <label>手機號碼</label>
-              <input v-model="form.phone" placeholder="請輸入手機號碼" />
+              <input 
+                v-model="form.phone" 
+                placeholder="請輸入手機號碼" 
+                :class="{ 'error': formErrors.phone }"
+                @blur="validateField('phone')"
+              />
+              <span class="error-message" v-if="formErrors.phone">{{ formErrors.phone }}</span>
             </div>
             <div class="form-group">
               <label>市內電話</label>
@@ -157,15 +210,28 @@
             </div>
             <div class="form-group">
               <label>產權登記<span class="required">*</span></label>
-              <div class="radio-group">
+              <div 
+                class="radio-group" 
+                :class="{ 'error': formErrors.ownership }"
+                @blur="validateField('ownership')"
+              >
                 <label class="radio-label"><input type="radio" v-model="form.ownership" value="有" />有</label>
                 <label class="radio-label"><input type="radio" v-model="form.ownership" value="無" />無</label>
               </div>
+              <span class="error-message" v-if="formErrors.ownership">{{ formErrors.ownership }}</span>
             </div>
             <div class="form-group">
-              <label>建物面積</label>
-              <input v-model="form.area" type="number" min="0" placeholder="0" />
+              <label>建物面積<span class="required">*</span></label>
+              <input 
+                v-model="form.area" 
+                type="number" 
+                min="0" 
+                placeholder="0" 
+                :class="{ 'error': formErrors.area }"
+                @blur="validateField('area')"
+              />
               <span>坪</span>
+              <span class="error-message" v-if="formErrors.area">{{ formErrors.area }}</span>
             </div>
             <div class="form-group">
               <label>法定用途</label>
@@ -176,14 +242,27 @@
             </div>
             <div class="form-group">
               <label>最短租期<span class="required">*</span></label>
-              <select v-model="form.minLease">
+              <select 
+                v-model="form.minLease" 
+                :class="{ 'error': formErrors.minLease }"
+                @blur="validateField('minLease')"
+              >
                 <option v-for="lease in leaseTerms" :key="lease" :value="lease">{{ lease }}</option>
               </select>
+              <span class="error-message" v-if="formErrors.minLease">{{ formErrors.minLease }}</span>
             </div>
             <div class="form-group">
-              <label>租金</label>
-              <input v-model="form.rent" type="number" min="0" placeholder="租金金額" />
+              <label>租金<span class="required">*</span></label>
+              <input 
+                v-model="form.rent" 
+                type="number" 
+                min="0" 
+                placeholder="租金金額" 
+                :class="{ 'error': formErrors.rent }"
+                @blur="validateField('rent')"
+              />
               <span>元/月</span>
+              <span class="error-message" v-if="formErrors.rent">{{ formErrors.rent }}</span>
             </div>
             <div class="form-group">
               <label>租金包含</label>
@@ -192,9 +271,17 @@
               </div>
             </div>
             <div class="form-group">
-              <label>押金</label>
-              <input v-model="form.deposit" type="number" min="0" placeholder="0" />
+              <label>押金<span class="required">*</span></label>
+              <input 
+                v-model="form.deposit" 
+                type="number" 
+                min="0" 
+                placeholder="0" 
+                :class="{ 'error': formErrors.deposit }"
+                @blur="validateField('deposit')"
+              />
               <span>元</span>
+              <span class="error-message" v-if="formErrors.deposit">{{ formErrors.deposit }}</span>
             </div>
             <div class="form-group">
               <label>管理費</label>
@@ -224,7 +311,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Button from '@/components/buttons/button.vue';
 import Alert from '@/components/alert/Alert.vue';
 import draggable from 'vuedraggable';
@@ -232,6 +319,9 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const showAlert = ref(false);
+const formErrors = ref({});  // 新增錯誤訊息物件
+const touched = ref({});  // 追蹤欄位是否已被觸碰
+
 const form = ref({
   city: '',
   district: '',
@@ -335,7 +425,89 @@ function toggleFeature(val) {
   if (idx === -1) form.value.features.push(val);
   else form.value.features.splice(idx, 1);
 }
+
+// 驗證單個欄位
+function validateField(field) {
+  const value = form.value[field];
+  touched.value[field] = true;
+
+  switch (field) {
+    case 'city':
+      return !value ? '請選擇縣市' : '';
+    case 'title':
+      return !value ? '請輸入標題' : '';
+    case 'description':
+      return !value ? '請輸入簡介' : '';
+    case 'photos':
+      if (!value || value.length < 2) return '請至少上傳2張照片';
+      if (value.length > 15) return '最多只能上傳15張照片';
+      return '';
+    case 'spaceType':
+      return !value ? '請選擇空間類型' : '';
+    case 'buildingType':
+      return !value ? '請選擇建物類型' : '';
+    case 'ping':
+      if (!value) return '請輸入坪數';
+      if (value <= 0) return '坪數必須大於0';
+      return '';
+    case 'identity':
+      return !value ? '請選擇身分' : '';
+    case 'phone':
+      if (value && !/^09\d{8}$/.test(value)) return '請輸入有效的手機號碼';
+      return '';
+    case 'ownership':
+      return !value ? '請選擇產權登記' : '';
+    case 'area':
+      if (!value) return '請輸入建物面積';
+      if (value <= 0) return '建物面積必須大於0';
+      return '';
+    case 'minLease':
+      return !value ? '請選擇最短租期' : '';
+    case 'rent':
+      if (!value) return '請輸入租金';
+      if (value <= 0) return '租金必須大於0';
+      return '';
+    case 'deposit':
+      if (!value) return '請輸入押金';
+      if (value <= 0) return '押金必須大於0';
+      return '';
+    default:
+      return '';
+  }
+}
+
+// 監聽表單變化
+watch(() => form.value, (newVal) => {
+  Object.keys(newVal).forEach(field => {
+    if (touched.value[field]) {
+      const error = validateField(field);
+      if (error) {
+        formErrors.value[field] = error;
+      } else {
+        delete formErrors.value[field];
+      }
+    }
+  });
+}, { deep: true });
+
+function validateForm() {
+  const errors = {};
+  Object.keys(form.value).forEach(field => {
+    const error = validateField(field);
+    if (error) {
+      errors[field] = error;
+    }
+  });
+  return errors;
+}
+
 function onSubmit() {
+  const errors = validateForm();
+  if (Object.keys(errors).length > 0) {
+    formErrors.value = errors;
+    return;
+  }
+  
   // 儲存變更，這裡可串接 API 或 localStorage
   showAlert.value = true;
 }
@@ -571,5 +743,22 @@ button:hover, .btn:hover, .Button:hover {
   border-radius: 8px;
   border: 1px solid #eee;
   cursor: grab;
+}
+.error {
+  border-color: #ff4d4f !important;
+  background-color: #fff2f0 !important;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.radio-group.error {
+  border: 1px solid #ff4d4f;
+  border-radius: 8px;
+  padding: 0.5rem;
+  background-color: #fff2f0;
 }
 </style> 
