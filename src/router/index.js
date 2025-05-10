@@ -85,6 +85,7 @@ const router = createRouter({
       name: 'landlord-property-create',
       component: () => import('@/views/landlord/PropertyCreate.vue')
     },
+    //
     {
       path: '/landlord/property-detail-form',
       name: 'landlord-property-detail-form',
@@ -94,7 +95,25 @@ const router = createRouter({
       path: '/landlord/property-plan-select',
       name: 'landlord-property-plan-select',
       component: () => import('@/views/landlord/PropertyPlanSelect.vue')
-    }
+    },
+
+    {
+      path: '/landlord/property-stats',
+      name: 'landlord-property-stats',
+      component: () => import('@/views/landlord/PropertyStats.vue')
+    },
+    //房東編輯
+    {
+      path: '/landlord/property-edit',
+      name: 'landlord-property-edit',
+      component: () => import('@/views/landlord/PropertyEdit.vue')
+    },
+    //成為房東
+    {
+      path: '/landlord/become',
+      name: 'BecomeLandlordModal',
+      component: () => import('@/views/landlord/BecomeLandlordModal.vue')
+    },
 
   ],
 })

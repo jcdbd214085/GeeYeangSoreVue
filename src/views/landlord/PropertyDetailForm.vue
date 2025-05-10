@@ -300,7 +300,7 @@ function onSubmit() {
 
 <style scoped>
 .property-detail-container {
-  max-width: 1100px;
+  max-width: 90%;
   margin: 40px auto 0 auto;
   background: #f7fafc;
   border-radius: 18px;

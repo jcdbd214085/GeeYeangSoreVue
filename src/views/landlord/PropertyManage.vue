@@ -23,51 +23,19 @@
         <option value="price">租金高低</option>
       </select>
     </div>
-    <div v-if="filteredProperties.length === 0" class="empty-state">
-      
-      <p>你沒有{{ currentTabLabel }}的物件，先來刊登一間吧！</p>
+    <div v-if="currentTab === 'active' && activeProperties.length === 0" class="empty-state">
+      <p>你沒有刊登中的物件，先來刊登一間吧！</p>
     </div>
-    <div v-else class="property-list">
-      <PropertyCard
-        v-for="item in filteredProperties"
-        :key="item.id"
-        :image="item.image"
-        :rentPrice="item.rentPrice"
-        :propertyType="item.propertyType"
-        :title="item.title"
-        :city="item.city"
-        :district="item.district"
-        :address="item.address"
-        :roomCount="item.roomCount"
-        :bathroomCount="item.bathroomCount"
-      >
-        <template #badge>
-          <span v-if="item.status === 'draft'" class="badge badge-draft">草稿</span>
-          <span v-else-if="item.status === 'rented'" class="badge badge-rented">已出租</span>
-          <span v-else-if="item.status === 'inactive'" class="badge badge-inactive">下架</span>
-        </template>
-        <template #default>
-          <div class="card-actions">
-            <Button size="sm" color="outline-secondary" @click.stop="onEdit(item)">編輯</Button>
-            <Button v-if="item.status === 'active'" size="sm" color="outline-danger" @click.stop="onDeactivate(item)">下架</Button>
-            <Button v-if="item.status === 'inactive'" size="sm" color="primary" @click.stop="onActivate(item)">重新上架</Button>
-          </div>
-        </template>
-      </PropertyCard>
-    </div>
-    <div v-if="currentTab === 'draft' && drafts.length > 0" class="property-list">
-      <div v-for="item in drafts" :key="item.created" class="property-card">
-        <img :src="item.cover" class="property-cover" />
-        <div class="property-info">
-          <div class="property-title">{{ item.title }}</div>
+    <div v-if="currentTab === 'active' && activeProperties.length > 0" class="property-list-listview">
+      <div v-for="item in filteredActiveProperties" :key="item.id" class="property-list-row">
+        <img :src="item.cover" class="property-list-cover" />
+        <div class="property-list-info">
+          <div class="property-list-title">{{ item.title }}</div>
+          <div class="property-list-rent">{{ item.rent ? item.rent + '元/月' : '' }}</div>
         </div>
-      </div>
-    </div>
-    <div v-if="currentTab === 'active' && activeProperties.length > 0" class="property-list">
-      <div v-for="item in activeProperties" :key="item.created" class="property-card">
-        <img :src="item.cover" class="property-cover" />
-        <div class="property-info">
-          <div class="property-title">{{ item.title }}</div>
+        <div class="property-list-actions">
+          <button class="edit-btn" @click="onEdit(item)">編輯</button>
+          <button class="edit-btn danger" @click="onDeactivate(item)">下架</button>
         </div>
       </div>
     </div>
@@ -76,7 +44,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import PropertyCard from '@/components/cards/PropertyCard.vue';
 import Button from '@/components/buttons/button.vue';
 
 const tabs = [
@@ -90,21 +57,45 @@ const search = ref('');
 const filterType = ref('');
 const sort = ref('updated');
 
-const properties = ref([
-  
+// 只用 activeProperties
+const activeProperties = ref([
+  {
+    id: 1,
+    title: '台中市西屯區獨立套房 (VIP1)',
+    cover: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    rent: 11400,
+    status: 'active',
+    city: '台中市',
+    district: '西屯區',
+    address: '逢甲路100號',
+    created: '2024-05-10T10:00:00Z',
+  },
+  {
+    id: 2,
+    title: '台北市大安區精選套房 (VIP2)',
+    cover: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
+    rent: 16800,
+    status: 'active',
+    city: '台北市',
+    district: '大安區',
+    address: '信義路三段200號',
+    created: '2024-05-09T09:00:00Z',
+  },
+  {
+    id: 3,
+    title: '新北市板橋區置頂豪宅 (VIP3)',
+    cover: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=400&q=80',
+    rent: 32000,
+    status: 'active',
+    city: '新北市',
+    district: '板橋區',
+    address: '文化路一段300號',
+    created: '2024-05-08T08:00:00Z',
+  },
 ]);
 
-// 新增：草稿資料
-const drafts = ref([]);
-// 新增：刊登中資料
-const activeProperties = ref([]);
-onMounted(() => {
-  drafts.value = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
-  activeProperties.value = JSON.parse(localStorage.getItem('propertyActive') || '[]');
-});
-
-const filteredProperties = computed(() => {
-  let list = properties.value.filter(p => p.status === currentTab.value);
+const filteredActiveProperties = computed(() => {
+  let list = activeProperties.value;
   if (search.value) {
     list = list.filter(p =>
       p.title.includes(search.value) ||
@@ -115,32 +106,23 @@ const filteredProperties = computed(() => {
     list = list.filter(p => p.propertyType === filterType.value);
   }
   if (sort.value === 'updated') {
-    list = list.sort((a, b) => b.updated.localeCompare(a.updated));
+    list = list.sort((a, b) => (b.updated || '').localeCompare(a.updated || ''));
   } else if (sort.value === 'created') {
-    list = list.sort((a, b) => b.created.localeCompare(a.created));
+    list = list.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
   } else if (sort.value === 'price') {
-    list = list.sort((a, b) => b.rentPrice - a.rentPrice);
+    list = list.sort((a, b) => b.rent - a.rent);
   }
   return list;
 });
 
-const currentTabLabel = computed(() => {
-  const tab = tabs.find(t => t.value === currentTab.value);
-  return tab ? tab.label : '';
-});
-
 function onAddProperty() {
-  // 跳轉到新增物件頁面
   window.location.href = '/landlord/property-create';
 }
 function onEdit(item) {
-  alert('編輯物件 ' + item.title + '（待串接編輯頁）');
+  window.location.href = `/landlord/property-edit?id=${item.id}`;
 }
 function onDeactivate(item) {
   alert('下架物件 ' + item.title + '（待串接 API）');
-}
-function onActivate(item) {
-  alert('重新上架 ' + item.title + '（待串接 API）');
 }
 </script>
 
@@ -203,45 +185,69 @@ function onActivate(item) {
   border: 1px solid #e0e0e0;
   font-size: 1rem;
 }
-.property-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem 1.5rem;
-}
-.card-actions {
+.property-list-listview {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  flex-direction: column;
+  gap: 1.2rem;
 }
-.badge {
-  display: inline-block;
-  padding: 0.3rem 0.9rem;
+.property-list-row {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
   border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-right: 0.5rem;
+  background: #fff;
+  box-shadow: 0 2px 8px #eee;
+  overflow: hidden;
+  padding: 1rem;
 }
-.badge-draft {
-  background: #eee;
-  color: #888;
-}
-.badge-rented {
-  background: #ffe0b2;
-  color: #ff9800;
-}
-.badge-inactive {
-  background: #e0f7fa;
-  color: #24B4A8;
-}
-.empty-state {
-  text-align: center;
-  color: #aaa;
-  margin: 4rem 0 2rem 0;
-}
-.empty-img {
+.property-list-cover {
   width: 120px;
-  margin-bottom: 1.2rem;
-  opacity: 0.7;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1.2rem;
+}
+.property-list-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.property-list-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.property-list-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.7rem;
+  align-items: center;
+  margin-left: auto;
+}
+.edit-btn {
+  background: none;
+  border: none;
+  color: var(--main-color, #24B4A8);
+  font-size: 1rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.edit-btn:hover {
+  background: #e0f7fa;
+}
+.edit-btn.danger {
+  color: #f44336;
+}
+.edit-btn.danger:hover {
+  background: #ffeaea;
+}
+.property-list-rent {
+  color: var(--main-color, #24B4A8);
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
 }
 @media (max-width: 700px) {
   .property-manage-container {
@@ -272,24 +278,8 @@ function onActivate(item) {
     font-size: 0.98rem;
     padding: 0.5rem 0.8rem;
   }
-  .property-list {
-    grid-template-columns: 1fr;
-    gap: 1.2rem 0.7rem;
-  }
-  .card-actions {
-    flex-direction: column;
-    gap: 0.4rem;
-    margin-top: 0.7rem;
-  }
-  .add-btn {
-    width: 100%;
-    font-size: 1rem;
-    padding: 0.5rem 0.7rem;
-  }
-  .badge {
-    font-size: 0.85rem;
-    padding: 0.2rem 0.7rem;
-    margin-right: 0.3rem;
+  .property-list-listview {
+    gap: 1.2rem;
   }
 }
 </style> 

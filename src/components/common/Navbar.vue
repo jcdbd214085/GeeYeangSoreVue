@@ -49,12 +49,11 @@
               <a class="nav-link dropdown-toggle" href="#">房東專區</a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
                 <a class="dropdown-item" href="#" @click="goToPropertyManage">物件管理</a>
-                <a class="dropdown-item" href="#" @click="closeMenu">刊登管理</a>
-                <a class="dropdown-item" href="#" @click="closeMenu">刊登成效追蹤</a>
+                <a class="dropdown-item" href="#" @click="goToPropertyStats">刊登成效追蹤</a>
               </div>
             </template>
             <template v-else>
-              <a class="nav-link" href="#" @click="closeMenu">成為房東</a>
+              <a class="nav-link" href="#" @click.prevent="showBecomeLandlordModal">成為房東</a>
             </template>
           </li>
 
@@ -127,6 +126,9 @@
       </div>
     </div>
   </nav>
+  <Teleport to="body">
+    <BecomeLandlordModal v-if="showModal" @close="closeModal" />
+  </Teleport>
 </template>
 
 
@@ -138,6 +140,7 @@ import Button from '@/components/buttons/button.vue';
 import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
 import { useRouter } from 'vue-router';
+import BecomeLandlordModal from '@/views/landlord/BecomeLandlordModal.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -145,7 +148,7 @@ const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
-
+const showModal = ref(false);
 
 const isScrolled = ref(false);
 function handleScroll() {
@@ -220,6 +223,20 @@ function goToAbout() {
 function goToPropertyManage() {
   router.push('/landlord/property-manage');
   closeMenu();
+}
+
+function goToPropertyStats() {
+  router.push('/landlord/property-stats');
+  closeMenu();
+}
+
+function showBecomeLandlordModal() {
+  showModal.value = true;
+  closeMenu();
+}
+
+function closeModal() {
+  showModal.value = false;
 }
 
 </script>
