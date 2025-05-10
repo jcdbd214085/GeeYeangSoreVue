@@ -1,40 +1,55 @@
 ﻿<script setup>
+import StepItem from "@/components/StepItem.vue";
+
 const Titles = ['如何使用標題1', '如何使用標題2', '如何使用標題3']
 const Context = ['如何使用內容1', '如何使用內容2', '如何使用內容3']
 </script>
 
 <template>
-  <div class="container mt-4">
-    <div
-        v-for="(item, index) in Titles"
-        :key="index"
-        class="custom-card mb-3 shadow-sm bg-white rounded"
-    >
-      <div class="d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">{{ item }}</h5>
-        <img
-            class="toggle-icon"
-            width="25"
-            height="25"
-            src="https://img.icons8.com/ios/50/down-squared--v1.png"
-            alt="toggle"
-            role="button"
-            :data-bs-toggle="'collapse'"
-            :data-bs-target="'#collapse-' + index"
-            :aria-controls="'collapse-' + index"
-            aria-expanded="false"
-        />
-      </div>
 
-      <transition name="slide">
-        <div :id="'collapse-' + index" class="collapse mt-2">
-          <div class="card card-body border-0 bg-light">
-            {{ Context[index] }}
-          </div>
-        </div>
-      </transition>
-    </div>
-  </div>
+  <StepItem>
+    <template #icon>
+      <i class="bi bi-1-circle"></i>
+    </template>
+    <template #title>
+      建立帳號
+    </template>
+    <template #desc>
+      填寫您的註冊資料，並完成驗證。
+    </template>
+  </StepItem>
+
+<!--  <div class="container mt-4">-->
+<!--    <div-->
+<!--        v-for="(item, index) in Titles"-->
+<!--        :key="index"-->
+<!--        class="custom-card mb-3 shadow-sm bg-white rounded"-->
+<!--    >-->
+<!--      <div class="d-flex justify-content-between align-items-center">-->
+<!--        <h5 class="mb-0">{{ item }}</h5>-->
+<!--        <img-->
+<!--            class="toggle-icon"-->
+<!--            width="25"-->
+<!--            height="25"-->
+<!--            src="https://img.icons8.com/ios/50/down-squared&#45;&#45;v1.png"-->
+<!--            alt="toggle"-->
+<!--            role="button"-->
+<!--            :data-bs-toggle="'collapse'"-->
+<!--            :data-bs-target="'#collapse-' + index"-->
+<!--            :aria-controls="'collapse-' + index"-->
+<!--            aria-expanded="false"-->
+<!--        />-->
+<!--      </div>-->
+
+<!--      <transition name="slide">-->
+<!--        <div :id="'collapse-' + index" class="collapse mt-2">-->
+<!--          <div class="card card-body border-0 bg-light">-->
+<!--            {{ Context[index] }}-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </transition>-->
+<!--    </div>-->
+<!--  </div>-->
 </template>
 
 <style scoped>
