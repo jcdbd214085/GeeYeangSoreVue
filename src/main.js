@@ -6,14 +6,18 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
+
+
 // v-intersect 指令
 const intersect = {
-    mounted(el) {
+    mounted(el, binding) {
+        const animationClass = binding.value || 'fadeInLeft'; // 預設為 fadeInLeft
+
         el.style.opacity = '0';
-        const observer = new window.IntersectionObserver((entries, observer) => {
+        const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    el.classList.add('animate__animated', 'animate__fadeInLeft');
+                    el.classList.add('animate__animated', `animate__${animationClass}`);
                     el.style.opacity = '1';
                     observer.unobserve(el);
                 }
@@ -21,7 +25,7 @@ const intersect = {
         }, { threshold: 0.15 });
         observer.observe(el);
     }
-};
+}
 
 const app = createApp(App)
 app.use(createPinia())
