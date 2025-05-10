@@ -33,6 +33,7 @@ const router = createRouter({
             component: () => import('@/views/landlord/landlord.vue')
         },
 
+
         //註冊畫面 測試用
         {
             path: '/login',
@@ -74,18 +75,58 @@ const router = createRouter({
       name: 'property-search-view',
       component: () => import('@/views/PropertySearch/PropertySearchView.vue')
     },
+
+    //個人頁面
+    {
+      path: '/UserHome/UserProfile',
+      name: 'UserProfile',
+      component: () => import('@/views/UserHome/UserProfile.vue')
+    },
+    {
+      path: '/landlord/property-manage',
+      name: 'landlord-property-manage',
+      component: () => import('@/views/landlord/PropertyManage.vue')
+    },
+    {
+      path: '/landlord/property-create',
+      name: 'landlord-property-create',
+      component: () => import('@/views/landlord/PropertyCreate.vue')
+    },
+    //
+    {
+      path: '/landlord/property-detail-form',
+      name: 'landlord-property-detail-form',
+      component: () => import('@/views/landlord/PropertyDetailForm.vue')
+    },
+    {
+      path: '/landlord/property-plan-select',
+      name: 'landlord-property-plan-select',
+      component: () => import('@/views/landlord/PropertyPlanSelect.vue')
+    },
+
+    {
+      path: '/landlord/property-stats',
+      name: 'landlord-property-stats',
+      component: () => import('@/views/landlord/PropertyStats.vue')
+    },
+    //房東編輯
+    {
+      path: '/landlord/property-edit',
+      name: 'landlord-property-edit',
+      component: () => import('@/views/landlord/PropertyEdit.vue')
+    },
+    //成為房東
+    {
+      path: '/landlord/become',
+      name: 'BecomeLandlordModal',
+      component: () => import('@/views/landlord/BecomeLandlordModal.vue')
+    },
     //房屋詳細資訊
     {
       path: '/PropertyDetail',
       name: 'PropertyDetail',
       component: () => import('@/views/PropertySearch/PropertyDetailView.vue')
     },
-        //個人頁面
-        {
-            path: '/UserHome/UserProfile',
-            name: 'UserProfile',
-            component: () => import('@/views/UserHome/UserProfile.vue')
-        },
         //公告
         {
 
@@ -108,6 +149,7 @@ const router = createRouter({
             name: 'about',
             component: () => import('@/views/about/About.vue')
         },
+
 
 
 

@@ -1,8 +1,6 @@
 <template>
   <!-- 導航列元件 -->
-  <nav class="navbar navbar-expand-lg fixed-top" 
-       id="mainNav" 
-       :class="{ 'navbar-scrolled': isScrolled }">
+  <nav class="navbar navbar-expand-lg fixed-top" id="mainNav" :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
 
       <!-- 左側 Logo 與名稱 -->
@@ -19,22 +17,22 @@
       <!-- 導覽列內容（主選單與登入區） -->
       <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
         <ul class="navbar-nav me-auto">
-          
+
           <!-- 靜態選單項目 -->
           <li class="nav-item">
             <router-link class="nav-link" to="/" exact-active-class="active" @click="closeMenu">首頁</router-link>
           </li>
           <li class="nav-item">
-  <router-link class="nav-link" to="/PropertySearch" exact-active-class="active" @click="closeMenu">搜尋房源</router-link>
-</li>
+            <router-link class="nav-link" to="/PropertySearch" exact-active-class="active"
+              @click="closeMenu">搜尋房源</router-link>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
           </li>
 
           <!-- 聯絡我們（滑鼠移入展開） -->
-          <li class="nav-item  dropdown"
-              @mouseenter="isHelpAccordionOpen = true"
-              @mouseleave="isHelpAccordionOpen = false">
+          <li class="nav-item  dropdown" @mouseenter="isHelpAccordionOpen = true"
+            @mouseleave="isHelpAccordionOpen = false">
             <a class="nav-link dropdown-toggle" href="#">聯絡我們</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <a class="dropdown-item" href="#" @click="goToNotice">最新公告</a>
@@ -45,20 +43,17 @@
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li v-if="userStore.isLogin"
-              class="nav-item dropdown"
-              @mouseenter="isLandlordAccordionOpen = true"
-              @mouseleave="isLandlordAccordionOpen = false">
+          <li v-if="userStore.isLogin" class="nav-item dropdown" @mouseenter="isLandlordAccordionOpen = true"
+            @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.role === 'landlord' || userStore.role === 'both'">
               <a class="nav-link dropdown-toggle" href="#">房東專區</a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
-                <a class="dropdown-item" href="#" @click="closeMenu">物件管理</a>
-                <a class="dropdown-item" href="#" @click="closeMenu">刊登管理</a>
-                <a class="dropdown-item" href="#" @click="closeMenu">刊登成效追蹤</a>
+                <router-link class="dropdown-item" to="/landlord/property-manage" @click="closeMenu">物件管理</router-link>
+                <router-link class="dropdown-item" to="/landlord/property-stats" @click="closeMenu">刊登成效追蹤</router-link>
               </div>
             </template>
             <template v-else>
-              <a class="nav-link" href="#" @click="goToLandlordRegister">成為房東</a>
+              <a class="nav-link" href="#" @click.prevent="showBecomeLandlordModal">成為房東</a>
             </template>
           </li>
 
@@ -107,9 +102,8 @@
             </li>
 
             <!-- 個人頁面（滑鼠移入展開） -->
-            <li class="nav-item nav-icon-item dropdown"
-                @mouseenter="isProfileAccordionOpen = true"
-                @mouseleave="isProfileAccordionOpen = false">
+            <li class="nav-item nav-icon-item dropdown" @mouseenter="isProfileAccordionOpen = true"
+              @mouseleave="isProfileAccordionOpen = false">
               <a class="nav-link dropdown-toggle" href="#">
                 <span class="icon-wrapper">
                   <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
@@ -132,6 +126,9 @@
       </div>
     </div>
   </nav>
+  <Teleport to="body">
+    <BecomeLandlordModal v-if="showModal" @close="closeModal" />
+  </Teleport>
 </template>
 
 
@@ -143,6 +140,7 @@ import Button from '@/components/buttons/button.vue';
 import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
 import { useRouter } from 'vue-router';
+import BecomeLandlordModal from '@/views/landlord/BecomeLandlordModal.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -150,7 +148,7 @@ const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
-
+const showModal = ref(false);
 
 const isScrolled = ref(false);
 function handleScroll() {
@@ -170,8 +168,8 @@ function closeMenu() {
   if (window.innerWidth < 992) menuOpen.value = false;
 }
 function loginAsTenant() {
-  userStore.login('landlord', '房東A');
-  //userStore.login('tenant', '房東房客A');
+  //userStore.login('landlord', '房東A');
+  userStore.login('tenant', '房東房客A');
   // 這邊用來改變是房東或是房客
 }
 function loginAsBoth() {
@@ -222,7 +220,24 @@ function goToAbout() {
   closeMenu();
 }
 
+function goToPropertyManage() {
+  router.push('/landlord/property-manage');
+  closeMenu();
+}
 
+function goToPropertyStats() {
+  router.push('/landlord/property-stats');
+  closeMenu();
+}
+
+function showBecomeLandlordModal() {
+  showModal.value = true;
+  closeMenu();
+}
+
+function closeModal() {
+  showModal.value = false;
+}
 
 </script>
 
@@ -240,25 +255,28 @@ function goToAbout() {
 }
 
 #mainNav.navbar-scrolled {
-  background: rgba(255,255,255,0.98);
+  background: rgba(255, 255, 255, 0.98);
   padding: 0.8rem 0;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
 }
 
 
 
 /* 導覽列左上圖標（Logo） */
 .nav-logo {
-    height: 50px;
-    width: 50px;
-    padding: 0;
-    border-radius: 50%;                        /* 圓形邊角 */
-    border: 3px solid var(--main-color);       /* 外框主色 */
-    background: none;
-    box-shadow: none;
-    aspect-ratio: 1;                           /* 長寬等比 */
-    object-fit: contain;
-    transition: all 0.4s ease;
+  height: 50px;
+  width: 50px;
+  padding: 0;
+  border-radius: 50%;
+  /* 圓形邊角 */
+  border: 3px solid var(--main-color);
+  /* 外框主色 */
+  background: none;
+  box-shadow: none;
+  aspect-ratio: 1;
+  /* 長寬等比 */
+  object-fit: contain;
+  transition: all 0.4s ease;
 }
 
 .nav-logo:hover {
@@ -269,25 +287,32 @@ function goToAbout() {
 
 /* 導覽列內選單區域（整體 ul） */
 .navbar-nav {
-    gap: 0.5rem; /* 選單間距 */
+  gap: 0.5rem;
+  /* 選單間距 */
 
 }
 
 /* 每一個選單連結樣式 */
 .navbar-nav .nav-link {
-    color: var(--text-main);       /* 主要文字色 */
-    font-weight: 500;
-    padding: 0.6rem 0.6rem;        /* 上下左右內距 */
-    transition: all 0.3s ease;     /* 滑入平滑效果 */
-    position: relative;
-    text-transform: uppercase;     /* 英文大寫 */
-    font-size: 1rem;
-    letter-spacing: 1px;           /* 字距 */
+  color: var(--text-main);
+  /* 主要文字色 */
+  font-weight: 500;
+  padding: 0.6rem 0.6rem;
+  /* 上下左右內距 */
+  transition: all 0.3s ease;
+  /* 滑入平滑效果 */
+  position: relative;
+  text-transform: uppercase;
+  /* 英文大寫 */
+  font-size: 1rem;
+  letter-spacing: 1px;
+  /* 字距 */
 }
 
 /* 滑鼠懸停變色 */
 .navbar-nav .nav-link:hover {
-    color: var(--main-color); /* 主色 */
+  color: var(--main-color);
+  /* 主色 */
 }
 
 /* 當前頁面連結高亮 */
@@ -362,67 +387,68 @@ function goToAbout() {
 /* RWD：平板寬度以下導覽列內容樣式 */
 @media (max-width: 991.98px) {
 
-    .navbar-collapse {
-        background-color: rgba(255, 255, 255, 0.98);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
+  .navbar-collapse {
+    background-color: rgba(255, 255, 255, 0.98);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
 
-    .navbar-nav .nav-link {
-        padding: 0.8rem 1.2rem;
-    }
+  .navbar-nav .nav-link {
+    padding: 0.8rem 1.2rem;
+  }
 }
 
 
 /* RWD：手機寬度樣式 */
 @media (max-width: 767.98px) {
-    #mainNav {
-        padding: 0.8rem 0;
-        /* background: rgba(255, 255, 255, 0.98); */
-        background: none;
-    }
+  #mainNav {
+    padding: 0.8rem 0;
+    /* background: rgba(255, 255, 255, 0.98); */
+    background: none;
+  }
 
-    .nav-logo {
-  height: 60px;
-  width: 60px;
-}
-#mainNav.navbar-scrolled .nav-logo {
-  height: 50px;
-  width: 50px;
-}
+  .nav-logo {
+    height: 60px;
+    width: 60px;
+  }
 
-    .navbar-nav .nav-link {
-        color: var(--text-main);
-    }
+  #mainNav.navbar-scrolled .nav-logo {
+    height: 50px;
+    width: 50px;
+  }
+
+  .navbar-nav .nav-link {
+    color: var(--text-main);
+  }
 }
 
 /* icon + badge 包裝外層，調整對齊 */
 .nav-icon-item {
-    display: flex;
-    align-items: center;
-    height: 48px;
+  display: flex;
+  align-items: center;
+  height: 48px;
 }
 
 
 /* 聊天室、收藏等 icon 對齊設定 */
 .nav-icon-item .nav-link {
-    display: flex;
-    align-items: center;
-    padding: 0.6rem 1.2rem;
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1.2rem;
 }
 
 /* icon 外圍圓形區塊 */
 .icon-wrapper {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 32px;
-    width: 32px;
-    margin-right: 6px;
-    vertical-align: middle;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
 .dropdown {
@@ -477,13 +503,21 @@ function goToAbout() {
   z-index: 1000;
   animation: fadeInAccordion 0.3s;
 }
+
 @keyframes fadeInAccordion {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-/* 品牌名稱（居研所）字體大小 */
-.navbar-brand {
-    font-size: 24px;
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* 品牌名稱（居研所）字體大小 */
+.navbar-brand {
+  font-size: 24px;
+}
 </style>
