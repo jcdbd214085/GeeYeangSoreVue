@@ -67,12 +67,19 @@ const router = createRouter({
             component: () => import('@/components/Pagination/Pagination.vue')
         },
 
-        //房屋搜尋
-        {
-            path: '/PropertySearch',
-            name: 'property-search-view',
-            component: () => import('@/views/PropertySearch/PropertySearchView.vue')
-        },
+
+    //房屋搜尋
+    {
+      path: '/PropertySearch',
+      name: 'property-search-view',
+      component: () => import('@/views/PropertySearch/PropertySearchView.vue')
+    },
+    //房屋詳細資訊
+    {
+      path: '/PropertyDetail',
+      name: 'PropertyDetail',
+      component: () => import('@/views/PropertySearch/PropertyDetailView.vue')
+    },
         //個人頁面
         {
             path: '/UserHome/UserProfile',
@@ -101,6 +108,7 @@ const router = createRouter({
             name: 'about',
             component: () => import('@/views/about/About.vue')
         },
+
 
 
     ],

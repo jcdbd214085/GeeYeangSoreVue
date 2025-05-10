@@ -14,7 +14,7 @@
             <form @submit.prevent>
                 <!-- 位置 -->
                 <div class="mb-3">
-                    <label class="fw-bold">位置</label>
+                    <label class="fw-bold mb-1">位置</label>
                     <div class="d-flex">
                         <select class="form-select me-2" v-model="city" @change="updateDistrictOptions">
                             <option disabled value="">選擇城市</option>
@@ -30,7 +30,7 @@
                 <!-- 類型與型態 -->
                 <div class="mb-3 d-flex">
                     <div class="w-50 me-2">
-                        <label class="fw-bold">類型</label>
+                        <label class="fw-bold mb-1">類型</label>
                         <select class="form-select" v-model="type">
                             <option>不限</option>
                             <option>整層出租</option>
@@ -41,7 +41,7 @@
                         </select>
                     </div>
                     <div class="w-50">
-                        <label class="fw-bold">型態</label>
+                        <label class="fw-bold mb-1">型態</label>
                         <select class="form-select" v-model="buildingType">
                             <option>不限</option>
                             <option>公寓</option>
@@ -55,7 +55,7 @@
                 <!-- 租金與坪數 -->
                 <div class="mb-3 d-flex">
                     <div class="w-50 me-2">
-                        <label class="fw-bold">租金 (元)</label>
+                        <label class="fw-bold mb-1">租金 (元)</label>
                         <select class="form-select" v-model="rentRange" @change="toggleCustomRent">
                             <option>不限</option>
                             <option>5000元以下</option>
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div class="w-50">
-                        <label class="fw-bold">坪數</label>
+                        <label class="fw-bold mb-1">坪數</label>
                         <select class="form-select" v-model="areaRange" @change="toggleCustomArea">
                             <option>不限</option>
                             <option>10坪以下</option>
@@ -93,13 +93,12 @@
 
                 <!-- 特色 -->
                 <div class="mb-3">
-                    <label class="fw-bold">特色</label>
-                    <div class="d-flex flex-wrap">
-                        <div class="form-check me-3" v-for="feature in featureOptions" :key="feature">
-                            <input class="form-check-input" type="checkbox" :id="feature" :value="feature"
-                                v-model="selectedFeatures">
-                            <label class="form-check-label" :for="feature">{{ feature }}</label>
-                        </div>
+                    <label class="fw-bold mb-1">特色</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button v-for="feature in featureOptions" :key="feature" type="button" class="feature-btn"
+                            :class="{ active: selectedFeatures.includes(feature) }" @click="toggleFeature(feature)">
+                            {{ feature }}
+                        </button>
                     </div>
                 </div>
 
@@ -168,6 +167,14 @@ function resetFilter() {
     districtOptions.value = []
 }
 
+function toggleFeature(feature) {
+    const index = selectedFeatures.value.indexOf(feature)
+    if (index > -1) {
+        selectedFeatures.value.splice(index, 1)
+    } else {
+        selectedFeatures.value.push(feature)
+    }
+}
 // 點擊頁面其他地方自動關閉 filter
 onMounted(() => {
     document.addEventListener('click', (e) => {
@@ -181,8 +188,11 @@ onMounted(() => {
 
 // 可自定義特色
 const featureOptions = [
-    '近捷運', '可養寵物', '可開伙', '有車位', '有電梯', '有陽台',
-    '有冷氣', '有冰箱', '有熱水器', '有天然瓦斯', '有網路', '有床'
+    '可養狗', '可養貓', '可養其他寵物',
+    '可開伙', '有家具', '有床', '有陽台', '公設', '車位',
+    '有冷氣', '有電視', '有冰箱', '有洗衣機', '有飲水機', '有熱水器', '有天然瓦斯',
+    '有網路', '有第四台', '公家電費', '公家水費',
+    '短期租賃', '社會住宅', '房東同住'
 ]
 </script>
 
@@ -255,7 +265,23 @@ const featureOptions = [
     max-width: 500px;
     background-color: #fff;
     border-radius: 10px;
-    z-index: 1060;
+    z-index: 1100;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.feature-btn {
+    border: 1px solid #3CDDD2;
+    background-color: transparent;
+    color: #3CDDD2;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.feature-btn.active,
+.feature-btn:hover {
+    background-color: #3CDDD2;
+    color: white;
 }
 </style>
