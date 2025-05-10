@@ -1,0 +1,33 @@
+﻿使用方式：
+在父層的script聲明一個array
+array[i]的內容，就是步驟第i格的內容
+
+使用範例：
+
+<script setup>
+
+import Footer from "@/components/common/Footer.vue";
+import Step from "@/components/step/Step.vue";
+
+const steps = ["第一格", "第二格", "第三格"]
+</script>
+
+
+<template>
+
+  <div class="main-content">
+  </div>
+
+  <Step :steps="steps" :activeStep="1">
+    <template #default="{ step, index }">
+      <div>
+        <div><strong>第 {{ index + 1 }} 步</strong></div>
+        <div style="font-size: 12px;">{{ step }}</div>
+      </div>
+    </template>
+  </Step>
+
+  <Footer>
+  </Footer>
+
+</template>
