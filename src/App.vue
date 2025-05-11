@@ -8,6 +8,7 @@ import ChatPopup from '@/components/chat/ChatPopup.vue';
 
 import FullScreenLoading from '@/components/common/FullScreenLoading.vue'
 import Navbar from '@/components/common/Navbar.vue'
+import Footer from '@/components/common/Footer.vue';
 
 import { useLoadingStore } from '@/stores/loadingStore'
 const loadingStore = useLoadingStore()
@@ -15,7 +16,7 @@ const loadingStore = useLoadingStore()
 
 <template>
   <!-- 導覽列會出現在每個頁面上方 -->
-  <!-- <Navbar /> -->
+  <Navbar />
 
   <!-- 主要內容區，避免被 fixed-top 導覽列遮擋 -->
   <div class="main-content">
@@ -27,6 +28,7 @@ const loadingStore = useLoadingStore()
 
   <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
+  <Footer />
 </template>
 
 <style scoped>
