@@ -16,7 +16,7 @@
             <input v-model="login.username" type="text" placeholder="電子信箱" required />
             <i class="fa-solid fa-envelope"></i>
           </div>
-          <div class="input-box">
+<div class="input-box">
             <input
               v-model="login.password"
               :type="showLoginPassword ? 'text' : 'password'"
@@ -27,7 +27,7 @@
               <i :class="showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
             </div>
           </div>
-  
+
           <div class="forgot-link"><a href="#">忘記密碼?</a></div>
           <button class="btn">登入</button>
           <p>——使用其他方式登入——</p>
@@ -52,35 +52,45 @@
             <i class="fa-solid fa-user"></i>
           </div>
           <div class="input-box">
-            <input v-model="register.userphone" type="text" placeholder="手機" required />
+            <input v-model="register.userphone" type="text" placeholder="手機" required pattern="^09\d{8}$" title="請輸入正確的手機號碼（例如：0912345678）"/>
             <i class="fa-solid fa-phone"></i>
           </div>
           <div class="input-box">
             <input v-model="register.email" type="email" placeholder="電子信箱" required />
             <i class="fa-solid fa-envelope"></i>
           </div>
-          <div class="input-box">
-            <input
-              v-model="register.password"
-              :type="showRegisterPassword ? 'text' : 'password'"
-              placeholder="密碼"
-              required
-            />
-            <div class="eye-icon-wrapper" @click="showRegisterPassword = !showRegisterPassword">
-              <i :class="showRegisterPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
-            </div>
-          </div>
+          <!-- 註冊表單的密碼欄位 -->
+<div class="input-box">
+  <input
+    v-model="register.password"
+    :type="showRegisterPassword ? 'text' : 'password'"
+    placeholder="密碼"
+    required
+    ref="passwordInputRef" 
+    @input="register.passwordError = ''; passwordInputRef.setCustomValidity('')"
+  />
+  <div class="eye-icon-wrapper" @click="showRegisterPassword = !showRegisterPassword">
+    <i :class="showRegisterPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+  </div>
+</div>
+
 
 
 <!-- 同意條款勾選 -->
 <div class="input-box agree-box">
   <label class="agree-label">
-    <input type="checkbox" v-model="agreePolicy" />
+    <input type="checkbox" ref="agreeCheckboxRef" required @invalid="handleAgreeInvalid"
+  @input="handleAgreeInput"/>
     <span>
       我已閱讀並同意
       <a href="#" @click.prevent="showPrivacyModal = true">隱私權政策</a>
     </span>
   </label>
+  <!-- 錯誤訊息顯示區塊 -->
+  <p v-if="agreeError" class="error-msg">
+    {{ agreeError }}
+  </p>
+  
 </div>
 
 
@@ -133,7 +143,8 @@
 
   //引入隱私權政策
   import PrivacyPolicyModal from '@/components/login/PrivacyPolicyModal.vue'
-
+  const agreeCheckboxRef = ref(null)
+const agreeError = ref('')
   
   // 控制是否顯示註冊頁面（切換用）
   const isRegister = ref(false)
@@ -145,6 +156,10 @@
   const showLoginPassword = ref(false)
   const showRegisterPassword = ref(false)
   
+// 密碼欄 input 的參考
+const passwordInputRef = ref(null)
+
+
   // 驗證碼倒數
   const countdown = ref(0) // 初始為 0 表示可按
   const resendText = ref('發送驗證碼')
@@ -162,7 +177,8 @@
     email: '',
     password: '',
     userphone: '',
-    verificationCode: ''
+    verificationCode: '',
+    passwordError: ''
   })
   
   // 點擊切換至註冊畫面
@@ -190,15 +206,35 @@
   }
   
   // 註冊事件處理
-  const handleRegister = () => {
-  if (!agreePolicy.value) {
-    alert('請勾選同意隱私權政策')
+const handleRegister = () => {
+  register.value.passwordError = ''
+  passwordInputRef.value?.setCustomValidity('')
+
+  // 檢查是否同意隱私權政策
+// 處理 checkbox 被勾選與取消時的錯誤提示
+const handleAgreeInvalid = (e) => {
+  e.target.setCustomValidity('請勾選同意隱私權政策')
+}
+
+const handleAgreeInput = (e) => {
+  e.target.setCustomValidity('') // 清除錯誤
+}
+
+
+  // 檢查密碼格式
+  const passwordError = validatePassword(register.value.password, register.value.email)
+  if (passwordError) {
+    register.value.passwordError = passwordError
+    passwordInputRef.value?.setCustomValidity(passwordError)
+    passwordInputRef.value?.reportValidity()
     return
   }
 
   console.log('註冊資料', register.value)
   // TODO: 呼叫 API 處理註冊
 }
+
+
 
   
   // 發送驗證碼事件
@@ -228,6 +264,21 @@ const agreePolicy = ref(false)
 const showPrivacy = ref(false)
 const showPrivacyModal = ref(false)
 
+// 加入密碼驗證邏輯
+const validatePassword = (password, email) => {
+  // 密碼正則：至少10字元，含大小寫、數字、特殊符號，不含空白
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{10,}$/;
+
+  if (password === email) {
+    return '密碼不得與電子信箱相同';
+  }
+
+  if (!regex.test(password)) {
+    return '密碼需至少10字元，包含大小寫英文字母、數字與特殊符號，且不可含空白';
+  }
+
+  return '';
+}
 
 
   onMounted(() => {

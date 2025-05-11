@@ -15,7 +15,7 @@ const loadingStore = useLoadingStore()
 
 <template>
   <!-- 導覽列會出現在每個頁面上方 -->
-  <Navbar />
+  <!-- <Navbar /> -->
 
   <!-- 主要內容區，避免被 fixed-top 導覽列遮擋 -->
   <div class="main-content">
