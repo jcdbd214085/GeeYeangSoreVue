@@ -1,5 +1,5 @@
 <template>
-  <section class="hero-section" style="padding-top:120px;">
+  <section class="hero-section" style="padding-top:100px;">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6">
