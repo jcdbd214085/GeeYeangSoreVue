@@ -1,5 +1,4 @@
 <template>
-  <!-- <Navbar /> -->
   <section class="hero-section" style="padding-top:120px;">
     <div class="container">
       <div class="row align-items-center">
@@ -95,7 +94,7 @@
   </section>
 </template>
 <script setup>
-// import Navbar from '@/components/common/Navbar.vue';
+
 import Carousel from '@/components/Carousel.vue';
 import SearchBar from '@/components/forms/SearchBar.vue';
 import PropertyCard from '@/components/cards/PropertyCard.vue';
