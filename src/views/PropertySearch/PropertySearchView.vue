@@ -39,7 +39,7 @@
             </div>
         </div>
     </section>
-    <BackToTop />
+    
 
 </template>
 
@@ -51,7 +51,7 @@ import PropertyCard from '@/components/cards/PropertyCard.vue';
 import propertyImg from '@/assets/images/property/property.jpg';
 import LandlordCarousel from '@/components/carousel/LandlordCarousel.vue';
 import Pagination from '@/components/Pagination/Pagination.vue';
-import BackToTop from '@/components/common/BackToTop.vue'
+
 
 
 import { ref, onMounted } from 'vue'

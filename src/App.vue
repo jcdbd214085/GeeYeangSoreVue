@@ -9,6 +9,7 @@ import ChatPopup from '@/components/chat/ChatPopup.vue';
 import FullScreenLoading from '@/components/common/FullScreenLoading.vue'
 import Navbar from '@/components/common/Navbar.vue'
 import Footer from '@/components/common/Footer.vue';
+import BackToTop from '@/components/common/BackToTop.vue'
 
 import { useLoadingStore } from '@/stores/loadingStore'
 const loadingStore = useLoadingStore()
@@ -29,6 +30,7 @@ const loadingStore = useLoadingStore()
   <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />
+  <BackToTop />
 </template>
 
 <style scoped>
