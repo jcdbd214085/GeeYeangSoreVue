@@ -28,6 +28,7 @@ const props = defineProps({
 
 const fallbackList = [
     {
+        propertyId: 1,
         image: propertyImg,
         rentPrice: 5000,
         title: '清幽小築',

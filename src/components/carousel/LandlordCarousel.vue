@@ -34,6 +34,7 @@ const defaultList = [
             avatar: avatarImg,
         },
         property: {
+            propertyId: 1,
             image: propertyImg,
             rentPrice: 15000,
             title: '精緻套房出租',
@@ -53,6 +54,7 @@ const defaultList = [
             avatar: '',
         },
         property: {
+            propertyId: 2,
             image: propertyImg,
             rentPrice: 12000,
             title: '文青風雅房',
@@ -72,6 +74,7 @@ const defaultList = [
             avatar: avatarImg,
         },
         property: {
+            propertyId: 3,
             image: propertyImg,
             rentPrice: 15000,
             title: '精緻套房出租',

@@ -86,11 +86,17 @@
             </li>
 
             <!-- 收藏 -->
-            <li class="nav-item nav-icon-item">
-              <a class="nav-link" href="#" @click="closeMenu">
-                <span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span>
-                收藏
+            <li class="nav-item nav-icon-item position-relative">
+              <a class="nav-link" href="#" @click="toggleFavoritePopup">
+              <span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span>
+              收藏
               </a>
+            <FavoritePopup
+              :visible="showFavoritePopup"
+              :favorites="favoriteList"
+              @remove="removeFavorite"
+              @close="showFavoritePopup = false"
+            />
             </li>
 
             <!-- 通知 -->
@@ -141,6 +147,9 @@ import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
 import { useRouter } from 'vue-router';
 import BecomeLandlordModal from '@/views/landlord/BecomeLandlordModal.vue';
+import FavoritePopup from '@/components/favorite/FavoritePopup.vue'
+import propertyImg from '@/assets/images/property/property.jpg'
+import axios from 'axios'
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -238,7 +247,44 @@ function showBecomeLandlordModal() {
 function closeModal() {
   showModal.value = false;
 }
+const showFavoritePopup = ref(false)
+const favoriteList = ref([
+  {
+    propertyId: 1,
+    image: propertyImg,
+    title: '文青套房',
+    city: '台中市',
+    district: '西區',
+    address: '公益路二段 88 號',
+    rentPrice: 16800
+  },
+  {
+    propertyId: 2,
+    image: propertyImg,
+    title: '海景套房',
+    city: '高雄市',
+    district: '前鎮區',
+    address: '海岸路 100 號',
+    rentPrice: 16500
+  }
+])
+onMounted(async () => {
+  try {
+    const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
+    favoriteList.value = res.data.slice(0, 5) 
+  } catch (error) {
+    console.warn('取得收藏清單失敗，使用假資料', error)
+  }
+})
 
+function toggleFavoritePopup(e) {
+  e.preventDefault()
+  showFavoritePopup.value = !showFavoritePopup.value
+}
+
+function removeFavorite(id) {
+  favoriteList.value = favoriteList.value.filter(f => f.propertyId !== id)
+}
 </script>
 
 <style scoped>

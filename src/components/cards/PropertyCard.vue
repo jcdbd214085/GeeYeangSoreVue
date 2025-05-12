@@ -1,6 +1,7 @@
 <template>
   <!-- 房源卡片元件 -->
-  <div class="property-card" v-intersect="intersectAnimation">
+
+  <div class="property-card" v-intersect="intersectAnimation" @click="goToDetail">
     <div v-if="$slots.badge" class="card-badge">
       <slot name="badge"></slot>
     </div>
@@ -11,7 +12,7 @@
           NT$ {{ new Intl.NumberFormat().format(rentPrice) }} / 月
 
         </div>
-        <button class="follow-btn" @click="toggleFavorite">
+        <button class="follow-btn" @click.stop="toggleFavorite">
           <i :class="['fa-heart', isFavorited ? 'fa-solid' : 'fa-regular']"
             :style="{ color: isFavorited ? '#ff9800' : '' }"></i>
         </button>
@@ -33,8 +34,11 @@
   </div>
 </template>
 <script setup>
+import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+const router = useRouter()
 const props = defineProps({
+  propertyId: { type: [String, Number], required: true },
   image: { type: String, required: true },
   rentPrice: { type: Number, required: true },
   propertyType: { type: String, required: true },
@@ -52,6 +56,15 @@ function toggleFavorite() {
   isFavorited.value = !isFavorited.value
 }
 
+
+function goToDetail() {
+  if (props.propertyId) {
+    router.push(`/property/${props.propertyId}`)
+  } else {
+    console.warn('propertyId 未定義')
+  }
+}
+
 </script>
 <style scoped>
 .card-img-top {
@@ -63,6 +76,7 @@ function toggleFavorite() {
 }
 
 .property-card {
+  cursor: pointer;
   background: white;
   border-radius: 15px;
   overflow: hidden;
