@@ -119,6 +119,8 @@
 
           <!-- 表單操作按鈕 -->
           <div class="form-actions">
+            <!-- 刪除帳號按鈕 -->
+  <button type="button" class="delete-btn" @click="showDeleteModal = true">刪除帳號</button>
             <button type="submit" class="save-btn">儲存變更</button>
             <button type="button" class="cancel-btn" @click="resetForm">重設</button>
           </div>
@@ -127,6 +129,20 @@
       </div>
     </div>
   </div>
+
+  <!-- 🆕 刪除帳號確認彈窗 -->
+<div v-if="showDeleteModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>確定要刪除帳號嗎？</h2>
+    <p>刪除後資料將無法復原，請再次確認。</p>
+    <div class="modal-actions">
+      <button class="confirm-btn" @click="deleteAccount">確定刪除</button>
+      <button class="cancel-btn" @click="showDeleteModal = false">取消</button>
+    </div>
+  </div>
+</div>
+
+
 </template>
 
 
@@ -191,24 +207,39 @@ const resetForm = () => {
     userData[key] = ''
   })
 }
+
+
+// 控制刪除帳號彈窗顯示
+const showDeleteModal = ref(false)
+
+// 刪除帳號邏輯
+const deleteAccount = () => {
+  showDeleteModal.value = false
+  // TODO: 呼叫後端 API 刪除帳號
+  alert('帳號已刪除')
+  // 可以導向登出或首頁
+  // window.location.href = '/'
+}
+
+
 </script>
 
 <style scoped>
-/* 🟡 外層容器：設定寬度與內距 */
+/*  外層容器：設定寬度與內距 */
 .profile-container {
   padding: 20px;                  /* 元件內距 */
   max-width: 1200px;              /* 最大寬度限制 */
   margin: 0 auto;                 /* 置中 */
 }
 
-/* 🟡 頁面標題樣式 */
+/*  頁面標題樣式 */
 .page-title {
   font-size: 24px;                /* 字體大小 */
   color: #333;                    /* 字體顏色 */
   margin-bottom: 30px;           /* 下方間距 */
 }
 
-/* 🟡 主要內容區：表單與大頭照排版 */
+/*  主要內容區：表單與大頭照排版 */
 .profile-content {
   display: flex;                  /* 使用 flex 排列左右區塊 */
   gap: 40px;                      /* 區塊之間的間距 */
@@ -218,12 +249,12 @@ const resetForm = () => {
   /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); */ /* 原陰影已註解 */
 }
 
-/* 🟡 大頭照區塊：設定固定寬度 */
+/*  大頭照區塊：設定固定寬度 */
 .profile-avatar-section {
   flex: 0 0 300px;                /* 固定寬度，不伸縮 */
 }
 
-/* 🟡 大頭照容器 */
+/*  大頭照容器 */
 .avatar-container {
   position: relative;            /* 讓遮罩層可以絕對定位 */
   width: 250px;                  /* 寬度固定 */
@@ -233,14 +264,14 @@ const resetForm = () => {
   margin: 0 auto;               /* 水平置中 */
 }
 
-/* 🟡 大頭照圖片 */
+/*  大頭照圖片 */
 .avatar-image {
   width: 100%;
   height: 100%;
   object-fit: cover;             /* 圖片填滿但不變形 */
 }
 
-/* 🟡 大頭照滑入遮罩層 */
+/*  大頭照滑入遮罩層 */
 .avatar-overlay {
   position: absolute;            /* 絕對定位 */
   bottom: 0;
@@ -253,17 +284,17 @@ const resetForm = () => {
   transition: opacity 0.3s;      /* 滑入漸顯 */
 }
 
-/* 🟡 滑鼠移入時顯示遮罩 */
+/*  滑鼠移入時顯示遮罩 */
 .avatar-container:hover .avatar-overlay {
   opacity: 1;
 }
 
-/* 🟡 檔案輸入欄位隱藏（由按鈕觸發） */
+/*  檔案輸入欄位隱藏（由按鈕觸發） */
 .file-input {
   display: none;
 }
 
-/* 🟡 更換照片按鈕樣式 */
+/*  更換照片按鈕樣式 */
 .change-avatar-btn {
   background: white;
   border: none;
@@ -273,31 +304,31 @@ const resetForm = () => {
   color: #333;
 }
 
-/* 🟡 表單區塊（右側） */
+/*  表單區塊（右側） */
 .profile-form-section {
   flex: 1;                        /* 撐滿剩下空間 */
 }
 
-/* 🟡 表單排列方式：使用 grid 間隔排列 */
+/*  表單排列方式：使用 grid 間隔排列 */
 .profile-form {
   display: grid;
   gap: 20px;                      /* 每欄間距 */
 }
 
-/* 🟡 單一欄位容器（label + input） */
+/*  單一欄位容器（label + input） */
 .form-group {
   display: flex;
   flex-direction: column;        /* 垂直排列 */
   gap: 8px;                      /* label 與 input 間距 */
 }
 
-/* 🟡 表單標籤樣式 */
+/*  表單標籤樣式 */
 .form-group label {
   font-weight: 500;
   color: #555;
 }
 
-/* 🟡 表單輸入與下拉選單共用樣式 */
+/*  表單輸入與下拉選單共用樣式 */
 .form-group input,
 .form-group select {
   padding: 10px;
@@ -306,21 +337,21 @@ const resetForm = () => {
   font-size: 16px;
 }
 
-/* 🟡 輸入框聚焦樣式：改變邊框色 */
+/*  輸入框聚焦樣式：改變邊框色 */
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: #4CAF50;
 }
 
-/* 🟡 表單操作按鈕區 */
+/*  表單操作按鈕區 */
 .form-actions {
   display: flex;
   gap: 16px;
   margin-top: 20px;
 }
 
-/* 🟡 儲存與取消按鈕共用樣式 */
+/*  儲存與取消按鈕共用樣式 */
 .save-btn,
 .cancel-btn {
   padding: 12px 24px;
@@ -331,29 +362,29 @@ const resetForm = () => {
   transition: background-color 0.3s;
 }
 
-/* 🟢 儲存按鈕樣式（綠色） */
+/*  儲存按鈕樣式（綠色） */
 .save-btn {
   background-color: #4CAF50;
   color: white;
 }
 
-/* 🟢 儲存按鈕 hover 效果 */
+/*  儲存按鈕 hover 效果 */
 .save-btn:hover {
   background-color: #45a049;
 }
 
-/* 🔘 取消按鈕樣式（灰底） */
+/*  取消按鈕樣式（灰底） */
 .cancel-btn {
-  background-color: #f5f5f5;
+  background-color: #c6c6c6;
   color: #333;
 }
 
-/* 🔘 取消按鈕 hover 效果 */
+/*  取消按鈕 hover 效果 */
 .cancel-btn:hover {
   background-color: #e0e0e0;
 }
 
-/* 🟡「我要更改」按鈕樣式 */
+/* 「我要更改」按鈕樣式 */
 .change-password-btn {
   background-color: #ffb700;     /* 深黃色 */
   border: none;
@@ -366,10 +397,72 @@ const resetForm = () => {
   transition: background-color 0.3s;
 }
 
-/* 🟡「我要更改」按鈕 hover 效果 */
+/* 「我要更改」按鈕 hover 效果 */
 .change-password-btn:hover {
   background-color: #ffcc00;     /* 明黃色 */
   color: #fff;
 }
+
+/*  刪除帳號按鈕樣式 */
+.delete-btn {
+  background-color: #e45454;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #d42d2d;
+}
+
+/*  確認刪除彈窗樣式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.confirm-btn {
+  background-color: #e45454;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.confirm-btn:hover {
+  background-color: #d42d2d;
+}
+
+
+
 </style>
 

@@ -18,9 +18,9 @@
             <h2 class="section-title"><i class="fa-solid fa-house"></i> 房源列表</h2>
             <div class="row">
                 <div class="col-md-3" v-for="(item, i) in propertyList" :key="i">
-                    <PropertyCard :image="item.image" :rentPrice="item.h_RentPrice" :title="item.h_PropertyTitle"
-                        :city="item.h_City" :district="item.h_District" :address="item.h_Address"
-                        :roomCount="item.h_RoomCount" :bathroomCount="item.h_BathroomCount"
+                    <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.h_RentPrice"
+                        :title="item.h_PropertyTitle" :city="item.h_City" :district="item.h_District"
+                        :address="item.h_Address" :roomCount="item.h_RoomCount" :bathroomCount="item.h_BathroomCount"
                         :propertyType="item.h_PropertyType" class="small-card" />
                 </div>
                 <div class="col-md-12 d-flex justify-content-center mt-4">
@@ -39,8 +39,8 @@
             </div>
         </div>
     </section>
-    <BackToTop />
-    <Footer />
+    
+
 </template>
 
 <script setup>
@@ -51,8 +51,8 @@ import PropertyCard from '@/components/cards/PropertyCard.vue';
 import propertyImg from '@/assets/images/property/property.jpg';
 import LandlordCarousel from '@/components/carousel/LandlordCarousel.vue';
 import Pagination from '@/components/Pagination/Pagination.vue';
-import BackToTop from '@/components/common/BackToTop.vue'
-import Footer from '@/components/common/Footer.vue';
+
+
 
 import { ref, onMounted } from 'vue'
 
@@ -62,6 +62,7 @@ onMounted(() => {
     // 模擬 API 資料
     propertyList.value = [
         {
+            propertyId: 1,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -73,6 +74,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 2,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -84,6 +86,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 3,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -95,6 +98,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 4,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -106,6 +110,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 5,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -117,6 +122,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 6,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -128,6 +134,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 7,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -139,6 +146,7 @@ onMounted(() => {
             h_PropertyType: '套房',
         },
         {
+            propertyId: 8,
             image: propertyImg,
             h_RentPrice: 18000,
             h_PropertyTitle: '晨曦小築',
@@ -165,6 +173,7 @@ onMounted(async () => {
                 avatar: ''
             },
             property: {
+                propertyId: 9,
                 image: propertyImg,
                 rentPrice: 15000,
                 title: '晨曦小築',
@@ -184,6 +193,7 @@ onMounted(async () => {
                 avatar: ''
             },
             property: {
+                propertyId: 9,
                 image: propertyImg,
                 rentPrice: 18000,
                 title: '晨曦小築',
@@ -203,6 +213,7 @@ onMounted(async () => {
                 avatar: ''
             },
             property: {
+                propertyId: 10,
                 image: propertyImg,
                 rentPrice: 15000,
                 title: '晨曦小築',
@@ -223,6 +234,7 @@ onMounted(async () => {
     // 模擬 API 抓資料
     featuredProperties.value = [
         {
+            propertyId: 11,
             image: propertyImg,
             rentPrice: 15000,
             title: '物件1',
@@ -234,6 +246,7 @@ onMounted(async () => {
             bathroomCount: 1
         },
         {
+            propertyId: 12,
             image: propertyImg,
             rentPrice: 5000,
             title: '物件2',
@@ -245,6 +258,7 @@ onMounted(async () => {
             bathroomCount: 1
         },
         {
+            propertyId: 13,
             image: propertyImg,
             rentPrice: 5000,
             title: '物件3',
@@ -256,6 +270,7 @@ onMounted(async () => {
             bathroomCount: 1
         },
         {
+            propertyId: 14,
             image: propertyImg,
             rentPrice: 5000,
             title: '物件4',
@@ -267,6 +282,7 @@ onMounted(async () => {
             bathroomCount: 1
         },
         {
+            propertyId: 15,
             image: propertyImg,
             rentPrice: 5000,
             title: '物件5',
