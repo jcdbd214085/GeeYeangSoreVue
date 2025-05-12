@@ -1,4 +1,5 @@
 <template>
+
   <!-- 導航列元件 -->
   <nav class="navbar navbar-expand-lg fixed-top" id="mainNav" :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
@@ -100,13 +101,18 @@
             </li>
 
             <!-- 通知 -->
-            <li class="nav-item nav-icon-item">
-              <a class="nav-link" href="#" @click="closeMenu">
+            <li class="nav-item nav-icon-item dropdown" style="position: relative;">
+              <a class="nav-link dropdown-toggle" href="#" @click.prevent="toggleNotification">
                 <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
-            </li>
 
+              <!-- 顯示通知清單 -->
+              <NewAlert
+                  v-if="isNotificationOpen"
+                  :notifications="notifications"
+              />
+            </li>
             <!-- 個人頁面（滑鼠移入展開） -->
             <li class="nav-item nav-icon-item dropdown" @mouseenter="isProfileAccordionOpen = true"
               @mouseleave="isProfileAccordionOpen = false">
@@ -147,9 +153,11 @@ import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
 import { useRouter } from 'vue-router';
 import BecomeLandlordModal from '@/views/landlord/BecomeLandlordModal.vue';
+import NewAlert from "@/components/alert/NewAlert.vue";
 import FavoritePopup from '@/components/favorite/FavoritePopup.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import axios from 'axios'
+
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -158,8 +166,29 @@ const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
 const showModal = ref(false);
-
+const showAlert = ref(false)
 const isScrolled = ref(false);
+
+
+//通知專用
+const isNotificationOpen = ref(false)
+const notifications = ref([])
+
+function toggleNotification() {
+  isNotificationOpen.value = !isNotificationOpen.value
+}
+
+// 模擬通知資料
+onMounted(() => {
+  notifications.value = [
+    { message: '你有一筆新房源申請', time: '10 分鐘前' },
+    { message: '系統將於今晚維護', time: '30 分鐘前' },
+    { message: '房東已接受你的申請', time: '2 小時前' }
+  ]
+})
+//通知專用
+
+
 function handleScroll() {
   isScrolled.value = window.scrollY > 100;
 }
@@ -247,6 +276,14 @@ function showBecomeLandlordModal() {
 function closeModal() {
   showModal.value = false;
 }
+
+function handleConfirm() {
+  console.log('✅ 使用者點了確認')
+}
+
+function handleCancel() {
+  console.log('❌ 使用者點了取消')
+
 const showFavoritePopup = ref(false)
 const favoriteList = ref([
   {
