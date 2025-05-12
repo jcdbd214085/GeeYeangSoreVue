@@ -127,29 +127,29 @@ const router = createRouter({
     //公告
     {
 
-      path: '/notice',
-      name: 'notice',
-      component: () => import('@/views/notice/Notice.vue')
-    },
-    {
-      path: '/guide',
-      name: 'guide',
-      component: () => import('@/views/guide/Guide.vue')
-    },
-    {
-      path: '/faq',
-      name: 'faq',
-      component: () => import('@/views/faq/Faq.vue')
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('@/views/about/About.vue')
-    },
-
-
-
-
+            path: '/notice',
+            name: 'notice',
+            component: () => import('@/views/notice/Notice.vue')
+        },
+        {
+            path: '/guide',
+            name: 'guide',
+            component: () => import('@/views/guide/Guide.vue')
+        },
+        {
+            path: '/faq',
+            name: 'faq',
+            component: () => import('@/views/faq/Faq.vue')
+        },
+        {
+            path: '/about',
+            name: 'about',
+            component: () => import('@/views/about/About.vue')
+        },        {
+            path: '/contact',
+            name: 'contact',
+            component: () => import('@/views/contact/Contact.vue')
+        },
   ],
 })
 
