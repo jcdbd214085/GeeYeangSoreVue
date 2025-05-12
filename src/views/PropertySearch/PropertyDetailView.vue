@@ -1,26 +1,26 @@
 <template>
     <div class="container my-5">
         <h2 class="section-title">
-            <i class="fa-solid fa-house"></i> 物件詳細資訊
+            <i class="fa-solid fa-house"></i> 房源詳細資訊
         </h2>
         <PropertyDetailCard v-if="property" :property="property" :images="images" />
 
         <div class="row mt-4 " v-if="property">
             <div class="col-md-8">
                 <div class="row mt-4 mb-5">
-                    <h5 class="component-title">物件特色</h5>
+                    <h5 class="component-title">房源特色</h5>
                     <FeatureIcons :features="mappedFeatures" />
                 </div>
                 <div class="property-description mt-4 mb-5">
-                    <h5 class="component-title">物件描述</h5>
+                    <h5 class="component-title">房源描述</h5>
                     <p>{{ property.description }}</p>
                 </div>
                 <div class="row mt-4 mb-5">
-                    <h5 class="component-title">物件位置</h5>
+                    <h5 class="component-title">房源位置</h5>
                     <MapView :address="property.city + property.district + property.address" />
                 </div>
                 <div class="row mt-4 mb-5">
-                    <h5 class="component-title">推薦物件</h5>
+                    <h5 class="component-title">推薦房源</h5>
                     <div>
                         <PropertyCarouselSmall :list="featuredProperties" />
                     </div>
