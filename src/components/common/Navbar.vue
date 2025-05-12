@@ -33,10 +33,10 @@
           <!-- 聯絡我們（滑鼠移入展開） -->
           <li class="nav-item  dropdown" @mouseenter="isHelpAccordionOpen = true"
             @mouseleave="isHelpAccordionOpen = false">
-            <a class="nav-link dropdown-toggle" href="#">聯絡我們</a>
+            <a class="nav-link dropdown-toggle" href="#">資訊專區</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <a class="dropdown-item" href="#" @click="goToNotice">最新公告</a>
-              <a class="dropdown-item" href="#" @click="goToGuide">使用介紹</a>
+              <a class="dropdown-item" href="#" @click="goToContact">聯絡我們</a>
               <a class="dropdown-item" href="#" @click="goToFAQ">常見問題</a>
               <a class="dropdown-item" href="#" @click="goToAbout">關於居研所</a>
             </div>
@@ -207,8 +207,8 @@ function goToNotice() {
   router.push('/notice');
   closeMenu();
 }
-function goToGuide() {
-  router.push('/guide');
+function goToContact() {
+  router.push('/contact');
   closeMenu();
 }
 function goToFAQ() {
