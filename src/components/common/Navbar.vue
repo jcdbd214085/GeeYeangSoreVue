@@ -95,19 +95,18 @@
             </li>
 
             <!-- 通知 -->
-            <li class="nav-item nav-icon-item">
-              <a class="nav-link" href="#" @click="showAlert = true">
+            <li class="nav-item nav-icon-item dropdown" style="position: relative;">
+              <a class="nav-link dropdown-toggle" href="#" @click.prevent="toggleNotification">
                 <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
-            </li>
-            <Alert
-                v-model:show="showAlert"
-                title="系統通知"
-                message="你有 3 筆尚未讀取的通知。"
-                type="info"
-            />
 
+              <!-- 顯示通知清單 -->
+              <NewAlert
+                  v-if="isNotificationOpen"
+                  :notifications="notifications"
+              />
+            </li>
             <!-- 個人頁面（滑鼠移入展開） -->
             <li class="nav-item nav-icon-item dropdown" @mouseenter="isProfileAccordionOpen = true"
               @mouseleave="isProfileAccordionOpen = false">
@@ -149,6 +148,7 @@ import Badge from '@/components/Badge.vue';
 import { useRouter } from 'vue-router';
 import BecomeLandlordModal from '@/views/landlord/BecomeLandlordModal.vue';
 import Alert from "@/components/alert/Alert.vue";
+import NewAlert from "@/components/alert/NewAlert.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -159,6 +159,27 @@ const isLandlordAccordionOpen = ref(false);
 const showModal = ref(false);
 const showAlert = ref(false)
 const isScrolled = ref(false);
+
+
+//通知專用
+const isNotificationOpen = ref(false)
+const notifications = ref([])
+
+function toggleNotification() {
+  isNotificationOpen.value = !isNotificationOpen.value
+}
+
+// 模擬通知資料
+onMounted(() => {
+  notifications.value = [
+    { message: '你有一筆新房源申請', time: '10 分鐘前' },
+    { message: '系統將於今晚維護', time: '30 分鐘前' },
+    { message: '房東已接受你的申請', time: '2 小時前' }
+  ]
+})
+//通知專用
+
+
 function handleScroll() {
   isScrolled.value = window.scrollY > 100;
 }
