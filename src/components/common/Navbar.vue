@@ -1,4 +1,5 @@
 <template>
+
   <!-- 導航列元件 -->
   <nav class="navbar navbar-expand-lg fixed-top" id="mainNav" :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
@@ -95,11 +96,17 @@
 
             <!-- 通知 -->
             <li class="nav-item nav-icon-item">
-              <a class="nav-link" href="#" @click="closeMenu">
+              <a class="nav-link" href="#" @click="showAlert = true">
                 <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
             </li>
+            <Alert
+                v-model:show="showAlert"
+                title="系統通知"
+                message="你有 3 筆尚未讀取的通知。"
+                type="info"
+            />
 
             <!-- 個人頁面（滑鼠移入展開） -->
             <li class="nav-item nav-icon-item dropdown" @mouseenter="isProfileAccordionOpen = true"
@@ -141,6 +148,7 @@ import Avatar from '@/components/Avatar.vue';
 import Badge from '@/components/Badge.vue';
 import { useRouter } from 'vue-router';
 import BecomeLandlordModal from '@/views/landlord/BecomeLandlordModal.vue';
+import Alert from "@/components/alert/Alert.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -149,7 +157,7 @@ const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
 const showModal = ref(false);
-
+const showAlert = ref(false)
 const isScrolled = ref(false);
 function handleScroll() {
   isScrolled.value = window.scrollY > 100;
@@ -238,7 +246,13 @@ function showBecomeLandlordModal() {
 function closeModal() {
   showModal.value = false;
 }
+function handleConfirm() {
+  console.log('✅ 使用者點了確認')
+}
 
+function handleCancel() {
+  console.log('❌ 使用者點了取消')
+}
 </script>
 
 <style scoped>
