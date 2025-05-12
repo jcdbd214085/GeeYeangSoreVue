@@ -19,6 +19,7 @@ const props = defineProps({
 // 預設資料
 const fallbackList = [
     {
+        propertyId: 1,
         image: propertyImg,
         rentPrice: 4500,
         title: '物件1',
@@ -30,6 +31,7 @@ const fallbackList = [
         bathroomCount: 1
     },
     {
+        propertyId: 2,
         image: propertyImg,
         rentPrice: 5000,
         title: '物件2',
@@ -41,6 +43,7 @@ const fallbackList = [
         bathroomCount: 1
     },
     {
+        propertyId: 3,
         image: propertyImg,
         rentPrice: 5000,
         title: '物件3',
@@ -52,6 +55,7 @@ const fallbackList = [
         bathroomCount: 1
     },
     {
+        propertyId: 4,
         image: propertyImg,
         rentPrice: 5000,
         title: '物件4',
@@ -63,6 +67,7 @@ const fallbackList = [
         bathroomCount: 1
     },
     {
+        propertyId: 5,
         image: propertyImg,
         rentPrice: 5000,
         title: '物件5',
