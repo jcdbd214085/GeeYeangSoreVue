@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="step-item"
-    v-bind="$attrs"
-  >
+  <div class="step-item" v-bind="$attrs">
     <div class="step-icon-wrapper">
       <div class="step-icon">
         <slot name="icon" />
@@ -18,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 const isHovered = ref(false);
 </script>
 
@@ -32,7 +29,7 @@ const isHovered = ref(false);
 }
 .step-item:hover {
   transform: translateY(-10px) scale(1.04);
-  box-shadow: 0 8px 32px rgba(60,221,210,0.12);
+  box-shadow: 0 8px 32px rgba(60, 221, 210, 0.12);
   z-index: 10;
 }
 .step-icon-wrapper {
@@ -55,6 +52,6 @@ const isHovered = ref(false);
 }
 .step-icon i {
   font-size: 24px;
-  color: #111;
+  color: #fff;
 }
 </style>

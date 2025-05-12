@@ -70,21 +70,21 @@
       <div class="row text-center">
         <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-1s">
           <StepItem>
-            <template #icon><i class="fa-solid fa-magnifying-glass"></i></template>
+            <template #icon><i class="fa-solid fa-magnifying-glass my-icon"></i></template>
             <template #title>搜尋適合的房源</template>
             <template #desc>依照需求篩選，快速找到心儀房源</template>
           </StepItem>
         </div>
         <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-2s">
           <StepItem>
-            <template #icon><i class="fa-solid fa-comments"></i></template>
+            <template #icon><i class="fa-solid fa-comments my-icon"></i></template>
             <template #title>與房東聯繫</template>
             <template #desc>線上即時溝通，安排看房時間</template>
           </StepItem>
         </div>
         <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-3s">
           <StepItem>
-            <template #icon><i class="fa-solid fa-house"></i></template>
+            <template #icon><i class="fa-solid fa-house my-icon"></i></template>
             <template #title>完成租賃</template>
             <template #desc>簽約完成，入住新家</template>
           </StepItem>
@@ -274,4 +274,10 @@ const newList = [
 .section-title {
   margin-bottom: 32px;
 }
+
+.my-icon {
+  color: #fff;
+  font-size: 28px;
+}
+
 </style>
