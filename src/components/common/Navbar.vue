@@ -66,7 +66,9 @@
           <!-- 未登入狀態 -->
           <template v-if="!userStore.isLogin">
             <li class="nav-item">
-              <Button color="primary" class="me-2" @click="loginAsTenant">登入/註冊</Button>
+              <Button color="primary" class="me-2" @click="$emit('open-login')">
+                登入/註冊
+              </Button>
             </li>
           </template>
 
@@ -116,7 +118,7 @@
               <a class="nav-link dropdown-toggle" href="#">
                 <span class="icon-wrapper">
                   <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
-                </span>
+                </span>               
                 個人頁面
               </a>
               <div class="accordion-menu" v-show="isProfileAccordionOpen">
@@ -142,7 +144,7 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, defineEmits } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useChatPopupStore } from '@/stores/chatPopup';
 import Button from '@/components/buttons/button.vue';
@@ -203,9 +205,9 @@ function closeMenu() {
   if (window.innerWidth < 992) menuOpen.value = false;
 }
 function loginAsTenant() {
-  userStore.login('landlord', '房東A');
-  // userStore.login('tenant', '房東房客A');
-  // 這邊用來改變是房東或是房客
+  // 觸發父層事件，請父層開啟登入彈窗
+  // 這裡用 emit
+  emit('open-login')
 }
 function loginAsBoth() {
   userStore.login('tenant', '房東房客A');
@@ -312,6 +314,8 @@ function toggleFavoritePopup(e) {
 function removeFavorite(id) {
   favoriteList.value = favoriteList.value.filter(f => f.propertyId !== id)
 }
+
+const emit = defineEmits(['open-login'])
 </script>
 
 <style scoped>

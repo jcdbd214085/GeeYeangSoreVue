@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { useUserStore } from '@/stores/user';
 
 
 
@@ -28,7 +29,25 @@ const intersect = {
 }
 
 const app = createApp(App)
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
 app.directive('intersect', intersect)
+
+// 確保 pinia 初始化後再呼叫 useUserStore
+const userStore = useUserStore();
+(async () => {
+    try {
+        const res = await fetch('/api/Auth/me', { credentials: 'include' })
+        const data = await res.json()
+        if (data.success) {
+            userStore.login('tenant', data.userName || data.user || '')
+        } else {
+            userStore.logout()
+        }
+    } catch {
+        userStore.logout()
+    }
+})();
+
 app.mount('#app')

@@ -15,4 +15,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://localhost:7022', // ASP.NET Core 伺服器位址
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })

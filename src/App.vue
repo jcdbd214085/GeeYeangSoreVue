@@ -10,14 +10,27 @@ import FullScreenLoading from '@/components/common/FullScreenLoading.vue'
 import Navbar from '@/components/common/Navbar.vue'
 import Footer from '@/components/common/Footer.vue';
 import BackToTop from '@/components/common/BackToTop.vue'
+import LoginModal from '@/components/login/LoginModal.vue'
 
 import { useLoadingStore } from '@/stores/loadingStore'
+import { ref } from 'vue'
 const loadingStore = useLoadingStore()
+
+const showLoginModal = ref(false)
+function openLoginModal() {
+  showLoginModal.value = true;
+}
+function closeLoginModal() {
+  showLoginModal.value = false;
+}
+
+
+
 </script>
 
 <template>
   <!-- 導覽列會出現在每個頁面上方 -->
-  <Navbar />
+  <Navbar @open-login="openLoginModal" />
 
   <!-- 主要內容區，避免被 fixed-top 導覽列遮擋 -->
   <div class="main-content">
@@ -31,6 +44,9 @@ const loadingStore = useLoadingStore()
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />
   <BackToTop />
+  <Teleport to="body">
+    <LoginModal v-if="showLoginModal" @close="closeLoginModal" />
+  </Teleport>
 </template>
 
 <style scoped>

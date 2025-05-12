@@ -1,187 +1,193 @@
 <template>
-  <!-- 單一根元素：用 isRegister 狀態切換 class -->
-  <div class="container" :class="{ active: isRegister }">
-    <!-- 關閉按鈕 -->
-    <button v-if="showCloseBtn" class="close-btn" @click="handleClose">
-      ×
-    </button>
+  <div class="modal-overlay" @click.self="$emit('close')">
+    <div class="modal-wrapper">
+      <div class="modal-content">
+        <!-- 單一根元素：用 isRegister 狀態切換 class -->
+        <div class="container" :class="{ active: isRegister }">
+          <!-- 關閉按鈕 -->
+          <button v-if="showCloseBtn" class="close-btn" @click="$emit('close')">
+            ×
+          </button>
 
-    <!-- 隱私權政策 -->
-    <PrivacyPolicyModal
-      :show="showPrivacyModal"
-      @close="showPrivacyModal = false"
-    />
+          <!-- 隱私權政策 -->
+          <PrivacyPolicyModal
+            :show="showPrivacyModal"
+            @close="showPrivacyModal = false"
+          />
 
-    <!-- 登入表單 -->
-    <div class="form-box login">
-      <form @submit.prevent="handleLogin">
-        <h1>會員登入</h1>
-        <div class="input-box">
-          <input
-            v-model="login.username"
-            type="text"
-            placeholder="電子信箱"
-            required
-          />
-          <i class="fa-solid fa-envelope"></i>
-        </div>
-        <div class="input-box">
-          <input
-            v-model="login.password"
-            :type="showLoginPassword ? 'text' : 'password'"
-            placeholder="密碼"
-            required
-          />
-          <div
-            class="eye-icon-wrapper"
-            @click="showLoginPassword = !showLoginPassword"
-          >
-            <i
-              :class="
-                showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'
-              "
-            ></i>
+          <!-- 登入表單 -->
+          <div class="form-box login">
+            <form @submit.prevent="handleLogin">
+              <h1>會員登入</h1>
+              <div class="input-box">
+                <input
+                  v-model="login.username"
+                  type="text"
+                  placeholder="電子信箱"
+                  required
+                />
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="input-box">
+                <input
+                  v-model="login.password"
+                  :type="showLoginPassword ? 'text' : 'password'"
+                  placeholder="密碼"
+                  required
+                />
+                <div
+                  class="eye-icon-wrapper"
+                  @click="showLoginPassword = !showLoginPassword"
+                >
+                  <i
+                    :class="
+                      showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'
+                    "
+                  ></i>
+                </div>
+              </div>
+
+              <div class="forgot-link"><a href="#">忘記密碼?</a></div>
+              <button class="btn">登入</button>
+              <p>——使用其他方式登入——</p>
+              <div class="social-icons">
+                <!-- Google登入icon -->
+                <button class="social-btn google-btn">
+                  <span class="icon-circle">
+                    <i class="fa-brands fa-google"></i>
+                  </span>
+                  <span class="btn-text">使用 Google 登入</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- 註冊表單 -->
+          <div class="form-box register">
+            <form @submit.prevent="handleRegister">
+              <h1>會員註冊</h1>
+              <div class="input-box">
+                <input
+                  v-model="register.username"
+                  type="text"
+                  placeholder="姓名"
+                  required
+                />
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="input-box">
+                <input
+                  v-model="register.userphone"
+                  type="text"
+                  placeholder="手機"
+                  required
+                  pattern="^09\d{8}$"
+                  title="請輸入正確的手機號碼（例如：0912345678）"
+                />
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div class="input-box">
+                <input
+                  v-model="register.email"
+                  type="email"
+                  placeholder="電子信箱"
+                  required
+                />
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <!-- 註冊表單的密碼欄位 -->
+              <div class="input-box">
+                <input
+                  v-model="register.password"
+                  :type="showRegisterPassword ? 'text' : 'password'"
+                  placeholder="密碼"
+                  required
+                  ref="passwordInputRef"
+                  @input="
+                    register.passwordError = '';
+                    passwordInputRef.setCustomValidity('');
+                  "
+                />
+                <div
+                  class="eye-icon-wrapper"
+                  @click="showRegisterPassword = !showRegisterPassword"
+                >
+                  <i
+                    :class="
+                      showRegisterPassword
+                        ? 'fa-solid fa-eye-slash'
+                        : 'fa-solid fa-eye'
+                    "
+                  ></i>
+                </div>
+              </div>
+
+              <!-- 同意條款勾選 -->
+              <div class="input-box agree-box">
+                <label class="agree-label">
+                  <input
+                    type="checkbox"
+                    ref="agreeCheckboxRef"
+                    required
+                    @invalid="handleAgreeInvalid"
+                    @input="handleAgreeInput"
+                  />
+                  <span>
+                    我已閱讀並同意
+                    <a href="#" @click.prevent="showPrivacyModal = true"
+                      >隱私權政策</a
+                    >
+                  </span>
+                </label>
+                <!-- 錯誤訊息顯示區塊 -->
+                <p v-if="agreeError" class="error-msg">
+                  {{ agreeError }}
+                </p>
+              </div>
+
+              <!-- 驗證碼欄位與發送按鈕：並排放置 -->
+              <div class="input-box verify-box">
+                <input
+                  v-model="register.verificationCode"
+                  type="text"
+                  placeholder="請輸入驗證碼"
+                  required
+                />
+                <button
+                  type="button"
+                  class="verify-btn"
+                  :class="{ 'disabled-btn': countdown > 0 }"
+                  :disabled="countdown > 0"
+                  @click="sendVerificationCode"
+                >
+                  <span v-if="countdown > 0">
+                    <div>{{ countdown }} 秒後</div>
+                    <div>可重新發送</div>
+                  </span>
+                  <span v-else>
+                    {{ resendText }}
+                  </span>
+                </button>
+              </div>
+
+              <button class="btn">註冊</button>
+            </form>
+          </div>
+
+          <!-- 切換面板 -->
+          <div class="toggle-box">
+            <div class="toggle-panel toggle-left">
+              <h1>居研所</h1>
+              <p>用心研究每一個家的可能性。</p>
+              <button class="btn" @click="showRegister">註冊會員</button>
+            </div>
+            <div class="toggle-panel toggle-right">
+              <h1>居研所</h1>
+              <p>讓數據，帶你回家。</p>
+              <button class="btn" @click="showLogin">登入會員</button>
+            </div>
           </div>
         </div>
-
-        <div class="forgot-link"><a href="#">忘記密碼?</a></div>
-        <button class="btn">登入</button>
-        <p>——使用其他方式登入——</p>
-        <div class="social-icons">
-          <!-- Google登入icon -->
-          <button class="social-btn google-btn">
-            <span class="icon-circle">
-              <i class="fa-brands fa-google"></i>
-            </span>
-            <span class="btn-text">使用 Google 登入</span>
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- 註冊表單 -->
-    <div class="form-box register">
-      <form @submit.prevent="handleRegister">
-        <h1>會員註冊</h1>
-        <div class="input-box">
-          <input
-            v-model="register.username"
-            type="text"
-            placeholder="姓名"
-            required
-          />
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="input-box">
-          <input
-            v-model="register.userphone"
-            type="text"
-            placeholder="手機"
-            required
-            pattern="^09\d{8}$"
-            title="請輸入正確的手機號碼（例如：0912345678）"
-          />
-          <i class="fa-solid fa-phone"></i>
-        </div>
-        <div class="input-box">
-          <input
-            v-model="register.email"
-            type="email"
-            placeholder="電子信箱"
-            required
-          />
-          <i class="fa-solid fa-envelope"></i>
-        </div>
-        <!-- 註冊表單的密碼欄位 -->
-        <div class="input-box">
-          <input
-            v-model="register.password"
-            :type="showRegisterPassword ? 'text' : 'password'"
-            placeholder="密碼"
-            required
-            ref="passwordInputRef"
-            @input="
-              register.passwordError = '';
-              passwordInputRef.setCustomValidity('');
-            "
-          />
-          <div
-            class="eye-icon-wrapper"
-            @click="showRegisterPassword = !showRegisterPassword"
-          >
-            <i
-              :class="
-                showRegisterPassword
-                  ? 'fa-solid fa-eye-slash'
-                  : 'fa-solid fa-eye'
-              "
-            ></i>
-          </div>
-        </div>
-
-        <!-- 同意條款勾選 -->
-        <div class="input-box agree-box">
-          <label class="agree-label">
-            <input
-              type="checkbox"
-              ref="agreeCheckboxRef"
-              required
-              @invalid="handleAgreeInvalid"
-              @input="handleAgreeInput"
-            />
-            <span>
-              我已閱讀並同意
-              <a href="#" @click.prevent="showPrivacyModal = true"
-                >隱私權政策</a
-              >
-            </span>
-          </label>
-          <!-- 錯誤訊息顯示區塊 -->
-          <p v-if="agreeError" class="error-msg">
-            {{ agreeError }}
-          </p>
-        </div>
-
-        <!-- 驗證碼欄位與發送按鈕：並排放置 -->
-        <div class="input-box verify-box">
-          <input
-            v-model="register.verificationCode"
-            type="text"
-            placeholder="請輸入驗證碼"
-            required
-          />
-          <button
-            type="button"
-            class="verify-btn"
-            :class="{ 'disabled-btn': countdown > 0 }"
-            :disabled="countdown > 0"
-            @click="sendVerificationCode"
-          >
-            <span v-if="countdown > 0">
-              <div>{{ countdown }} 秒後</div>
-              <div>可重新發送</div>
-            </span>
-            <span v-else>
-              {{ resendText }}
-            </span>
-          </button>
-        </div>
-
-        <button class="btn">註冊</button>
-      </form>
-    </div>
-
-    <!-- 切換面板 -->
-    <div class="toggle-box">
-      <div class="toggle-panel toggle-left">
-        <h1>居研所</h1>
-        <p>用心研究每一個家的可能性。</p>
-        <button class="btn" @click="showRegister">註冊會員</button>
-      </div>
-      <div class="toggle-panel toggle-right">
-        <h1>居研所</h1>
-        <p>讓數據，帶你回家。</p>
-        <button class="btn" @click="showLogin">登入會員</button>
       </div>
     </div>
   </div>
@@ -190,9 +196,13 @@
 <script setup>
 // 引入 Composition API
 import { ref, onMounted } from "vue";
+// 加入 defineEmits
+const emit = defineEmits(['close'])
 
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
+import { useUserStore } from '@/stores/user';
+const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
 
@@ -249,10 +259,40 @@ const showLogin = () => {
 };
 
 // 登入事件處理
-const handleLogin = () => {
-  console.log("登入資料", login.value);
-  // TODO: 呼叫 API 處理登入
-};
+const handleLogin = async () => {
+  try {
+    const res = await fetch('/api/Auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include', // 若需帶 cookie/session
+      body: JSON.stringify({
+        txtAccount: login.value.username,
+        txtPassword: login.value.password
+      })
+    })
+
+    // 檢查 HTTP 狀態碼
+    if (!res.ok) {
+      throw new Error('伺服器錯誤，請稍後再試')
+    }
+
+    // 解析 JSON
+    const data = await res.json()
+
+    // 判斷回傳格式
+    if (data.success) {
+      userStore.login('tenant', data.userName || data.user || '')
+      // 登入成功自動關閉彈窗
+      emit('close')
+    } else {
+      alert(data.message || '登入失敗')
+    }
+  } catch (err) {
+    alert(err.message || '登入時發生錯誤')
+  }
+}
 
 // 註冊事件處理
 const handleRegister = () => {
@@ -301,12 +341,6 @@ const sendVerificationCode = () => {
   }, 1000);
 };
 
-// 關閉彈窗事件
-const handleClose = () => {
-  console.log("關閉彈窗");
-  // TODO: emit('close') 或控制外層變數
-};
-
 // 是否同意隱私權政策
 const agreePolicy = ref(false);
 const showPrivacy = ref(false);
@@ -333,7 +367,29 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-wrapper {
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  box-shadow: none;
+  border: none;
+  background-color: transparent;
+}
+
 /*  基本通用樣式初始化 */
 * {
   margin: 0;
