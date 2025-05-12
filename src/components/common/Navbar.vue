@@ -26,9 +26,6 @@
             <router-link class="nav-link" to="/PropertySearch" exact-active-class="active"
               @click="closeMenu">搜尋房源</router-link>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" @click="closeMenu">我要出租</a>
-          </li>
 
           <!-- 聯絡我們（滑鼠移入展開） -->
           <li class="nav-item  dropdown" @mouseenter="isHelpAccordionOpen = true"
