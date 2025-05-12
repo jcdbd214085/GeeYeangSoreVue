@@ -277,13 +277,6 @@ function closeModal() {
   showModal.value = false;
 }
 
-function handleConfirm() {
-  console.log('✅ 使用者點了確認')
-}
-
-function handleCancel() {
-  console.log('❌ 使用者點了取消')
-
 const showFavoritePopup = ref(false)
 const favoriteList = ref([
   {
