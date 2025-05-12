@@ -49,7 +49,10 @@ import BackToTop from '@/components/common/BackToTop.vue'
 import Footer from '@/components/common/Footer.vue';
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
+const propertyId = route.params.id
 const property = ref(null)
 const images = ref([])
 const landlord = ref(null)
@@ -87,8 +90,9 @@ const mappedFeatures = computed(() => {
 })
 
 const fallbackProperty = {
+    propertyId: 1,
     title: '清幽小築',
-    description:`透天獨立套房，環境清幽，生活機能便利，適合單身或小家庭入住。
+    description: `透天獨立套房，環境清幽，生活機能便利，適合單身或小家庭入住。
     室內空間配置良好，附設冷氣、衣櫃、床組等基本家具，讓您拎包即可入住。
     房屋鄰近台電公司及多項公車路線，交通便利，步行可達超商、市場及餐飲商圈，生活機能完善。
     是尋求舒適與便利生活的理想選擇。`,
@@ -118,11 +122,11 @@ const fallbackLandlord = {
 const fallbackImages = Array(6).fill(propertyImg)
 
 const fallbackList = [
-    { image: propertyImg, rentPrice: 12000, title: '物件1', city: '台中市', district: '西區', address: '五權西路二段', propertyType: '雅房', roomCount: 1, bathroomCount: 1 },
-    { image: propertyImg, rentPrice: 18000, title: '物件2', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 },
-    { image: propertyImg, rentPrice: 18000, title: '物件3', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 },
-    { image: propertyImg, rentPrice: 18000, title: '物件4', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 },
-    { image: propertyImg, rentPrice: 18000, title: '物件5', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 }
+    { propertyId: 1, image: propertyImg, rentPrice: 12000, title: '物件1', city: '台中市', district: '西區', address: '五權西路二段', propertyType: '雅房', roomCount: 1, bathroomCount: 1 },
+    { propertyId: 2, image: propertyImg, rentPrice: 18000, title: '物件2', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 },
+    { propertyId: 3, image: propertyImg, rentPrice: 18000, title: '物件3', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 },
+    { propertyId: 4, image: propertyImg, rentPrice: 18000, title: '物件4', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 },
+    { propertyId: 5, image: propertyImg, rentPrice: 18000, title: '物件5', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 }
 ]
 
 onMounted(async () => {
