@@ -21,7 +21,13 @@ export default defineConfig({
         target: 'https://localhost:7022', // ASP.NET Core 伺服器位址
         changeOrigin: true,
         secure: false,
-      }
+      },
+      '/hub': {
+        target: 'https://localhost:7022', // ASP.NET Core SignalR 伺服器位址
+        ws: true, // 支援 WebSocket
+        changeOrigin: true,
+        secure: false,
+      },
     }
   }
 })
