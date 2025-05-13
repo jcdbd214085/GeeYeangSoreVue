@@ -2,17 +2,28 @@
 import {ref} from 'vue'
 import Input from '@/components/input/Input.vue'
 import Button from "@/components/buttons/button.vue";
+import axios from "axios";
 
 const name = ref('')
 const email = ref('')
 const phone = ref('')
 const subject = ref('')
 const message = ref('')
-//ver1
+
+const data=ref({name,email,phone,subject,message})
 
 function handleSubmit() {
-  alert('模擬聯絡送出...')
+
+  axios.post('https://api.example.com/users', data)
+      .then(response => {
+        console.log('送出成功', response.data);
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
+      });
 }
+
+
 </script>
 
 <template>
