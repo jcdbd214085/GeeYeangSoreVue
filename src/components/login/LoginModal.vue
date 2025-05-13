@@ -41,7 +41,9 @@
                 >
                   <i
                     :class="
-                      showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'
+                      showLoginPassword
+                        ? 'fa-solid fa-eye-slash'
+                        : 'fa-solid fa-eye'
                     "
                   ></i>
                 </div>
@@ -197,11 +199,11 @@
 // 引入 Composition API
 import { ref, onMounted } from "vue";
 // 加入 defineEmits
-const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
@@ -266,52 +268,43 @@ const handleLogin = async () => {
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // 若需帶 cookie/session
+      credentials: "include", // 若需帶 cookie/session
       body: JSON.stringify({
         txtAccount: login.value.username,
-        txtPassword: login.value.password
-      })
-    })
+        txtPassword: login.value.password,
+      }),
+    });
 
     // 檢查 HTTP 狀態碼
     if (!res.ok) {
-      throw new Error('伺服器錯誤，請稍後再試')
+      throw new Error("伺服器錯誤，請稍後再試");
     }
 
     // 解析 JSON
-    const data = await res.json()
+    const data = await res.json();
 
     // 判斷回傳格式
     if (data.success) {
-      userStore.login('tenant', data.userName || data.user || '')
+      userStore.login("tenant", data.userName || data.user || "");
       // 登入成功自動關閉彈窗
-      emit('close')
+      emit("close");
     } else {
-      alert(data.message || '登入失敗')
+      alert(data.message || "登入失敗");
     }
   } catch (err) {
-    alert(err.message || '登入時發生錯誤')
+    alert(err.message || "登入時發生錯誤");
   }
-}
+};
 
 // 註冊事件處理
-const handleRegister = () => {
+const handleRegister = async () => {
+  // 清除舊的錯誤
   register.value.passwordError = "";
   passwordInputRef.value?.setCustomValidity("");
 
-  // 檢查是否同意隱私權政策
-  // 處理 checkbox 被勾選與取消時的錯誤提示
-  const handleAgreeInvalid = (e) => {
-    e.target.setCustomValidity("請勾選同意隱私權政策");
-  };
-
-  const handleAgreeInput = (e) => {
-    e.target.setCustomValidity(""); // 清除錯誤
-  };
-
-  // 檢查密碼格式
+  // 密碼格式驗證
   const passwordError = validatePassword(
     register.value.password,
     register.value.email
@@ -323,8 +316,39 @@ const handleRegister = () => {
     return;
   }
 
-  console.log("註冊資料", register.value);
-  // TODO: 呼叫 API 處理註冊
+  try {
+    const res = await fetch("http://localhost:5134/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userName: register.value.username,
+        email: register.value.email,
+        password: register.value.password,
+        phone: register.value.userphone,
+        verificationCode: register.value.verificationCode,
+        isAgreePolicy: agreeCheckboxRef.value.checked,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text(); // ⬅️先讀取原始錯誤文字
+      console.error("Register error response:", errorText);
+      alert("註冊失敗");
+      return;
+    }
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      alert(data.message || "註冊失敗，請稍後再試");
+      return;
+    }
+
+    alert("註冊成功！請重新登入");
+    showLogin(); // 切換回登入頁面
+  } catch (err) {
+    alert(err.message || "註冊時發生錯誤");
+  }
 };
 
 // 發送驗證碼事件
@@ -435,7 +459,6 @@ body {
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 } */
-
 
 /*  表單內 h1 標題大小 */
 .container h1 {
