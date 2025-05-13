@@ -10,30 +10,86 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import ContactsList from '@/components/chat/ContactsList.vue';
 import ChatWindow from '@/components/chat/ChatWindow.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
-import avatar1 from '@/assets/images/avatar/avatar1.png';
-import default1 from '@/assets/images/avatar/default.png';
+import defaultAvatar from '@/assets/images/avatar/default.png';
 
-const user = ref({ id: 1, name: '我' });
-const contacts = ref([
-    { id: 2, name: '成員1', lastMsg: '有問題問組長', avatar: avatar1, unread: 2 },
-    { id: 3, name: '成員2', lastMsg: '組長最棒了', avatar: avatar1, unread: 0 },
-]);
-const activeContactId = ref(2);
-const messages = ref([
-    { id: 1, from: 2, to: 1, text: '各位加油寫vue', time: '12:55 am' },
-    { id: 2, from: 1, to: 2, text: '加油', time: '12:56 am' },
-]);
+const user = ref({ id: null, name: '我' });
+const contacts = ref([]);
+const activeContactId = ref(null);
+const messages = ref([]);
+
+// 取得聊天室列表
+async function fetchChatList() {
+    try {
+        const res = await axios.get('/api/Chat/chatlist', { withCredentials: true });
+        if (res.data.success) {
+            // 依據後端回傳SenderName顯示聯絡人名稱
+            contacts.value = res.data.data.map(msg => ({
+                id: msg.hSenderId, // 聯絡人ID
+                name: msg.senderName || `聯絡人${msg.hSenderId}`,
+                lastMsg: msg.hContent || '',
+                avatar: defaultAvatar,
+                time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : '',
+            }));
+            // 取得自己 id
+            if (res.data.data.length > 0 && res.data.data[0].hReceiverId) {
+                user.value.id = res.data.data[0].hReceiverId;
+            }
+            // 預設選第一個聯絡人
+            if (contacts.value.length > 0) {
+                activeContactId.value = contacts.value[0].id;
+                fetchMessages(activeContactId.value);
+            }
+        }
+    } catch (e) {
+        contacts.value = [];
+        messages.value = [];
+    }
+}
+
+// 取得與指定聯絡人的聊天紀錄
+async function fetchMessages(otherId) {
+    try {
+        const res = await axios.get(`/api/Chat/history/${otherId}`, { withCredentials: true });
+        if (res.data.success) {
+            messages.value = res.data.data.map(msg => ({
+                id: msg.hMessageId,
+                from: msg.hSenderId,
+                to: msg.hReceiverId,
+                text: msg.hContent,
+                time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : ''
+            }));
+        } else {
+            messages.value = [];
+        }
+    } catch (e) {
+        messages.value = [];
+    }
+}
+
 function selectContact(id) {
     activeContactId.value = id;
-    // 這裡可根據 id 載入對應訊息
+    fetchMessages(id);
 }
+
 function sendMessage(text) {
-    messages.value.push({ id: Date.now(), from: user.value.id, to: activeContactId.value, text, time: new Date().toLocaleTimeString() });
+    // 這裡可加上呼叫發送訊息API
+    messages.value.push({
+        id: Date.now(),
+        from: user.value.id,
+        to: activeContactId.value,
+        text,
+        time: new Date().toLocaleTimeString()
+    });
 }
+
+onMounted(() => {
+    fetchChatList();
+});
 </script>
 <style scoped>
 .chat-view {
