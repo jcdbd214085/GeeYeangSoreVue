@@ -10,8 +10,9 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
+import * as signalR from '@microsoft/signalr';
 import ContactsList from '@/components/chat/ContactsList.vue';
 import ChatWindow from '@/components/chat/ChatWindow.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
@@ -21,6 +22,37 @@ const user = ref({ id: null, name: '我' });
 const contacts = ref([]);
 const activeContactId = ref(null);
 const messages = ref([]);
+
+// SignalR 連線物件
+let connection = null;
+
+// 建立 SignalR 連線
+async function setupSignalR() {
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl('/hub', { withCredentials: true })
+        .withAutomaticReconnect()
+        .build();
+
+    // 接收訊息
+    connection.on('ReceiveMessage', (msg) => {
+        // 僅顯示與目前聊天對象的訊息
+        if ((msg.from == user.value.id && msg.to == activeContactId.value) ||
+            (msg.from == activeContactId.value && msg.to == user.value.id)) {
+            messages.value.push(msg);
+        }
+    });
+    // 接收錯誤
+    connection.on('ReceiveError', (errMsg) => {
+        alert(errMsg);
+    });
+
+    try {
+        await connection.start();
+        // console.log('SignalR Connected!');
+    } catch (err) {
+        alert('SignalR 連線失敗');
+    }
+}
 
 // 取得聊天室列表
 async function fetchChatList() {
@@ -77,18 +109,20 @@ function selectContact(id) {
 }
 
 function sendMessage(text) {
-    // 這裡可加上呼叫發送訊息API
-    messages.value.push({
-        id: Date.now(),
-        from: user.value.id,
-        to: activeContactId.value,
-        text,
-        time: new Date().toLocaleTimeString()
-    });
+    if (!connection || connection.state !== 'Connected') {
+        alert('SignalR 尚未連線');
+        return;
+    }
+    // 呼叫 SignalR Hub 發送訊息
+    connection.invoke('SendMessage', String(user.value.id), String(activeContactId.value), text);
 }
 
 onMounted(() => {
     fetchChatList();
+    setupSignalR();
+});
+onUnmounted(() => {
+    if (connection) connection.stop();
 });
 </script>
 <style scoped>
