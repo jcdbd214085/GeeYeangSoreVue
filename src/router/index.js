@@ -130,6 +130,11 @@ const router = createRouter({
       name: "contact",
       component: () => import("@/views/contact/Contact.vue"),
     },
+    {
+      path: "/guide",
+      name: "guide",
+      component: () => import("@/views/guide/Guide.vue"),
+    },
   ],
 });
 
