@@ -19,7 +19,8 @@ import ChatInput from '@/components/chat/ChatInput.vue';
 import defaultAvatar from '@/assets/images/avatar/default.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL || '/hub';
+const SIGNALR_URL = `${import.meta.env.VITE_API_BASE_URL}/hub`;
+
 
 const user = ref({ id: null, name: '我' });
 const contacts = ref([]);
