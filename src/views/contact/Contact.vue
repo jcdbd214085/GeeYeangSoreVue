@@ -13,8 +13,20 @@ const message = ref('')
 const data=ref({name,email,phone,subject,message})
 
 function handleSubmit() {
+  const contactData = {
+    hEmail: email.value,
+    hPhoneNumber: phone.value,
+    hTitle: subject.value,
+    hContent: message.value,
 
-  axios.post('https://api.example.com/users', data)
+  };
+  axios.post('https://localhost:44383/api/contact/contact', contactData, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
+  })
+
       .then(response => {
         console.log('送出成功', response.data);
       })
@@ -22,6 +34,7 @@ function handleSubmit() {
         console.error('Error:', error.message);
       });
 }
+
 
 
 </script>

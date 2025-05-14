@@ -89,49 +89,6 @@ const formatDate = (dateString) => {
   });
 };
 
-// 按關鍵字搜尋公告
-const filterAnnouncements = () => {
-  if (!searchKeyword.value) {
-    filteredAnnouncements.value = [...announcements.value];
-  } else {
-    const keyword = searchKeyword.value.toLowerCase();
-    filteredAnnouncements.value = announcements.value.filter(item =>
-        item.title.toLowerCase().includes(keyword) ||
-        item.content.toLowerCase().includes(keyword)
-    );
-  }
-  currentPage.value = 1;
-  // 如果篩選後沒有結果，清空選中項
-  if (filteredAnnouncements.value.length === 0) {
-    selectedAnnouncement.value = null;
-  }
-};
-
-// 選擇公告查看詳情
-const selectAnnouncement = (announcement) => {
-  selectedAnnouncement.value = announcement;
-};
-
-// 切換頁面
-const changePage = (page) => {
-  currentPage.value = page;
-};
-
-// 重新獲取公告數據
-const refreshAnnouncements = () => {
-  // 實際使用時，這裡應該調用API重新獲取數據
-  // 模擬重新獲取
-  announcements.value = [...announcements.value];
-  filterAnnouncements();
-  selectedAnnouncement.value = null;
-};
-
-// 下載附件
-const downloadAttachment = (attachment) => {
-  // 實際使用時，這裡應該處理文件下載邏輯
-  console.log(`正在下載: ${attachment.name}, URL: ${attachment.url}`);
-  alert(`模擬下載文件: ${attachment.name}`);
-};
 
 
 async function fetchData() {

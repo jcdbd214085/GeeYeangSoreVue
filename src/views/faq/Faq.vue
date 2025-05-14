@@ -1,6 +1,21 @@
 ﻿<script setup>
+import axios from "axios";
+
 const Titles = ['常見問題標題1', '常見問題標題2', '常見問題標題3']
 const Context = ['常見問題內文1', '常見問題內文1', '常見問題內文1']
+
+
+async function fetchData() {
+  try {
+    const res = await axios.get('https://localhost:44383/api/Notice/news')
+    const newsList = res.data.response
+    console.log(newsList)  // 確認 API 返回的資料格式
+    receiveData.value = newsList
+  } catch (error) {
+    console.error('取得資料失敗', error)
+  }
+}
+
 </script>
 
 <template>
