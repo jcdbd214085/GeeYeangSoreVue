@@ -2,20 +2,50 @@
     <!-- 聊天輸入框元件 -->
     <form class="chat-input" @submit.prevent="send">
         <Button iconOnly class="input-btn plus-btn"><i class="fas fa-plus"></i></Button>
-        <input v-model="text" type="text" placeholder="請輸入訊息，按下Enter傳送" />
-        <Button v-if="props.showEmoji" iconOnly class="input-btn emoji-btn"><i class="far fa-smile"></i></Button>
+        <input v-model="text" ref="inputRef" type="text" placeholder="請輸入訊息，按下Enter傳送" />
+        <Button v-if="props.showEmoji" iconOnly class="input-btn emoji-btn" @click="togglePicker"><i class="far fa-smile"></i></Button>
+        <div v-if="showPicker" class="emoji-picker">
+            <Picker :data="data" :preview="false" @select="insertEmoji" />
+        </div>
         <button v-if="props.showSend" type="submit" class="send-btn">傳送 <i class="fas fa-paper-plane"></i></button>
     </form>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import Button from '@/components/buttons/button.vue';
+import data from '@emoji-mart/data';
+import { Picker } from 'emoji-mart-vue-fast';
+
+const text = ref('');
+const inputRef = ref(null);
+const showPicker = ref(false);
+
 const props = defineProps({
-  showSend: { type: Boolean, default: true },
-  showEmoji: { type: Boolean, default: true },
+    showSend: { type: Boolean, default: true },
+    showEmoji: { type: Boolean, default: true },
 });
 const emit = defineEmits(['send']);
-const text = ref('');
+
+function togglePicker() {
+    showPicker.value = !showPicker.value;
+}
+
+function insertEmoji(emoji) {
+    const el = inputRef.value;
+    if (el) {
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const value = el.value;
+        text.value = value.slice(0, start) + emoji.native + value.slice(end);
+        nextTick(() => {
+            el.focus();
+            el.selectionStart = el.selectionEnd = start + emoji.native.length;
+        });
+    } else {
+        text.value += emoji.native;
+    }
+}
+
 function send() {
     if (text.value.trim()) {
         emit('send', text.value);
@@ -112,5 +142,12 @@ function send() {
 
 .popup, .sidebar {
     padding-right: 2.5rem;
+}
+
+.emoji-picker {
+    position: absolute;
+    bottom: 60px;
+    right: 30px;
+    z-index: 999;
 }
 </style>
