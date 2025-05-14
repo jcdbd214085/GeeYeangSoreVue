@@ -35,7 +35,7 @@
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <router-link class="dropdown-item" to="/notice" @click="closeMenu">最新公告</router-link>
               <router-link class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
-              <router-link class="dropdown-item" to="/faq" @click="closeMenu">常見問題</router-link>
+              <router-link class="dropdown-item" to="/guide" @click="closeMenu">指南手冊</router-link>
               <router-link class="dropdown-item" to="/about" @click="closeMenu">關於居研所</router-link>
             </div>
           </li>

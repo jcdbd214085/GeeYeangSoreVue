@@ -1,4 +1,6 @@
-﻿<!-- SystemAnnouncementPage.vue -->
+﻿
+
+
 <template>
   <div class="announcement-container">
     <!-- 標題列 -->
@@ -35,6 +37,8 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue';
 import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 // 模擬公告資料
 const announcements = ref([]);
@@ -89,11 +93,9 @@ const formatDate = (dateString) => {
   });
 };
 
-
-
 async function fetchData() {
   try {
-    const res = await axios.get('https://localhost:44383/api/Notice/news')
+    const res = await axios.get(`${API_BASE_URL}/api/Notice/news`);
     const newsList = res.data.response
     console.log(newsList)  // 確認 API 返回的資料格式
     announcements.value = newsList

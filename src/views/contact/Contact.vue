@@ -3,6 +3,7 @@ import {ref} from 'vue'
 import Input from '@/components/input/Input.vue'
 import Button from "@/components/buttons/button.vue";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const name = ref('')
 const email = ref('')
@@ -12,6 +13,7 @@ const message = ref('')
 
 const data=ref({name,email,phone,subject,message})
 
+
 function handleSubmit() {
   const contactData = {
     hEmail: email.value,
@@ -20,7 +22,7 @@ function handleSubmit() {
     hContent: message.value,
 
   };
-  axios.post('https://localhost:44383/api/contact/contact', contactData, {
+  axios.post(`${API_BASE_URL}/api/contact/contact`, contactData, {
     headers: {
       'Content-Type': 'application/json'
     },

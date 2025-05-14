@@ -1,12 +1,13 @@
 ﻿<script setup>
+
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
 const receiveData = ref([]);
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 async function fetchData() {
   try {
-    const res = await axios.get("https://localhost:44383/api/About/about");
+    const res = await axios.get(`${API_BASE_URL}/api/About/about`);
     const newsList = res.data.response;
     console.log(newsList); // 確認 API 返回的資料格式
     receiveData.value = newsList;
