@@ -265,7 +265,7 @@ const showLogin = () => {
 // 登入事件處理
 const handleLogin = async () => {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
+    const res = await fetch('/api/Auth/login', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
