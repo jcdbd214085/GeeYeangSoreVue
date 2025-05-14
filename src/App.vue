@@ -13,7 +13,9 @@ import BackToTop from '@/components/common/BackToTop.vue'
 import LoginModal from '@/components/login/LoginModal.vue'
 
 import { useLoadingStore } from '@/stores/loadingStore'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
+
 const loadingStore = useLoadingStore()
 
 const showLoginModal = ref(false)
@@ -24,7 +26,10 @@ function closeLoginModal() {
   showLoginModal.value = false;
 }
 
-
+const userStore = useUserStore();
+onMounted(() => {
+  userStore.initFromLocalStorage();
+});
 
 </script>
 
