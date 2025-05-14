@@ -17,6 +17,10 @@ import ContactsList from '@/components/chat/ContactsList.vue';
 import ChatWindow from '@/components/chat/ChatWindow.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
 import defaultAvatar from '@/assets/images/avatar/default.png';
+import dayjs from 'dayjs';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL || '/hub';
 
 const user = ref({ id: null, name: '我' });
 const contacts = ref([]);
@@ -29,7 +33,7 @@ let connection = null;
 // 建立 SignalR 連線
 async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl('/hub', { withCredentials: true })
+        .withUrl(SIGNALR_URL, { withCredentials: true })
         .withAutomaticReconnect()
         .build();
 
@@ -38,7 +42,18 @@ async function setupSignalR() {
         // 僅顯示與目前聊天對象的訊息
         if ((msg.from == user.value.id && msg.to == activeContactId.value) ||
             (msg.from == activeContactId.value && msg.to == user.value.id)) {
-            messages.value.push(msg);
+            messages.value.push({
+                id: msg.id,
+                from: msg.from,
+                to: msg.to,
+                text: msg.text,
+                senderRole: msg.senderRole,
+                receiverRole: msg.receiverRole,
+                messageType: msg.messageType,
+                isRead: msg.isRead,
+                source: msg.source,
+                time: msg.time
+            });
         }
     });
     // 接收錯誤
@@ -57,7 +72,7 @@ async function setupSignalR() {
 // 取得聊天室列表
 async function fetchChatList() {
     try {
-        const res = await axios.get('/api/Chat/chatlist', { withCredentials: true });
+        const res = await axios.get(`${API_BASE_URL}/api/Chat/chatlist`, { withCredentials: true });
         if (res.data.success) {
             // 依據後端回傳SenderName顯示聯絡人名稱
             contacts.value = res.data.data.map(msg => ({
@@ -86,7 +101,7 @@ async function fetchChatList() {
 // 取得與指定聯絡人的聊天紀錄
 async function fetchMessages(otherId) {
     try {
-        const res = await axios.get(`/api/Chat/history/${otherId}`, { withCredentials: true });
+        const res = await axios.get(`${API_BASE_URL}/api/Chat/history/${otherId}`, { withCredentials: true });
         if (res.data.success) {
             messages.value = res.data.data.map(msg => ({
                 id: msg.hMessageId,
@@ -113,8 +128,19 @@ function sendMessage(text) {
         alert('SignalR 尚未連線');
         return;
     }
-    // 呼叫 SignalR Hub 發送訊息
-    connection.invoke('SendMessage', String(user.value.id), String(activeContactId.value), text);
+    // 呼叫 SignalR Hub 發送訊息（角色由後端自動判斷）
+    connection.invoke('SendMessage', String(user.value.id), String(activeContactId.value), text)
+        .then(() => {
+            console.log('訊息送出成功');
+        })
+        .catch(err => {
+            console.error(' 送出失敗：', err);
+        });
+}
+
+function formatTime(time) {
+    // 支援字串或 Date 物件，統一顯示 24 小時制
+    return dayjs(time).format('HH:mm');
 }
 
 onMounted(() => {
@@ -148,5 +174,31 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     background: #f7f8fa;
+}
+
+.bubble {
+    max-width: 60%;
+    margin: 8px 0;
+    padding: 12px 16px;
+    border-radius: 16px;
+    clear: both;
+    word-break: break-all;
+}
+.bubble.right {
+    background: #2ee0d5;
+    color: #fff;
+    float: right;
+    text-align: right;
+}
+.bubble.left {
+    background: #f5f6fa;
+    color: #222;
+    float: left;
+    text-align: left;
+}
+.time {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
 }
 </style>
