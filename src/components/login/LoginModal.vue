@@ -41,7 +41,9 @@
                 >
                   <i
                     :class="
-                      showLoginPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'
+                      showLoginPassword
+                        ? 'fa-solid fa-eye-slash'
+                        : 'fa-solid fa-eye'
                     "
                   ></i>
                 </div>
@@ -197,11 +199,11 @@
 // 引入 Composition API
 import { ref, onMounted } from "vue";
 // 加入 defineEmits
-const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
@@ -240,7 +242,7 @@ const register = ref({
   passwordError: "",
 });
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 // 點擊切換至註冊畫面
 const showRegister = () => {
@@ -264,54 +266,44 @@ const showLogin = () => {
 const handleLogin = async () => {
   try {
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // 若需帶 cookie/session
+      credentials: "include", // 若需帶 cookie/session
       body: JSON.stringify({
         txtAccount: login.value.username,
-        txtPassword: login.value.password
-      })
-    })
+        txtPassword: login.value.password,
+      }),
+    });
 
     // 檢查 HTTP 狀態碼
     if (!res.ok) {
-      throw new Error('伺服器錯誤，請稍後再試')
+      throw new Error("伺服器錯誤，請稍後再試");
     }
 
     // 解析 JSON
-    const data = await res.json()
+    const data = await res.json();
 
     // 判斷回傳格式
     if (data.success) {
-      userStore.login('tenant', data.userName || data.user || '')
+      userStore.login("tenant", data.userName || data.user || "");
       // 登入成功自動關閉彈窗
-      emit('close')
+      emit("close");
     } else {
-      alert(data.message || '登入失敗')
+      alert(data.message || "登入失敗");
     }
   } catch (err) {
-    alert(err.message || '登入時發生錯誤')
+    alert(err.message || "登入時發生錯誤");
   }
-}
+};
 
 // 註冊事件處理
-const handleRegister = () => {
+const handleRegister = async () => {
   register.value.passwordError = "";
   passwordInputRef.value?.setCustomValidity("");
 
-  // 檢查是否同意隱私權政策
-  // 處理 checkbox 被勾選與取消時的錯誤提示
-  const handleAgreeInvalid = (e) => {
-    e.target.setCustomValidity("請勾選同意隱私權政策");
-  };
-
-  const handleAgreeInput = (e) => {
-    e.target.setCustomValidity(""); // 清除錯誤
-  };
-
-  // 檢查密碼格式
+  // ✅ 密碼格式驗證
   const passwordError = validatePassword(
     register.value.password,
     register.value.email
@@ -323,8 +315,43 @@ const handleRegister = () => {
     return;
   }
 
-  console.log("註冊資料", register.value);
-  // TODO: 呼叫 API 處理註冊
+  // ✅ 建立傳送資料物件
+  const requestData = {
+    userName: register.value.username,
+    email: register.value.email,
+    password: register.value.password,
+    phone: register.value.userphone,
+    isAgreePolicy: true, // 勾選隱私權條款後才可送出表單
+    verificationCode: register.value.verificationCode,
+  };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(requestData),
+    });
+
+    if (!res.ok) {
+      const errRes = await res.json();
+      alert(errRes.message || "註冊失敗");
+      return;
+    }
+
+    const result = await res.json();
+    if (result.success) {
+      alert(result.message || "註冊成功，請登入");
+      showLogin(); // 自動切換回登入畫面
+    } else {
+      alert(result.message || "註冊失敗");
+    }
+  } catch (err) {
+    alert("註冊時發生錯誤，請稍後再試");
+    console.error("註冊錯誤", err);
+  }
 };
 
 // 發送驗證碼事件
@@ -435,7 +462,6 @@ body {
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 } */
-
 
 /*  表單內 h1 標題大小 */
 .container h1 {
