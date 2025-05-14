@@ -34,6 +34,22 @@ app.use(pinia)
 app.use(router)
 app.directive('intersect', intersect)
 
+// 確保 pinia 初始化後再呼叫 useUserStore
+const userStore = useUserStore();
+(async () => {
+    try {
+        const res = await fetch('/api/Auth/me', { credentials: 'include' })
+        const data = await res.json()
+        if (data.success) {
+            userStore.login('tenant', data.userName || data.user || '')
+        } else {
+            userStore.logout()
+        }
+    } catch {
+        userStore.logout()
+    }
+})();
+
 // ✅ 啟動時初始化使用者狀態
 const userStore = useUserStore()
 userStore.initFromLocalStorage()
