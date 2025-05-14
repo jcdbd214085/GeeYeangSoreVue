@@ -61,7 +61,7 @@ onUnmounted(() => {
   position: fixed;
   top: 90px;
   right: 115px;
-  width: 480px;
+  width: 490px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
