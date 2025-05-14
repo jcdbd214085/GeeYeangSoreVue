@@ -51,7 +51,7 @@ const props = defineProps({
   intersectAnimation: { type: String, default: 'fadeInLeft' }
 });
 const isFavorited = ref(false)
-
+console.log("image url", props.image)
 function toggleFavorite() {
   isFavorited.value = !isFavorited.value
 }
@@ -69,7 +69,7 @@ function goToDetail() {
 <style scoped>
 .card-img-top {
   width: 100%;
-  height: auto;
+  height: 200px;
   object-fit: cover;
   border-radius: 8px 8px 0 0;
   display: block;
@@ -87,6 +87,7 @@ function goToDetail() {
   position: relative;
   transform: translateY(20px);
   border: 1px solid #eee;
+
 }
 
 .property-card.animate__animated {
@@ -101,7 +102,7 @@ function goToDetail() {
 
 .property-card img {
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
   transition: all 0.4s ease;
 }

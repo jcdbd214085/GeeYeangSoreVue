@@ -261,7 +261,7 @@ const showLogin = () => {
     showCloseBtn.value = true;
   }, 1800);
 };
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 // 登入事件處理
 const handleLogin = async () => {
   try {
@@ -287,7 +287,7 @@ const handleLogin = async () => {
 
     // 判斷回傳格式
     if (data.success) {
-      userStore.login("tenant", data.userName || data.user || "");
+      userStore.login(data.role || 'tenant', data.userName || data.user || '')
       // 登入成功自動關閉彈窗
       emit("close");
     } else {
@@ -297,6 +297,7 @@ const handleLogin = async () => {
     alert(err.message || "登入時發生錯誤");
   }
 };
+
 
 // 註冊事件處理
 const handleRegister = async () => {

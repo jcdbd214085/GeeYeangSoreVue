@@ -17,7 +17,6 @@ import ContactsList from '@/components/chat/ContactsList.vue';
 import ChatWindow from '@/components/chat/ChatWindow.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
 import defaultAvatar from '@/assets/images/avatar/default.png';
-import dayjs from 'dayjs';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL || '/hub';
@@ -140,7 +139,8 @@ function sendMessage(text) {
 
 function formatTime(time) {
     // 支援字串或 Date 物件，統一顯示 24 小時制
-    return dayjs(time).format('HH:mm');
+    const date = new Date(time);
+    return date.toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit' });
 }
 
 onMounted(() => {
@@ -154,7 +154,7 @@ onUnmounted(() => {
 <style scoped>
 .chat-view {
     display: flex;
-    height: 100%;
+    height: 100vh; /* 讓 chatview 滿版 */
     background: #f7f8fa;
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -174,6 +174,19 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     background: #f7f8fa;
+    min-height: 0;
+}
+
+.chat-main > .chat-window {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.chat-main > .chat-input {
+    flex-shrink: 0;
+    border-top: 1px solid #eee;
+    background: #fff;
 }
 
 .bubble {

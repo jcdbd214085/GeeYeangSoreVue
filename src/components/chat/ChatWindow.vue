@@ -5,7 +5,7 @@
           v-for="msg in messages"
           :key="msg.id"
           :msg="msg"
-          :isMe="msg.from === user.id"
+          :isMe="String(msg.from) === String(user.id)"
         />
     </div>
 </template>

@@ -57,34 +57,17 @@
           >
             <a class="nav-link dropdown-toggle" href="#">資訊專區</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
-              <router-link class="dropdown-item" to="/notice" @click="closeMenu"
-                >最新公告</router-link
-              >
-              <router-link
-                class="dropdown-item"
-                to="/contact"
-                @click="closeMenu"
-                >聯絡我們</router-link
-              >
-              <router-link class="dropdown-item" to="/faq" @click="closeMenu"
-                >常見問題</router-link
-              >
-              <router-link class="dropdown-item" to="/about" @click="closeMenu"
-                >關於居研所</router-link
-              >
+              <router-link class="dropdown-item" to="/notice" @click="closeMenu">最新公告</router-link>
+              <router-link class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
+              <router-link class="dropdown-item" to="/guide" @click="closeMenu">指南手冊</router-link>
+              <router-link class="dropdown-item" to="/about" @click="closeMenu">關於居研所</router-link>
             </div>
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li
-            v-if="userStore.isLogin"
-            class="nav-item dropdown"
-            @mouseenter="isLandlordAccordionOpen = true"
-            @mouseleave="isLandlordAccordionOpen = false"
-          >
-            <template
-              v-if="userStore.role === 'landlord' || userStore.role === 'both'"
-            >
+          <li v-if="isLogin" class="nav-item dropdown" @mouseenter="isLandlordAccordionOpen = true"
+            @mouseleave="isLandlordAccordionOpen = false">
+            <template v-if="role === 'landlord' || role === 'both'">
               <a class="nav-link dropdown-toggle" href="#">房東專區</a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
                 <router-link
@@ -110,20 +93,16 @@
               >
             </template>
           </li>
-
           <!-- 房源管理（雙重身分顯示） -->
-          <li
-            v-if="userStore.isLogin && userStore.role === 'both'"
-            class="nav-item"
-          >
-            <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
-          </li>
+<li v-if="isLogin && role === 'both'" class="nav-item">
+  <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
+</li>
         </ul>
 
         <!-- 右側登入與個人區域 -->
         <ul class="navbar-nav">
           <!-- 未登入狀態 -->
-          <template v-if="!userStore.isLogin">
+          <template v-if="!isLogin">
             <li class="nav-item">
               <Button color="primary" class="me-2" @click="$emit('open-login')">
                 登入/註冊
@@ -245,12 +224,15 @@ import Badge from "@/components/Badge.vue";
 import { useRouter } from "vue-router";
 import BecomeLandlordModal from "@/views/landlord/BecomeLandlordModal.vue";
 import NewAlert from "@/components/alert/NewAlert.vue";
-import FavoritePopup from "@/components/favorite/FavoritePopup.vue";
-import propertyImg from "@/assets/images/property/property.jpg";
-import axios from "axios";
+import FavoritePopup from '@/components/favorite/FavoritePopup.vue'
+import propertyImg from '@/assets/images/property/property.jpg'
+import axios from 'axios'
+import { storeToRefs } from 'pinia';
+
 
 const router = useRouter();
 const userStore = useUserStore();
+const { role, isLogin } = storeToRefs(userStore);
 const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
@@ -685,3 +667,4 @@ const emit = defineEmits(["open-login"]);
   font-size: 24px;
 }
 </style>
+
