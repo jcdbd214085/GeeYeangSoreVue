@@ -3,43 +3,164 @@
     <div v-if="isOpen" class="chat-popup">
         <div class="chat-popup-header">
             <div class="chat-tabs">
-                <div v-for="c in openChats" :key="c.id" :class="['chat-tab', { active: c.id === activeChatId }]"
+                <div v-for="c in contacts" :key="c.id" :class="['chat-tab', { active: c.id === activeContactId }]"
                     @click="switchChat(c.id)">
                     <Avatar :src="c.avatar || avatar1" :alt="c.name" :size="32" />
                 </div>
             </div>
             <button class="close-btn" @click="closePopup">✖</button>
         </div>
-        <div class="chat-popup-body">
+        <div class="chat-popup-body" ref="chatBodyRef">
             <ChatWindow :messages="messages" :user="user" />
         </div>
         <ChatInput :showSend="false" @send="sendMessage" />
     </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import axios from 'axios';
+import * as signalR from '@microsoft/signalr';
 import { useChatPopupStore } from '@/stores/chatPopup';
 import ChatWindow from './ChatWindow.vue';
 import ChatInput from './ChatInput.vue';
 import avatar1 from '@/assets/images/avatar/avatar1.png';
-import default1 from '@/assets/images/avatar/default.png';
+import defaultAvatar from '@/assets/images/avatar/default.png';
 import Avatar from '@/components/Avatar.vue';
+import { storeToRefs } from 'pinia';
+
 const chatStore = useChatPopupStore();
-const isOpen = computed(() => chatStore.isOpen);
-const openChats = computed(() => chatStore.openChats);
-const activeChatId = computed(() => chatStore.activeChatId);
-const user = computed(() => chatStore.user);
-const messages = computed(() => chatStore.activeMessages);
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL || '/hub';
+
+const { isOpen } = storeToRefs(chatStore);
+const contacts = ref([]);
+const activeContactId = ref(null);
+const messages = ref([]);
+const user = ref({ id: null, name: '我' });
+const chatBodyRef = ref(null);
+
+let connection = null;
+
+async function setupSignalR() {
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl(SIGNALR_URL, { withCredentials: true })
+        .withAutomaticReconnect()
+        .build();
+    connection.on('ReceiveMessage', (msg) => {
+        if ((msg.from == user.value.id && msg.to == activeContactId.value) ||
+            (msg.from == activeContactId.value && msg.to == user.value.id)) {
+            messages.value.push({
+                id: msg.id,
+                from: msg.from,
+                to: msg.to,
+                text: msg.text,
+                senderRole: msg.senderRole,
+                receiverRole: msg.receiverRole,
+                messageType: msg.messageType,
+                isRead: msg.isRead,
+                source: msg.source,
+                time: msg.time
+            });
+        }
+    });
+    connection.on('ReceiveError', (errMsg) => {
+        alert(errMsg);
+    });
+    try {
+        await connection.start();
+    } catch (err) {
+        alert('SignalR 連線失敗');
+    }
+}
+
+async function fetchChatList() {
+    try {
+        const res = await axios.get(`${API_BASE_URL}/api/Chat/chatlist`, { withCredentials: true });
+        if (res.data.success) {
+            contacts.value = res.data.data.map(msg => ({
+                id: msg.hSenderId,
+                name: msg.senderName || `聯絡人${msg.hSenderId}`,
+                lastMsg: msg.hContent || '',
+                avatar: defaultAvatar,
+                time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : '',
+            }));
+            if (res.data.data.length > 0 && res.data.data[0].hReceiverId) {
+                user.value.id = res.data.data[0].hReceiverId;
+            }
+            if (contacts.value.length > 0) {
+                activeContactId.value = contacts.value[0].id;
+                fetchMessages(activeContactId.value);
+            }
+        }
+    } catch (e) {
+        contacts.value = [];
+        messages.value = [];
+    }
+}
+
+async function fetchMessages(otherId) {
+    try {
+        const res = await axios.get(`${API_BASE_URL}/api/Chat/history/${otherId}`, { withCredentials: true });
+        if (res.data.success) {
+            messages.value = res.data.data.map(msg => ({
+                id: msg.hMessageId,
+                from: msg.hSenderId,
+                to: msg.hReceiverId,
+                text: msg.hContent,
+                time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : ''
+            }));
+            scrollToBottom();
+        } else {
+            messages.value = [];
+            scrollToBottom();
+        }
+    } catch (e) {
+        messages.value = [];
+        scrollToBottom();
+    }
+}
+
+function switchChat(id) {
+    activeContactId.value = id;
+    fetchMessages(id);
+    scrollToBottom();
+}
+
+function sendMessage(text) {
+    if (!connection || connection.state !== 'Connected') {
+        alert('SignalR 尚未連線');
+        return;
+    }
+    connection.invoke('SendMessage', String(user.value.id), String(activeContactId.value), text)
+        .then(() => {
+            console.log('訊息送出成功');
+        })
+        .catch(err => {
+            console.error(' 送出失敗：', err);
+        });
+}
 
 function closePopup() {
     chatStore.close();
 }
-function switchChat(id) {
-    chatStore.switchChat(id);
+
+function scrollToBottom() {
+    nextTick(() => {
+        if (chatBodyRef.value) {
+            chatBodyRef.value.scrollTop = chatBodyRef.value.scrollHeight;
+        }
+    });
 }
-function sendMessage(text) {
-    chatStore.sendMessage(text);
-}
+
+onMounted(() => {
+    fetchChatList();
+    setupSignalR();
+    scrollToBottom();
+});
+onUnmounted(() => {
+    if (connection) connection.stop();
+});
+
 // 動態取得頭像路徑，若找不到則回傳預設頭像
 function getAvatarUrl(filename) {
     try {
@@ -48,6 +169,11 @@ function getAvatarUrl(filename) {
         return new URL('@/assets/images/avatar/default.png', import.meta.url).href;
     }
 }
+
+// 在訊息更新時自動滾動
+watch(messages, () => {
+    scrollToBottom();
+}, { deep: true, immediate: true });
 </script>
 <style scoped>
 .chat-popup {
