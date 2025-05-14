@@ -285,7 +285,7 @@ const handleLogin = async () => {
 
     // 判斷回傳格式
     if (data.success) {
-      userStore.login('tenant', data.userName || data.user || '')
+      userStore.login(data.role || 'tenant', data.userName || data.user || '')
       // 登入成功自動關閉彈窗
       emit('close')
     } else {
