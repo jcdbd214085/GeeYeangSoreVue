@@ -71,4 +71,7 @@ import img3 from '@/assets/images/carousel/首頁展示圖(3).jpg'
 .carousel-control-next {
     right: -50px;
 }
+.carousel-indicators {
+  z-index: 900 !important;
+}
 </style>

@@ -257,11 +257,11 @@ const showLogin = () => {
     showCloseBtn.value = true;
   }, 1800);
 };
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 // 登入事件處理
 const handleLogin = async () => {
   try {
-    const res = await fetch('/api/Auth/login', {
+    const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -292,7 +292,7 @@ const handleLogin = async () => {
   } catch (err) {
     alert(err.message || '登入時發生錯誤')
   }
-}
+} 
 
 // 註冊事件處理
 const handleRegister = () => {
