@@ -240,6 +240,8 @@ const register = ref({
   passwordError: "",
 });
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 // 點擊切換至註冊畫面
 const showRegister = () => {
   isRegister.value = true;
@@ -261,7 +263,7 @@ const showLogin = () => {
 // 登入事件處理
 const handleLogin = async () => {
   try {
-    const res = await fetch('/api/Auth/login', {
+    const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
