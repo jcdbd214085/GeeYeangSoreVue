@@ -51,7 +51,6 @@ const userStore = useUserStore();
 })();
 
 // ✅ 啟動時初始化使用者狀態
-const userStore = useUserStore()
-userStore.initFromLocalStorage()
+userStore.initFromLocalStorage();
 
 app.mount('#app')
