@@ -243,6 +243,8 @@ const register = ref({
 });
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+// 用 base URL 拼接 SignalR Hub 位置
+const SIGNALR_URL = `${API_BASE_URL}/hub`;
 
 // 點擊切換至註冊畫面
 const showRegister = () => {

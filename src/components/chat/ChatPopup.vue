@@ -30,7 +30,8 @@ import { storeToRefs } from 'pinia';
 
 const chatStore = useChatPopupStore();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL || '/hub';
+const SIGNALR_URL = `${import.meta.env.VITE_API_BASE_URL}/hub`;
+
 
 const { isOpen } = storeToRefs(chatStore);
 const contacts = ref([]);
