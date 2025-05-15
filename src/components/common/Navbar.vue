@@ -93,10 +93,6 @@
               >
             </template>
           </li>
-          <!-- 房源管理（雙重身分顯示） -->
-<li v-if="isLogin && role === 'both'" class="nav-item">
-  <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
-</li>
         </ul>
 
         <!-- 右側登入與個人區域 -->
