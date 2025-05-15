@@ -269,6 +269,7 @@ function loginAsBoth() {
 }
 function logout() {
   userStore.logout();
+  router.push('/');
 }
 function openChatPopup(e) {
   e.preventDefault();
