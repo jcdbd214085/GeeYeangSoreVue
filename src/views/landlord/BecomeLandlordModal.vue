@@ -23,10 +23,6 @@
             <div v-if="submitted && !register.bankName" class="error">銀行帳戶名稱為必填</div>
           </div>
           <div class="input-box">
-            
-          </div>
-          <!-- 銀行欄位 -->
-          <div class="input-box">
             <label for="bank">銀行帳戶</label>
             <input id="bank" v-model="register.bank" type="text" placeholder="請輸入銀行帳戶" required />
             <i class="fa-solid fa-piggy-bank"></i>
@@ -39,11 +35,15 @@
             <!-- 身分證正面 -->
             <div class="file-upload">
               <label for="idFront">身分證（正面）</label>
-              <div class="image-upload-wrap">
-                <div class="drag-text">
+              <div class="image-upload-wrap" :class="{ 'has-image': idCardFrontPreview }">
+                <div class="drag-text" v-if="!idCardFrontPreview">
                   <h5>未上傳圖片</h5>
-                  <input id="idFront" type="file" hidden @change="handleImageUpload" />
+                  <input id="idFront" type="file" accept="image/*" hidden @change="handleImageUpload($event, 'front')" />
                   <label for="idFront" class="upload-btn">點我上傳圖片</label>
+                </div>
+                <div v-else class="image-preview">
+                  <img :src="idCardFrontPreview" alt="身分證正面" />
+                  <button type="button" class="remove-image" @click="removeImage('front')">×</button>
                 </div>
               </div>
             </div>
@@ -51,17 +51,23 @@
             <!-- 身分證反面 -->
             <div class="file-upload">
               <label for="idBack">身分證（反面）</label>
-              <div class="image-upload-wrap">
-                <div class="drag-text">
+              <div class="image-upload-wrap" :class="{ 'has-image': idCardBackPreview }">
+                <div class="drag-text" v-if="!idCardBackPreview">
                   <h5>未上傳圖片</h5>
-                  <input id="idBack" type="file" hidden @change="handleImageUpload" />
+                  <input id="idBack" type="file" accept="image/*" hidden  @change="handleImageUpload($event, 'back')" />
                   <label for="idBack" class="upload-btn">點我上傳圖片</label>
+                </div>
+                <div v-else class="image-preview">
+                  <img :src="idCardBackPreview" alt="身分證反面" />
+                  <button type="button" class="remove-image" @click="removeImage('back')">×</button>
                 </div>
               </div>
             </div>
           </div>
 
-          <button class="btn">註冊</button>
+          <button class="btn" :disabled="isSubmitting">
+            {{ isSubmitting ? '處理中...' : '註冊' }}
+          </button>
         </form>
         <Alert
           v-model:show="showAlert"
@@ -82,34 +88,84 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Alert from '@/components/alert/Alert.vue'
-const router = useRouter()
+import axios from 'axios'
 
+const router = useRouter()
 const emit = defineEmits(['close'])
 
 const register = ref({
   username: '',
+  bankName: '',
   bank: '',
-  verificationCode: ''
+  idCardFront: null,
+  idCardBack: null
 })
+
 const submitted = ref(false)
 const showAlert = ref(false)
+const isSubmitting = ref(false)
+const idCardFrontPreview = ref(null)
+const idCardBackPreview = ref(null)
 
 const isBankValid = computed(() => {
-  // 假設銀行帳戶為10~14位數字
   return /^\d{10,14}$/.test(register.value.bank)
 })
 
-const handleImageUpload = (event) => {
+const handleImageUpload = (event, type) => {
   const file = event.target.files[0]
   if (file) {
-    // 圖片上傳處理
+    if (type === 'front') {
+      register.value.idCardFront = file
+      idCardFrontPreview.value = URL.createObjectURL(file)
+    } else {
+      register.value.idCardBack = file
+      idCardBackPreview.value = URL.createObjectURL(file)
+    }
   }
 }
 
-const handleRegister = () => {
+const removeImage = (type) => {
+  if (type === 'front') {
+    register.value.idCardFront = null
+    idCardFrontPreview.value = null
+  } else {
+    register.value.idCardBack = null
+    idCardBackPreview.value = null
+  }
+}
+
+const handleRegister = async () => {
   submitted.value = true
-  if (!register.value.username || !register.value.bank || !isBankValid.value) return
-  showAlert.value = true
+  if (!register.value.username || !register.value.bankName || !register.value.bank || !isBankValid.value) return
+  if (!register.value.idCardFront || !register.value.idCardBack) {
+    alert('請上傳身分證正反面照片')
+    return
+  }
+
+  try {
+    isSubmitting.value = true
+    const formData = new FormData()
+    formData.append('username', register.value.username)
+    formData.append('bankName', register.value.bankName)
+    formData.append('bank', register.value.bank)
+    formData.append('idCardFront', register.value.idCardFront)
+    formData.append('idCardBack', register.value.idCardBack)
+
+    const response = await axios.post('/api/BecomeLandlord/register', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      withCredentials: true
+    })
+
+    if (response.data) {
+      showAlert.value = true
+    }
+  } catch (error) {
+    alert(error.response?.data?.message || '註冊失敗，請稍後再試')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 function onAlertConfirm() {
@@ -226,19 +282,64 @@ font-weight: bold;      /* 字體加粗 */
 
 /* 圖片上傳虛線框設定 */
 .image-upload-wrap {
-  border: 4px dashed #9b9b9b;     /* 虛線框樣式 */
-  background-color: #fff;         /* 背景白色 */
+  position: relative;
+  border: 4px dashed #9b9b9b;
+  background-color: #fff;
   color: #888888;
   padding: 20px;
   text-align: center;
   border-radius: 8px;
-
-  width: 300px;                   /* 固定寬度 */
-  height: 200px;                  /* 固定高度 */
+  width: 300px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+}
+
+.image-upload-wrap.has-image {
+  border-style: solid;
+  border-color: #32a49c;
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  color: #ff4d4f;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.remove-image:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 /* 上傳按鈕樣式 */
