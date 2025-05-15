@@ -358,20 +358,48 @@ const handleRegister = async () => {
 };
 
 // 發送驗證碼事件
-const sendVerificationCode = () => {
+const sendVerificationCode = async () => {
   if (countdown.value > 0) return; // 防止重複點擊
 
-  console.log("發送驗證碼至", register.value.email);
-  resendText.value = "重新發送";
-  countdown.value = 30;
+  if (!register.value.email) {
+    alert("請先輸入電子信箱");
+    return;
+  }
 
-  timer = setInterval(() => {
-    countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(timer);
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/EmailToken/send-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userEmail: register.value.email,
+        device: "web", // 裝置資訊可選
+      }),
+    });
+
+    const result = await res.text(); // 回傳是字串
+
+    if (!res.ok) {
+      throw new Error(result || "發送驗證碼失敗");
     }
-  }, 1000);
+
+    alert(result || "驗證碼已發送，請查看信箱 📩");
+
+    // ✅ 開始倒數
+    resendText.value = "重新發送";
+    countdown.value = 30;
+    timer = setInterval(() => {
+      countdown.value--;
+      if (countdown.value <= 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  } catch (err) {
+    alert(err.message || "寄送驗證碼時發生錯誤");
+  }
 };
+
 
 // 是否同意隱私權政策
 const agreePolicy = ref(false);
