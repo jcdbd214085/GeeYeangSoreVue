@@ -65,38 +65,22 @@
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li v-if="isLogin" class="nav-item dropdown" @mouseenter="isLandlordAccordionOpen = true"
-            @mouseleave="isLandlordAccordionOpen = false">
-            <template v-if="role === 'landlord' || role === 'both'">
-              <a class="nav-link dropdown-toggle" href="#">房東專區</a>
+          <li class="nav-item dropdown" v-if="userStore.isLogin"
+              @mouseenter="isLandlordAccordionOpen = true"
+              @mouseleave="isLandlordAccordionOpen = false">
+            <template v-if="userStore.isLandlord">
+              <a class="nav-link dropdown-toggle" href="#">
+                房東專區
+              </a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
-                <router-link
-                  class="dropdown-item"
-                  to="/landlord/property-manage"
-                  @click="closeMenu"
-                  >物件管理</router-link
-                >
-                <router-link
-                  class="dropdown-item"
-                  to="/landlord/property-stats"
-                  @click="closeMenu"
-                  >刊登成效追蹤</router-link
-                >
+                <router-link class="dropdown-item" to="/landlord/property-manage" @click="closeMenu">物件管理</router-link>
+                <router-link class="dropdown-item" to="/landlord/property-stats" @click="closeMenu">刊登成效追蹤</router-link>
               </div>
             </template>
             <template v-else>
-              <a
-                class="nav-link"
-                href="#"
-                @click.prevent="showBecomeLandlordModal"
-                >成為房東</a
-              >
+              <a class="nav-link" href="#" @click.prevent="showBecomeLandlordModal">成為房東</a>
             </template>
           </li>
-          <!-- 房源管理（雙重身分顯示） -->
-<li v-if="isLogin && role === 'both'" class="nav-item">
-  <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
-</li>
         </ul>
 
         <!-- 右側登入與個人區域 -->

@@ -289,7 +289,7 @@ const handleLogin = async () => {
 
     // 判斷回傳格式
     if (data.success) {
-      userStore.login(data.role || 'tenant', data.userName || data.user || '')
+      userStore.login(data.role || 'tenant', data.userName || data.user || '', data.isLandlord || false)
       // 登入成功自動關閉彈窗
       emit("close");
     } else {
