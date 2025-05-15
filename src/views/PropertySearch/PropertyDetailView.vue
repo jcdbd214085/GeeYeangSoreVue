@@ -17,7 +17,7 @@
                 </div>
                 <div class="row mt-4 mb-5">
                     <h5 class="component-title">房源位置</h5>
-                    <MapView :address="property.city + property.district + property.address" />
+                    <MapView v-if="fullAddress" :address="fullAddress" />
                 </div>
                 <div class="row mt-4 mb-5">
                     <h5 class="component-title">推薦房源</h5>
@@ -34,8 +34,7 @@
         </div>
 
     </div>
-    <BackToTop />
-    <Footer />
+
 </template>
 
 <script setup>
@@ -51,6 +50,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const route = useRoute()
 const propertyId = route.params.id
 const property = ref(null)
@@ -129,24 +129,34 @@ const fallbackList = [
     { propertyId: 5, image: propertyImg, rentPrice: 18000, title: '物件5', city: '新竹市', district: '東區', address: '光復路一段', propertyType: '整層住家', roomCount: 2, bathroomCount: 1 }
 ]
 
+const fullAddress = computed(() => {
+  return [
+    property.value?.city,
+    property.value?.district,
+    property.value?.address
+  ].filter(Boolean).join('')
+})
+
 onMounted(async () => {
     try {
-        const res = await axios.get('https://localhost:7167/api/Properties/1')
-        property.value = res.data
+        console.log("房源 ID:", propertyId);
+        console.log("API 呼叫 URL:", `${API_BASE_URL}/api/PropertySearch/${propertyId}`);
+        const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/${propertyId}`)
+        property.value = res.data.property
         images.value = res.data.images
         landlord.value = res.data.landlord
-    } catch {
-        console.warn('取得房源失敗，使用假資料')
+        } catch (error) {
+        console.error('取得房源失敗:', error)
         property.value = fallbackProperty
         images.value = fallbackImages
         landlord.value = fallbackLandlord
     }
 
     try {
-        const res2 = await axios.get('https://localhost:7167/api/Properties/Featured')
+        const res2 = await axios.get(`${API_BASE_URL}/api/PropertySearch/recommendedProperties`)
         featuredProperties.value = res2.data
-    } catch {
-        console.warn('取得推薦物件失敗，使用假資料')
+    } catch (error) {
+        console.warn('取得推薦物件失敗:', error)
         featuredProperties.value = fallbackList
     }
 })

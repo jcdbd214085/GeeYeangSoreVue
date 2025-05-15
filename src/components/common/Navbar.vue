@@ -297,14 +297,14 @@ const favoriteList = ref([
     rentPrice: 16500
   }
 ])
-onMounted(async () => {
-  try {
-    const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-    favoriteList.value = res.data.slice(0, 5) 
-  } catch (error) {
-    console.warn('取得收藏清單失敗，使用假資料', error)
-  }
-})
+// onMounted(async () => {
+//   try {
+//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
+//     favoriteList.value = res.data.slice(0, 5) 
+//   } catch (error) {
+//     console.warn('取得收藏清單失敗，使用假資料', error)
+//   }
+// })
 
 function toggleFavoritePopup(e) {
   e.preventDefault()
