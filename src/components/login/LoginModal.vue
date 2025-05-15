@@ -272,7 +272,7 @@ const handleLogin = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // 若需帶 cookie/session
+      credentials: "include", // 需帶 session
       body: JSON.stringify({
         txtAccount: login.value.username,
         txtPassword: login.value.password,

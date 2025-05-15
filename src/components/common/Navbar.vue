@@ -65,7 +65,7 @@
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li class="nav-item dropdown" v-if="userStore.isLogin"
+          <li class="nav-item dropdown" v-if="isLandlord"
               @mouseenter="isLandlordAccordionOpen = true"
               @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.isLandlord">
@@ -85,16 +85,13 @@
 
         <!-- 右側登入與個人區域 -->
         <ul class="navbar-nav">
-          <!-- 未登入狀態 -->
-          <template v-if="!isLogin">
-            <li class="nav-item">
-              <Button color="primary" class="me-2" @click="$emit('open-login')">
-                登入/註冊
-              </Button>
-            </li>
-          </template>
-
-          <!-- 已登入狀態 -->
+          <!-- 如果尚未登入，顯示登入/註冊 -->
+          <li class="nav-item" v-if="!isLogin">
+            <Button color="primary" class="me-2 login-btn" @click="$emit('open-login')">
+              登入/註冊
+            </Button>
+          </li>
+          <!-- 如果已登入 -->
           <template v-else>
             <!-- 聊天室 -->
             <li class="nav-item nav-icon-item">
@@ -112,7 +109,6 @@
                 聊天室
               </a>
             </li>
-
             <!-- 收藏 -->
             <li class="nav-item nav-icon-item position-relative">
               <a class="nav-link" href="#" @click="toggleFavoritePopup">
@@ -128,7 +124,6 @@
                 @close="showFavoritePopup = false"
               />
             </li>
-
             <!-- 通知 -->
             <li
               class="nav-item nav-icon-item dropdown"
@@ -144,7 +139,6 @@
                 ></span>
                 通知
               </a>
-
               <!-- 顯示通知清單 -->
               <NewAlert
                 v-if="isNotificationOpen"
@@ -181,7 +175,6 @@
                 >
               </div>
             </li>
-
             <!-- 登出按鈕 -->
             <li class="nav-item">
               <Button color="outline-secondary" class="ms-2" @click="logout"
@@ -213,10 +206,9 @@ import propertyImg from '@/assets/images/property/property.jpg'
 import axios from 'axios'
 import { storeToRefs } from 'pinia';
 
-
 const router = useRouter();
 const userStore = useUserStore();
-const { role, isLogin } = storeToRefs(userStore);
+const { role, isLogin, isLandlord} = storeToRefs(userStore); 
 const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
@@ -267,9 +259,16 @@ function loginAsTenant() {
 function loginAsBoth() {
   userStore.login("tenant", "房東房客A");
 }
-function logout() {
+async function logout() {
+  try {
+    await axios.post('/api/auth/logout', {}, { withCredentials: true }); //  呼叫後端清除 session
+  } catch (err) {
+    console.error('登出失敗', err);
+  }
+
   userStore.logout();
-  router.push('/');
+  chatPopup.$reset();
+  router.push('/'); 
 }
 function openChatPopup(e) {
   e.preventDefault();

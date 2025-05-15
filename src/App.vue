@@ -27,8 +27,25 @@ function closeLoginModal() {
 }
 
 const userStore = useUserStore();
-onMounted(() => {
+onMounted(async () => {
+  // 初始化 localStorage 狀態
   userStore.initFromLocalStorage();
+
+  // 嘗試從後端抓目前登入者（驗證 Session）
+  try {
+    const res = await fetch('/api/auth/me', {
+      credentials: 'include' // 必加，才能帶 cookie 給後端
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      userStore.login(data.role, data.userName, data.isLandlord); // 重新登入前端狀態
+    } else {
+      userStore.logout(); // Session 無效 → 登出前端狀態
+    }
+  } catch (err) {
+    console.error('Session 驗證失敗', err);
+  }
 });
 
 </script>

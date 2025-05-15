@@ -72,7 +72,7 @@ async function setupSignalR() {
 // 取得聊天室列表
 async function fetchChatList() {
     try {
-        const res = await axios.get(`${API_BASE_URL}/api/Chat/chatlist`, { withCredentials: true });
+        const res = await axios.get(`${API_BASE_URL}/api/chat/chatlist`, { withCredentials: true });
         if (res.data.success) {
             // 依據後端回傳SenderName顯示聯絡人名稱
             contacts.value = res.data.data.map(msg => ({
@@ -101,7 +101,7 @@ async function fetchChatList() {
 // 取得與指定聯絡人的聊天紀錄
 async function fetchMessages(otherId) {
     try {
-        const res = await axios.get(`${API_BASE_URL}/api/Chat/history/${otherId}`, { withCredentials: true });
+        const res = await axios.get(`${API_BASE_URL}/api/chat/history/${otherId}`, { withCredentials: true });
         if (res.data.success) {
             messages.value = res.data.data.map(msg => ({
                 id: msg.hMessageId,
