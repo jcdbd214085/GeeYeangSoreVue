@@ -14,13 +14,13 @@
                 <PropertyCarousel :list="featuredProperties" />
             </div>
         </div>
-        <div class="container my-5">
+        <div id="property-list-section" class="container my-5">
             <h2 class="section-title"><i class="fa-solid fa-house"></i> 房源列表</h2>
             <div v-if="pagedList.length === 0 && propertyList.length === 0" class="text-center my-5">
                 <p>查無符合條件的房源，請嘗試其他搜尋條件。</p>
             </div>
-            <div class="row">
-                <div class="col-md-3" v-for="(item, i) in pagedList" :key="i">
+            <div class="row" :key="currentPage">
+                <div class="col-md-3" v-for="(item, i) in pagedList" :key="i" v-intersect="pageDirection === 'next' ? '' : 'fadeInRight'">
                     <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice"
                         :title="item.title" :city="item.city" :district="item.district" :address="item.address"
                         :roomCount="item.roomCount" :bathroomCount="item.bathroomCount"
@@ -61,11 +61,18 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const propertyList = ref([])
 const currentPage = ref(1)
 const itemsPerPage = 8
+const previousPage = ref(1)
+const pageDirection = ref('next')
+
 const pagedList = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     return propertyList.value.slice(start, start + itemsPerPage)
 })
 
+watch(currentPage, (newVal, oldVal) => {
+  pageDirection.value = newVal > oldVal ? 'next' : 'prev'
+  previousPage.value = newVal
+})
 
 const featuredProperties = ref([])
 
