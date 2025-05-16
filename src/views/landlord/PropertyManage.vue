@@ -44,7 +44,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import Button from '@/components/buttons/button.vue';
+
+const router = useRouter();
+const userStore = useUserStore();
 
 const tabs = [
   { label: '刊登中', value: 'active' },
@@ -115,11 +120,30 @@ const filteredActiveProperties = computed(() => {
   return list;
 });
 
+// 檢查登入狀態和權限
+onMounted(async () => {
+  try {
+    const res = await fetch('/api/Auth/me', { credentials: 'include' });
+    const data = await res.json();
+    
+    if (!data.success || !data.isLandlord) {
+      // 如果未登入或不是房東，跳轉到登入頁面
+      router.push('/login');
+      return;
+    }
+  } catch (error) {
+    console.error('驗證失敗:', error);
+    router.push('/login');
+  }
+});
+
 function onAddProperty() {
-  window.location.href = '/landlord/property-create';
+  // 使用 router 進行頁面跳轉，而不是 window.location
+  router.push('/landlord/property-create');
 }
 function onEdit(item) {
-  window.location.href = `/landlord/property-edit?id=${item.id}`;
+  // 使用 router 進行頁面跳轉，而不是 window.location
+  router.push(`/landlord/property-edit?id=${item.id}`);
 }
 function onDeactivate(item) {
   alert('下架物件 ' + item.title + '（待串接 API）');
