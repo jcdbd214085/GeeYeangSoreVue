@@ -1,6 +1,7 @@
 ﻿<script setup>
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import QARobot from "@/components/QARobot/QARobot.vue";
 
 const receiveData = ref([]);
 const loading = ref(true);
@@ -84,7 +85,9 @@ onMounted(() => {
                 <span class="about-number">{{ index + 1 }}</span>
                 <h5 class="card-title">{{ item.hTitle }}</h5>
               </div>
+
               <button
+
                   class="toggle-btn"
                   @click="toggleExpand(item.hAboutId || index)"
                   :aria-expanded="expandedItems[item.hAboutId || index]"
@@ -92,6 +95,7 @@ onMounted(() => {
               >
                 <i class="bi" :class="expandedItems[item.hAboutId || index] ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
               </button>
+
             </header>
             <div
                 class="card-content"
@@ -260,9 +264,9 @@ onMounted(() => {
   color: #1a1a1a;
   margin: 0;
 }
-
 .toggle-btn {
-  background: #f1f5f9;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12 6l-4 4-4-4"/></svg>') no-repeat center center;
+  background-size: 50%;
   border: none;
   width: 2rem;
   height: 2rem;
@@ -272,6 +276,7 @@ onMounted(() => {
   justify-content: center;
   transition: background 0.2s ease;
 }
+
 
 .toggle-btn:hover {
   background: #e2e8f0;

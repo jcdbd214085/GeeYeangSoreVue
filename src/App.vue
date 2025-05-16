@@ -61,7 +61,7 @@ onMounted(async () => {
 
   <!-- 全站聊天室彈窗 -->
   <ChatPopup />
-
+  <QA />
   <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />

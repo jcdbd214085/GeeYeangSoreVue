@@ -92,7 +92,7 @@ onMounted(() => {
     <div class="container">
       <!-- Header Section -->
       <header class="header-section text-center">
-        <h2 class="section-title">📢 公告列表</h2>
+        <h2 class="section-title">公告列表</h2>
         <div class="section-divider"></div>
         <p class="section-subtitle">查看最新的公告與資訊</p>
         <div class="header-controls">
