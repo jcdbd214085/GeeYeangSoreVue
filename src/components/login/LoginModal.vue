@@ -49,7 +49,9 @@
                 </div>
               </div>
 
-              <div class="forgot-link"><a href="#">忘記密碼?</a></div>
+              <div class="forgot-link">
+  <a href="#" @click.prevent="showForgotPasswordModal = true">忘記密碼?</a>
+</div>
               <button class="btn">登入</button>
               <p>——使用其他方式登入——</p>
               <div class="social-icons">
@@ -193,6 +195,12 @@
       </div>
     </div>
   </div>
+  <!-- 忘記密碼 -->
+<ForgotPasswordModal
+  v-if="showForgotPasswordModal"
+  @close="showForgotPasswordModal = false"
+/>
+
 </template>
 
 <script setup>
@@ -207,6 +215,11 @@ import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
+
+//引入忘記密碼
+import ForgotPasswordModal from "@/components/login/ForgotPasswordModal.vue";
+const showForgotPasswordModal = ref(false);
+
 
 // 控制是否顯示註冊頁面（切換用）
 const isRegister = ref(false);
