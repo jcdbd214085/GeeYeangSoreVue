@@ -294,24 +294,39 @@ const handleLogin = async () => {
     });
 
     // 檢查 HTTP 狀態碼
-    if (!res.ok) {
-      throw new Error("伺服器錯誤，請稍後再試");
-    }
+const httpdata = await res.json();
 
-    // 解析 JSON
-    const data = await res.json();
+if (res.status === 401) {
+  alert(httpdata.message || "帳號或密碼錯誤");
+  return;
+}
 
+if (!res.ok) {
+  alert(httpdata.message || "伺服器錯誤，請稍後再試");
+  return;
+}
+
+if (httpdata.success) {
+  userStore.login(
+    httpdata.role || "tenant",
+    httpdata.userName || httpdata.user || "",
+    httpdata.isLandlord || false
+  );
+  emit("close");
+} else {
+  alert(httpdata.message || "登入失敗");
+}
     // 判斷回傳格式
-    if (data.success) {
+    if (httpdata.success) {
       userStore.login(
-        data.role || "tenant",
-        data.userName || data.user || "",
-        data.isLandlord || false
+        httpdata.role || "tenant",
+        httpdata.userName || data.user || "",
+        httpdata.isLandlord || false
       );
       // 登入成功自動關閉彈窗
       emit("close");
     } else {
-      alert(data.message || "登入失敗");
+      alert(httpdata.message || "登入失敗");
     }
   } catch (err) {
     alert(err.message || "登入時發生錯誤");

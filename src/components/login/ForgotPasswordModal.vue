@@ -3,52 +3,144 @@
     <div class="modal-wrapper">
       <div class="modal-content small">
         <button class="close-btn" @click="$emit('close')">×</button>
-        <h2>重設密碼</h2>
-        <p>請輸入您的電子信箱，<br />我們會寄送重設密碼的連結給您。</p>
-        <div class="input-box">
-          <input
-            v-model="email"
-            type="email"
-            placeholder="請輸入信箱"
-            required
-          />
-          <i class="fa-solid fa-envelope"></i>
-        </div>
 
-        <button class="btn" @click="sendReset">發送</button>
+        <template v-if="step === 1">
+          <h2>重設密碼</h2>
+          <p>請輸入您的電子信箱，<br />我們會寄送驗證碼給您。</p>
+          <div class="input-box">
+            <input v-model="email" type="email" placeholder="請輸入信箱" required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <button class="btn" @click="sendCode">發送驗證碼</button>
+        </template>
+
+        <template v-else-if="step === 2">
+          <h2>輸入驗證碼</h2>
+          <p>驗證碼已發送至 {{ email }}，請於 {{ countdown }} 秒內輸入。</p>
+          <div class="input-box">
+            <input v-model="code" type="text" placeholder="請輸入驗證碼" required />
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <button class="btn" @click="verifyCode">送出驗證碼</button>
+        </template>
+
+        <template v-else-if="step === 3">
+          <h2>設定新密碼</h2>
+          <p>請輸入符合規則的新密碼。</p>
+          <div class="input-box">
+            <input
+              v-model="newPassword"
+              type="password"
+              placeholder="請輸入新密碼"
+              required
+              @input="passwordError = ''"
+            />
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <p v-if="passwordError" class="error-msg">{{ passwordError }}</p>
+          <button class="btn" @click="resetPassword">重設密碼</button>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-const emit = defineEmits(["close"]);
-const email = ref("");
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const emit = defineEmits(['close']);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const sendReset = async () => {
-  if (!email.value) {
-    alert("請輸入信箱");
-    return;
-  }
+const step = ref(1);
+const email = ref('');
+const code = ref('');
+const newPassword = ref('');
+const passwordError = ref('');
+const countdown = ref(300); // 5分鐘倒數
+let timer = null;
 
+const router = useRouter();
+
+const startCountdown = () => {
+  timer = setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      clearInterval(timer);
+      alert("驗證碼已過期，請重新申請。");
+      step.value = 1;
+    }
+  }, 1000);
+};
+
+const sendCode = async () => {
+  if (!email.value) return alert('請輸入信箱');
   try {
     const res = await fetch(`${API_BASE_URL}/api/forgot-password/send-code`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.value }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value })
     });
-
     const result = await res.json();
     if (res.ok && result.success) {
-      alert("已發送重設信件，請至信箱確認");
-      emit("close");
+      alert('驗證碼已發送，請至信箱查收');
+      step.value = 2;
+      countdown.value = 300;
+      startCountdown();
     } else {
-      alert(result.message || "發送失敗");
+      alert(result.message || '發送失敗');
     }
   } catch (err) {
-    alert("發送失敗，請稍後再試");
+    alert('發送失敗');
+  }
+};
+
+const verifyCode = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/forgot-password/verify-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value, code: code.value })
+    });
+    const result = await res.json();
+    if (res.ok && result.success) {
+      step.value = 3;
+    } else {
+      alert(result.message || '驗證失敗');
+    }
+  } catch (err) {
+    alert('驗證失敗');
+  }
+};
+
+const validatePassword = (password, email) => {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{10,}$/;
+  if (password === email) return '密碼不得與電子信箱相同';
+  if (!regex.test(password))
+    return '密碼需至少10字元，包含大小寫英文字母、數字與特殊符號，且不可含空白';
+  return '';
+};
+
+const resetPassword = async () => {
+  passwordError.value = validatePassword(newPassword.value, email.value);
+  if (passwordError.value) return;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/forgot-password/reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value, code: code.value, newPassword: newPassword.value })
+    });
+    const result = await res.json();
+    if (res.ok && result.success) {
+      alert('密碼重設成功，請重新登入');
+      emit('close');
+      router.push('/login'); // ✅ 自動導向登入頁
+    } else {
+      alert(result.message || '密碼重設失敗');
+    }
+  } catch (err) {
+    alert('密碼重設失敗');
   }
 };
 </script>
