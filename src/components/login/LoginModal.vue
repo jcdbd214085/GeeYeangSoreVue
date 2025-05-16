@@ -225,6 +225,7 @@ const passwordInputRef = ref(null);
 const countdown = ref(0); // 初始為 0 表示可按
 const resendText = ref("發送驗證碼");
 let timer = null;
+const isSending = ref(false); // 是否正在發送驗證碼
 
 // 登入表單資料
 const login = ref({
@@ -289,7 +290,11 @@ const handleLogin = async () => {
 
     // 判斷回傳格式
     if (data.success) {
-      userStore.login(data.role || 'tenant', data.userName || data.user || '', data.isLandlord || false)
+      userStore.login(
+        data.role || "tenant",
+        data.userName || data.user || "",
+        data.isLandlord || false
+      );
       // 登入成功自動關閉彈窗
       emit("close");
     } else {
@@ -299,7 +304,6 @@ const handleLogin = async () => {
     alert(err.message || "登入時發生錯誤");
   }
 };
-
 
 // 註冊事件處理
 const handleRegister = async () => {
@@ -359,12 +363,14 @@ const handleRegister = async () => {
 
 // 發送驗證碼事件
 const sendVerificationCode = async () => {
-  if (countdown.value > 0) return; // 防止重複點擊
+  if (countdown.value > 0 || isSending.value) return; // 防止重複點擊
 
   if (!register.value.email) {
     alert("請先輸入電子信箱");
     return;
   }
+
+  isSending.value = true; // 鎖定按鈕
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/EmailToken/send-token`, {
@@ -397,9 +403,10 @@ const sendVerificationCode = async () => {
     }, 1000);
   } catch (err) {
     alert(err.message || "寄送驗證碼時發生錯誤");
+  } finally {
+    isSending.value = false; // 發送結束解除鎖定
   }
 };
-
 
 // 是否同意隱私權政策
 const agreePolicy = ref(false);
