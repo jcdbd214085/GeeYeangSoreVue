@@ -34,7 +34,7 @@ const sendReset = async () => {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/Auth/send-reset-password`, {
+    const res = await fetch(`${API_BASE_URL}/api/forgot-password/send-code`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email.value }),
