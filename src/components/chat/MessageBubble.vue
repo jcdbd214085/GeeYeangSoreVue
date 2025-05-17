@@ -1,9 +1,4 @@
-<template>
-  <div :class="['msg-bubble', isMe ? 'me' : 'other']">
-    <div class="msg-text">{{ msg.text }}</div>
-    <div class="msg-time">{{ msg.time }}</div>
-  </div>
-</template>
+
 <script setup>
 const props = defineProps({
   message: {

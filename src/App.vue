@@ -39,11 +39,11 @@ function closeChatPopup() {
 }
 
 const userStore = useUserStore();
-onMounted(() => {
+onMounted(async () => {
   userStore.initFromLocalStorage();
 
   // 嘗試從後端抓目前登入者（驗證 Session）
-   try {
+  try {
     const res = await fetch('/api/auth/me', {
       credentials: 'include' // 必加，才能帶 cookie 給後端
     });
@@ -55,7 +55,7 @@ onMounted(() => {
     }
   } catch (err) {
     console.error('Session 驗證失敗', err);
-  }finally {
+  } finally {
     isUserReady.value = true; //無論成功或失敗都表示初始化完成
   }
 });
