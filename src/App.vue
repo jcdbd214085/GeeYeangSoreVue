@@ -15,6 +15,7 @@ import LoginModal from '@/components/login/LoginModal.vue'
 import { useLoadingStore } from '@/stores/loadingStore'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
+import QARobot from "@/components/QARobot/QARobot.vue";
 
 const loadingStore = useLoadingStore()
 
@@ -61,7 +62,7 @@ onMounted(async () => {
 
   <!-- 全站聊天室彈窗 -->
   <ChatPopup />
-  <QA />
+  <QARobot></QARobot>
   <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />
