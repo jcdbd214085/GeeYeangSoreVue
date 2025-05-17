@@ -46,32 +46,29 @@ const router = createRouter({
       name: "UserProfile",
       component: () => import("@/views/UserHome/UserProfile.vue"),
     },
+    //物件管理
     {
       path: "/landlord/property-manage",
       name: "landlord-property-manage",
       component: () => import("@/views/landlord/PropertyManage.vue"),
     },
+    //刊登物件
     {
       path: "/landlord/property-create",
       name: "landlord-property-create",
       component: () => import("@/views/landlord/PropertyCreate.vue"),
     },
-    //
+    //物件詳細資訊
     {
       path: "/landlord/property-detail-form",
       name: "landlord-property-detail-form",
       component: () => import("@/views/landlord/PropertyDetailForm.vue"),
     },
+    //廣告方案頁面
     {
       path: "/landlord/property-plan-select",
       name: "landlord-property-plan-select",
       component: () => import("@/views/landlord/PropertyPlanSelect.vue"),
-    },
-
-    {
-      path: "/landlord/property-stats",
-      name: "landlord-property-stats",
-      component: () => import("@/views/landlord/PropertyStats.vue"),
     },
     //房東編輯
     {
@@ -121,6 +118,18 @@ const router = createRouter({
       path: "/guide",
       name: "guide",
       component: () => import("@/views/guide/Guide.vue"),
+    },
+    // 廣告管理（刊登管理合併）
+    {
+      path: "/landlord/ad-manage",
+      name: "landlord-ad-manage",
+      component: () => import("@/views/landlord/AdManage.vue"),
+    },
+    // 廣告購買專區
+    {
+      path: "/landlord/ad-purchase",
+      name: "landlord-ad-purchase",
+      component: () => import("@/views/landlord/AdPurchase.vue"),
     },
   ],
 });
