@@ -31,7 +31,9 @@
                 </div>
               </div>
 
-              <div class="forgot-link"><a href="#">忘記密碼?</a></div>
+              <div class="forgot-link">
+  <a href="#" @click.prevent="showForgotPasswordModal = true">忘記密碼?</a>
+</div>
               <button class="btn">登入</button>
               <p>——使用其他方式登入——</p>
               <div class="social-icons">
@@ -130,6 +132,12 @@
       </div>
     </div>
   </div>
+  <!-- 忘記密碼 -->
+<ForgotPasswordModal
+  v-if="showForgotPasswordModal"
+  @close="showForgotPasswordModal = false"
+/>
+
 </template>
 
 <script setup>
@@ -146,6 +154,11 @@ const favoriteStore = useFavoriteStore()
 const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
+
+//引入忘記密碼
+import ForgotPasswordModal from "@/components/login/ForgotPasswordModal.vue";
+const showForgotPasswordModal = ref(false);
+
 
 // 控制是否顯示註冊頁面（切換用）
 const isRegister = ref(false);
@@ -164,6 +177,7 @@ const passwordInputRef = ref(null);
 const countdown = ref(0); // 初始為 0 表示可按
 const resendText = ref("發送驗證碼");
 let timer = null;
+const isSending = ref(false); // 是否正在發送驗證碼
 
 // 登入表單資料
 const login = ref({
@@ -211,7 +225,7 @@ const handleLogin = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // 需帶 session
+      credentials: "include", // 若需帶 cookie/session
       body: JSON.stringify({
         txtAccount: login.value.username,
         txtPassword: login.value.password,
@@ -219,31 +233,48 @@ const handleLogin = async () => {
     });
 
     // 檢查 HTTP 狀態碼
-    if (!res.ok) {
-      throw new Error("伺服器錯誤，請稍後再試");
-    }
+const httpdata = await res.json();
 
-    // 解析 JSON
-    const data = await res.json();
+if (res.status === 401) {
+  alert(httpdata.message || "帳號或密碼錯誤");
+  return;
+}
 
+if (!res.ok) {
+  alert(httpdata.message || "伺服器錯誤，請稍後再試");
+  return;
+}
+
+if (httpdata.success) {
+  userStore.login(
+    httpdata.role || "tenant",
+    httpdata.userName || httpdata.user || "",
+    httpdata.isLandlord || false
+  );
+  emit("close");
+} else {
+  alert(httpdata.message || "登入失敗");
+}
     // 判斷回傳格式
+
     if (data.success) {
       userStore.login(data.role || 'tenant', data.userName || data.user || '', data.isLandlord || false)
+      
       await favoriteStore.fetchFavorites();
       if (favoriteStore.pendingFavoriteId) {
         await favoriteStore.addFavorite(favoriteStore.pendingFavoriteId)
         favoriteStore.pendingFavoriteId = null
       }
+
       // 登入成功自動關閉彈窗
       emit("close");
     } else {
-      alert(data.message || "登入失敗");
+      alert(httpdata.message || "登入失敗");
     }
   } catch (err) {
     alert(err.message || "登入時發生錯誤");
   }
 };
-
 
 // 註冊事件處理
 const handleRegister = async () => {
@@ -302,19 +333,50 @@ const handleRegister = async () => {
 };
 
 // 發送驗證碼事件
-const sendVerificationCode = () => {
-  if (countdown.value > 0) return; // 防止重複點擊
+const sendVerificationCode = async () => {
+  if (countdown.value > 0 || isSending.value) return; // 防止重複點擊
 
-  console.log("發送驗證碼至", register.value.email);
-  resendText.value = "重新發送";
-  countdown.value = 30;
+  if (!register.value.email) {
+    alert("請先輸入電子信箱");
+    return;
+  }
 
-  timer = setInterval(() => {
-    countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(timer);
+  isSending.value = true; // 鎖定按鈕
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/EmailToken/send-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userEmail: register.value.email,
+        device: "web", // 裝置資訊可選
+      }),
+    });
+
+    const result = await res.text(); // 回傳是字串
+
+    if (!res.ok) {
+      throw new Error(result || "發送驗證碼失敗");
     }
-  }, 1000);
+
+    alert(result || "驗證碼已發送，請查看信箱 📩");
+
+    // ✅ 開始倒數
+    resendText.value = "重新發送";
+    countdown.value = 30;
+    timer = setInterval(() => {
+      countdown.value--;
+      if (countdown.value <= 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  } catch (err) {
+    alert(err.message || "寄送驗證碼時發生錯誤");
+  } finally {
+    isSending.value = false; // 發送結束解除鎖定
+  }
 };
 
 // 是否同意隱私權政策

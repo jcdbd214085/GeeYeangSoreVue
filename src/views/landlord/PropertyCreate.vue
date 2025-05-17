@@ -74,6 +74,8 @@ function toggleFeature(val) {
   else form.value.features.splice(idx, 1);
 }
 function onSubmit() {
+  // 將選擇的features存到localStorage
+  localStorage.setItem('propertyFeatures', JSON.stringify(form.value.features));
   // 跳轉到詳細資料填寫頁面
   router.push('/landlord/property-detail-form');
 }
@@ -81,6 +83,15 @@ function goBack() {
   router.push('/landlord/property-manage');
 }
 function onSaveExit() {
+  // 儲存草稿
+  const draft = {
+    step: 'create',
+    data: { ...form.value },
+    savedAt: new Date().toISOString()
+  };
+  let drafts = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
+  drafts.push(draft);
+  localStorage.setItem('propertyDrafts', JSON.stringify(drafts));
   showAlert.value = true;
 }
 function handleAlertConfirm() {

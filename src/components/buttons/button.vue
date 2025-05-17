@@ -1,9 +1,9 @@
 <template>
   <button
-    :type="type"
-    :class="['custom-btn', colorClass, { 'icon-only': iconOnly }]"
-    @click="$emit('click', $event)"
-    v-bind="$attrs"
+      :type="type"
+      :class="['custom-btn', colorClass, { 'icon-only': iconOnly }]"
+      @click="$emit('click', $event)"
+      v-bind="$attrs"
   >
     <slot />
   </button>
@@ -17,7 +17,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: 'primary' 
+    default: 'primary'
   },
   iconOnly: {
     type: Boolean,
@@ -30,6 +30,9 @@ const colorClass = props.color === 'outline-secondary' ? 'custom-btn-outline-sec
 
 <style scoped>
 .custom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 500;
   border-radius: 8px;
   padding: 0.5em 1.5em;
@@ -37,8 +40,19 @@ const colorClass = props.color === 'outline-secondary' ? 'custom-btn-outline-sec
   transition: background 0.2s, color 0.2s;
   cursor: pointer;
   border: none;
-  height: 50px;
+
+  /* 允許換行，避免文字超出 */
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+
+  line-height: 1.2;
+  box-sizing: border-box;
+  min-height: 50px;
+  /* 限制最大寬度，避免撐破父容器 */
+  max-width: 300px;
 }
+
 .custom-btn-primary {
   background-color: var(--main-color);
   color: #fff;
@@ -66,5 +80,6 @@ const colorClass = props.color === 'outline-secondary' ? 'custom-btn-outline-sec
   justify-content: center;
   border-radius: 50%;
   font-size: 1.2rem;
+  white-space: nowrap; /* icon-only 通常不需要換行 */
 }
 </style>

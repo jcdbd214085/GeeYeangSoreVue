@@ -31,9 +31,13 @@
             <a class="nav-link dropdown-toggle" href="#">資訊專區</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <router-link class="dropdown-item" to="/notice" @click="closeMenu">最新公告</router-link>
-              <router-link class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
+
+
+              <router-link v-if="isLogin" class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
               <router-link class="dropdown-item" to="/guide" @click="closeMenu">指南手冊</router-link>
               <router-link class="dropdown-item" to="/about" @click="closeMenu">關於居研所</router-link>
+
+
             </div>
           </li>
 
@@ -46,7 +50,8 @@
               </a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
                 <router-link class="dropdown-item" to="/landlord/property-manage" @click="closeMenu">物件管理</router-link>
-                <router-link class="dropdown-item" to="/landlord/property-stats" @click="closeMenu">刊登成效追蹤</router-link>
+                <router-link class="dropdown-item" to="/landlord/ad-manage" @click="closeMenu">刊登管理</router-link>
+                <router-link class="dropdown-item" to="/landlord/ad-purchase" @click="closeMenu">廣告購買專區</router-link>
               </div>
             </template>
             <template v-else>
@@ -75,6 +80,7 @@
                 聊天室
               </a>
             </li>
+
             <!-- 收藏 -->
             <li class="nav-item nav-icon-item position-relative">
               <a class="nav-link" href="#" @click="toggleFavoritePopup">
@@ -83,12 +89,14 @@
               </a>
               <FavoritePopup :visible="showFavoritePopup" @close="showFavoritePopup = false" />
             </li>
+
             <!-- 通知 -->
             <li class="nav-item nav-icon-item dropdown" style="position: relative">
               <a class="nav-link dropdown-toggle" href="#" @click.prevent="toggleNotification">
                 <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
+
               <!-- 顯示通知清單 -->
               <NewAlert v-if="isNotificationOpen" :notifications="notifications" />
             </li>
@@ -107,6 +115,7 @@
                 <router-link class="dropdown-item" to="/chat" @click="closeMenu">聊天室</router-link>
               </div>
             </li>
+
             <!-- 登出按鈕 -->
             <li class="nav-item">
               <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
@@ -136,6 +145,7 @@ import propertyImg from '@/assets/images/property/property.jpg'
 import axios from 'axios'
 import { storeToRefs } from 'pinia';
 import { useFavoriteStore } from '@/stores/favoriteStore.js'
+
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -190,13 +200,7 @@ function loginAsTenant() {
 function loginAsBoth() {
   userStore.login("tenant", "房東房客A");
 }
-async function logout() {
-  try {
-    await axios.post('/api/auth/logout', {}, { withCredentials: true }); //  呼叫後端清除 session
-  } catch (err) {
-    console.error('登出失敗', err);
-  }
-
+function logout() {
   userStore.logout();
   chatPopup.$reset();
   favoriteStore.list = []

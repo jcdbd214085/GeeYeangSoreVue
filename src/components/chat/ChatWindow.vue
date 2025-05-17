@@ -2,25 +2,16 @@
     <!-- 聊天視窗元件 -->
     <div class="chat-window">
         <MessageBubble
-        v-for="msg in messages"
-            :key="msg.id"
-            :message="msg"
-            :isMe="msg.from === user.id"
+          v-for="msg in messages"
+          :key="msg.id"
+          :msg="msg"
+          :isMe="String(msg.from) === String(user.id)"
         />
     </div>
-  </template>
+</template>
 <script setup>
 import MessageBubble from './MessageBubble.vue'
-import { defineProps } from 'vue';
-
-const props = defineProps({
-  messages: Array,
-  user: {
-    type: Object,
-    default: () => ({ id: null, name: '' })
-    
-  }
-});
+const props = defineProps(['messages', 'user']);
 </script>
 <style scoped>
 .chat-window {

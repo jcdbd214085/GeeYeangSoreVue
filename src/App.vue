@@ -16,6 +16,7 @@ import { useLoadingStore } from '@/stores/loadingStore'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useFavoriteStore } from '@/stores/favoriteStore'
+import QARobot from "@/components/QARobot/QARobot.vue";
 
 const loadingStore = useLoadingStore()
 
@@ -28,26 +29,26 @@ function closeLoginModal() {
 }
 const favoriteStore = useFavoriteStore()
 const userStore = useUserStore();
-onMounted(async () => {
-  // 初始化 localStorage 狀態
+onMounted(() => {
   userStore.initFromLocalStorage();
 
   // 嘗試從後端抓目前登入者（驗證 Session）
-  try {
-    const res = await fetch('/api/auth/me', {
-      credentials: 'include' // 必加，才能帶 cookie 給後端
-    });
+   //try {
+   //  const res = await fetch('/api/auth/me', {
+   //    credentials: 'include' // 必加，才能帶 cookie 給後端
+   //  });
 
-    if (res.ok) {
-      const data = await res.json();
-      userStore.login(data.role, data.userName, data.isLandlord); // 重新登入前端狀態
-      await favoriteStore.fetchFavorites()
-    } else {
-      userStore.logout(); // Session 無效 → 登出前端狀態
-    }
-  } catch (err) {
-    console.error('Session 驗證失敗', err);
-  }
+    // if (res.ok) {
+    //  const data = await res.json();
+     //  userStore.login(data.role, data.userName, data.isLandlord); // 重新登入前端狀態
+     //  await favoriteStore.fetchFavorites()
+     //} else {
+     //  userStore.logout(); // Session 無效 → 登出前端狀態
+    // }
+  // } catch (err) {
+   //  console.error('Session 驗證失敗', err);
+   //}
+   
 });
 
 </script>
@@ -63,7 +64,7 @@ onMounted(async () => {
 
   <!-- 全站聊天室彈窗 -->
   <ChatPopup />
-
+  <QARobot></QARobot>
   <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />
