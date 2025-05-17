@@ -57,7 +57,6 @@
 import { useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
 import AvatarImage from '@/components/Avatar.vue'
-import { useChatPopupStore } from '@/stores/chatPopup'
 import { useFavoriteStore } from '@/stores/favoriteStore.js'
 import { useUserStore } from '@/stores/user.js'
 
@@ -106,22 +105,8 @@ async function toggleFavorite() {
   }
 }
 
-const chatPopupStore = useChatPopupStore()
-
 function openChat() {
-  const landlordId = props.landlord.id
-  const chatAlreadyExists = chatPopupStore.openChats.some(c => c.id === landlordId)
-
-  if (!chatAlreadyExists) {
-    chatPopupStore.openChats.push({
-      id: landlordId,
-      name: props.landlord.name,
-      avatar: props.landlord.avatar
-    })
-  }
-
-  chatPopupStore.activeChatId = landlordId
-  chatPopupStore.open()
+  // Placeholder for the removed chatPopupStore
 }
 </script>
 

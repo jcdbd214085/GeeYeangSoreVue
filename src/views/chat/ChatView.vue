@@ -57,8 +57,8 @@
           id: msg.id,
           from: msg.from,
           to: msg.to,
-          type: msg.messageType || 'text',
-          content: msg.text || msg.content,
+          type: msg.type || msg.messageType || 'text',
+          content: msg.content,
           time: msg.time
         });
       }
@@ -85,7 +85,7 @@
         contacts.value = res.data.data.map((msg) => ({
           id: msg.hSenderId,
           name: msg.senderName || `聯絡人${msg.hSenderId}`,
-          lastMsg: msg.hContent || '',
+          lastMsg: (msg.hMessageType === 'image' || msg.hMessageType === '圖片' || (msg.hContent && msg.hContent.startsWith('/images/chat/'))) ? '[圖片]' : (msg.hContent || ''),
           avatar: defaultAvatar,
           time: msg.hTimestamp
             ? new Date(msg.hTimestamp).toLocaleTimeString()
@@ -144,9 +144,8 @@
       alert('SignalR 尚未連線');
       return;
     }
-  
     const { type, content } = payload;
-  
+    if (type !== 'text' && type !== '文字') return;
     connection
       .invoke(
         'SendMessage',

@@ -32,30 +32,28 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+  import { ref, onMounted, onUnmounted, nextTick, watch, watchEffect, defineEmits } from 'vue';
   import axios from 'axios';
   import * as signalR from '@microsoft/signalr';
-  import { useChatPopupStore } from '@/stores/chatPopup';
   import { useUserStore } from '@/stores/user';
-  import { storeToRefs } from 'pinia';
   import ChatWindow from './ChatWindow.vue';
   import ChatInput from './ChatInput.vue';
   import Avatar from '@/components/Avatar.vue';
   import defaultAvatar from '@/assets/images/avatar/default.png';
   
-  const chatStore = useChatPopupStore();
-  const userStore = useUserStore();
-  const { isOpen } = storeToRefs(chatStore);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
   const SIGNALR_URL = `${API_BASE_URL}/hub`;
   
+  const isOpen = ref(true);
   const contacts = ref([]);
   const activeContactId = ref(null);
   const messages = ref([]);
   const errorMsg = ref('');
-  const user = ref({ id: null, name: userStore.username || '我' });
+  const user = ref({ id: null, name: '' });
   const chatBodyRef = ref(null);
   let connection = null;
+  
+  const emit = defineEmits(['close']);
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -70,8 +68,8 @@
           id: msg.id,
           from: msg.from,
           to: msg.to,
-          type: msg.messageType || 'text',
-          content: msg.text || msg.content,
+          type: msg.type || msg.messageType || 'text',
+          content: msg.content,
           time: msg.time
         });
       }
@@ -99,8 +97,6 @@
           avatar: defaultAvatar,
           time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : '',
         }));
-        user.value.id = res.data.selfId;
-        user.value.name = userStore.username || '我';
         if (contacts.value.length > 0) {
           activeContactId.value = contacts.value[0].id;
           fetchMessages(activeContactId.value);
@@ -151,6 +147,7 @@
       return;
     }
     const { type, content } = payload;
+    if (type !== 'text' && type !== '文字') return;
     connection.invoke('SendMessage', String(user.value.id), String(activeContactId.value), content)
       .catch(err => {
         errorMsg.value = '送出失敗';
@@ -158,7 +155,8 @@
   }
   
   function closePopup() {
-    chatStore.close();
+    isOpen.value = false;
+    emit('close');
   }
   
   function scrollToBottom() {
@@ -169,29 +167,33 @@
     });
   }
   
-  onMounted(async () => {
-    if (!userStore.isLogin) {
-      errorMsg.value = '請先登入';
-      return;
-    }
+  async function fetchUserInfo() {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/chat/chatlist`, { withCredentials: true });
-      if (res.data.success && res.data.selfId) {
-        user.value.id = res.data.selfId;
+      const res = await axios.get('/api/auth/me', { withCredentials: true });
+      if (res.data.success) {
+        user.value.id = res.data.tenantId;
+        user.value.name = res.data.userName || '我';
       } else {
-        const authRes = await axios.get('/api/auth/me', { withCredentials: true });
-        if (authRes.data && authRes.data.id) {
-          user.value.id = authRes.data.id;
-        }
+        user.value.id = null;
+        user.value.name = '';
+        errorMsg.value = '請先登入';
       }
     } catch (e) {
-      errorMsg.value = '無法取得登入者資訊';
-      return;
+      user.value.id = null;
+      user.value.name = '';
+      errorMsg.value = '請先登入';
     }
-    user.value.name = userStore.username || '我';
-    fetchChatList();
-    setupSignalR();
-    scrollToBottom();
+  }
+  
+  watchEffect(async () => {
+    if (isOpen.value) {
+      await fetchUserInfo();
+      if (user.value.id) {
+        await fetchChatList();
+        setupSignalR();
+        scrollToBottom();
+      }
+    }
   });
   
   onUnmounted(() => {
@@ -262,5 +264,6 @@
     overflow-y: auto;
     background: #f7f8fa;
   }
-  </style>
   
+  
+  </style>

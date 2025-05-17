@@ -25,8 +25,7 @@
 
 <script setup>
 import AvatarImage from '@/components/Avatar.vue'
-import { useChatPopupStore } from '@/stores/chatPopup'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
     landlord: {
@@ -35,16 +34,11 @@ const props = defineProps({
     }
 })
 
-const chatPopupStore = useChatPopupStore()
-
 function openChat() {
     const { id, name, avatar } = props.landlord
-    const exists = chatPopupStore.openChats.some(c => c.id === id)
-    if (!exists) {
-        chatPopupStore.openChats.push({ id, name, avatar })
-    }
-    chatPopupStore.activeChatId = id
-    chatPopupStore.open()
+    // chatPopupStore.openChats.push({ id, name, avatar })
+    // chatPopupStore.activeChatId = id
+    // chatPopupStore.open()
 }
 </script>
 

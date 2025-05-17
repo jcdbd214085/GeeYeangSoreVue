@@ -17,6 +17,13 @@ const props = defineProps({
 });
 
 const msgType = props.message?.type || 'text'; // fallback
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
+function getImageUrl(rawUrl) {
+  if (!rawUrl) return '/images/chat/placeholder.png'; // fallback 預設圖片
+  if (rawUrl.startsWith('http')) return rawUrl; // 已是絕對網址
+  return VITE_API_BASE_URL + rawUrl; // 拼完整網址
+}
 </script>
 
 <template>
@@ -29,11 +36,11 @@ const msgType = props.message?.type || 'text'; // fallback
 
     <!-- 圖片訊息 -->
     <img
-      v-else-if="msgType === 'image'"
-      :src="message.content"
-      alt="圖片訊息"
-      class="msg-image"
-    />
+      v-else-if="msgType === 'image' || msgType === '圖片'"
+      :src="getImageUrl(message.content)"
+       alt="圖片訊息"
+       class="msg-image"
+/>
 
     <!-- 未來擴充：檔案、語音、貼圖... -->
 
@@ -77,8 +84,8 @@ const msgType = props.message?.type || 'text'; // fallback
 }
 
 .msg-image {
-  max-width: 240px;
-  max-height: 240px;
+  width: 150px;
+  height: 150px;
   border-radius: 0.8rem;
   object-fit: cover;
   margin-bottom: 0.3rem;

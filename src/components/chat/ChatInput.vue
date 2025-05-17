@@ -22,19 +22,9 @@
         placeholder="請輸入訊息，按下Enter傳送"
       />
   
-      <!-- Emoji 按鈕 -->
-      <Button
-        v-if="props.showEmoji"
-        iconOnly
-        class="input-btn emoji-btn"
-        @click="togglePicker"
-      >
-        <i class="far fa-smile"></i>
-      </Button>
-  
-      <!-- Emoji 選擇器 -->
-      <div v-if="showPicker" class="emoji-picker">
-        <Picker :data="data" :preview="false" @select="insertEmoji" />
+      <!-- emoji 按鈕 -->
+      <div class="emoji-btn-wrap">
+        <V3Emoji @clickEmoji="insertEmoji" />
       </div>
   
       <!-- 傳送按鈕 -->
@@ -42,17 +32,15 @@
         v-if="props.showSend"
         type="submit"
         class="send-btn"
-      >
-        傳送 <i class="fas fa-paper-plane"></i>
-      </button>
+      >傳送</button>
     </form>
   </template>
   
   <script setup>
   import { ref, nextTick } from 'vue';
   import Button from '@/components/buttons/button.vue';
-  import data from '@emoji-mart/data';
-  import { Picker } from 'emoji-mart-vue-fast';
+  import V3Emoji from 'vue3-emoji';
+  import 'vue3-emoji/dist/style.css';
   import axios from 'axios';
   
   const text = ref('');
@@ -80,14 +68,15 @@
       const start = el.selectionStart;
       const end = el.selectionEnd;
       const value = el.value;
-      text.value = value.slice(0, start) + emoji.native + value.slice(end);
+      text.value = value.slice(0, start) + emoji + value.slice(end);
       nextTick(() => {
         el.focus();
-        el.selectionStart = el.selectionEnd = start + emoji.native.length;
+        el.selectionStart = el.selectionEnd = start + emoji.length;
       });
     } else {
-      text.value += emoji.native;
+      text.value += emoji;
     }
+    showPicker.value = false;
   }
   
   function sendText() {
@@ -165,7 +154,7 @@
   }
   
   .input-btn {
-    background: #fff5e6;
+    background: #3CDDD2;
     color: #444;
     border: none;
     border-radius: 0.8rem;
@@ -182,34 +171,21 @@
   }
   
   .input-btn:hover {
-    background: #ffe0b2;
+    background: #24B4A8;
   }
   
   .plus-btn {
     margin-left: 0.2rem;
   }
   
-  .emoji-btn {
-    color: #3c6df0;
-    background: #fff;
-    margin-right: 1rem;
-    margin-left: 0.2rem;
-    padding: 0.2rem;
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
+  .emoji-btn-wrap {
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-  }
-  
-  .emoji-btn:hover {
-    background: #e3eaff;
+    margin: 0 0.5rem;
   }
   
   .send-btn {
-    background: #fff5e6;
+    background:#3CDDD2;
     color: #222;
     border: none;
     border-radius: 0.8rem;
@@ -218,20 +194,15 @@
     font-weight: 500;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4em;
     cursor: pointer;
     transition: background 0.2s;
+    writing-mode: horizontal-tb;
   }
   
   .send-btn:hover {
-    background: #ffe0b2;
-  }
-  
-  .emoji-picker {
-    position: absolute;
-    bottom: 60px;
-    right: 30px;
-    z-index: 999;
+    background:  #24B4A8;
   }
   </style>
   
