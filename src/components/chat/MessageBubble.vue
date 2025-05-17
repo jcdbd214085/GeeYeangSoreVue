@@ -6,21 +6,54 @@
 </template>
 <script setup>
 const props = defineProps({
-  msg: { type: Object, required: true },
-  isMe: { type: Boolean, default: false }
+  message: {
+    type: Object,
+    required: true
+  },
+  isMe: {
+    type: Boolean,
+    default: false
+  }
 });
+
+const msgType = props.message?.type || 'text'; // fallback
 </script>
+
+<template>
+  <div :class="['msg-bubble', isMe ? 'me' : 'other']">
+    <!-- 文字訊息 -->
+    <pre
+      v-if="msgType === 'text' || msgType === '文字'"
+      class="msg-text"
+    >{{ message.content || message.text || '' }}</pre>
+
+    <!-- 圖片訊息 -->
+    <img
+      v-else-if="msgType === 'image'"
+      :src="message.content"
+      alt="圖片訊息"
+      class="msg-image"
+    />
+
+    <!-- 未來擴充：檔案、語音、貼圖... -->
+
+    <div class="msg-time">{{ message.time }}</div>
+  </div>
+</template>
+
 <style scoped>
 .msg-bubble {
-    max-width: 70%;
-    border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
-    padding: 0.9rem 1.2rem;
-    font-size: 1.05rem;
-    margin-bottom: 0.2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    word-break: break-word;
-    position: relative;
-    background: #fff;
+  max-width: 70%;
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  word-break: break-word;
+  position: relative;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .msg-bubble.me {
@@ -37,7 +70,19 @@ const props = defineProps({
 }
 
 .msg-text {
-    margin-bottom: 0.3rem;
+  margin-bottom: 0.3rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+}
+
+.msg-image {
+  max-width: 240px;
+  max-height: 240px;
+  border-radius: 0.8rem;
+  object-fit: cover;
+  margin-bottom: 0.3rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .msg-time {
