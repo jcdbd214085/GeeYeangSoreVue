@@ -35,7 +35,13 @@
 </template>
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import axios from 'axios'
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
+import { useUserStore } from '@/stores/user.js'
+
+const userStore = useUserStore()
+const emit = defineEmits(['open-login'])
 const router = useRouter()
 const props = defineProps({
   propertyId: { type: [String, Number], required: true },
@@ -50,12 +56,27 @@ const props = defineProps({
   bathroomCount: { type: Number, required: true },
   intersectAnimation: { type: String, default: 'fadeInLeft' }
 });
-const isFavorited = ref(false)
-console.log("image url", props.image)
-function toggleFavorite() {
-  isFavorited.value = !isFavorited.value
-}
 
+const favoriteStore = useFavoriteStore()
+const isFavorited = computed(() => {
+  return favoriteStore.list.some(item => item.propertyId === props.propertyId)
+})
+const tenantId = localStorage.getItem('tenantId')
+console.log("image url", props.image)
+
+async function toggleFavorite() {
+  if (!userStore.isLogin) {
+    favoriteStore.pendingFavoriteId = props.propertyId
+    emit('open-login')
+    return
+  }
+
+  if (isFavorited.value) {
+    await favoriteStore.removeFavorite(props.propertyId)
+  } else {
+    await favoriteStore.addFavorite(props.propertyId)
+  }
+}
 
 function goToDetail() {
   if (props.propertyId) {

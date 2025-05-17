@@ -2,7 +2,8 @@
     <Swiper :modules="[Autoplay]" :slides-per-view="2" :loop="true" :autoplay="{ delay: 5000, pauseOnMouseEnter: true }"
         :space-between="30">
         <SwiperSlide v-for="(item, i) in effectiveList" :key="i">
-            <LandlordPropertyCard v-bind="item.property" :landlord="item.landlord" class="no-animation" />
+            <LandlordPropertyCard v-bind="item.property" :landlord="item.landlord" class="no-animation"
+                @open-login="$emit('open-login')" />
         </SwiperSlide>
     </Swiper>
 </template>
@@ -18,6 +19,7 @@ import propertyImg from '@/assets/images/property/property.jpg'
 import avatarImg from '@/assets/images/avatar/default.png'
 import { computed } from 'vue'
 
+const emit = defineEmits(['open-login'])
 const props = defineProps({
     list: {
         type: Array,

@@ -5,7 +5,7 @@
             992: { slidesPerView: 3 }
         }">
         <SwiperSlide v-for="(item, i) in propertyList" :key="i">
-            <PropertyCard v-bind="item" class="no-animation small-card" />
+            <PropertyCard v-bind="item" class="no-animation small-card" @open-login="$emit('open-login')" />
         </SwiperSlide>
     </Swiper>
 </template>
@@ -14,11 +14,11 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Autoplay, Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
-
 import PropertyCard from '@/components/cards/PropertyCard.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import { computed } from 'vue'
 
+const emit = defineEmits(['open-login'])
 const props = defineProps({
     list: {
         type: Array,

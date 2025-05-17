@@ -3,7 +3,7 @@
         <h2 class="section-title">
             <i class="fa-solid fa-house"></i> 房源詳細資訊
         </h2>
-        <PropertyDetailCard v-if="property" :property="property" :images="images" />
+        <PropertyDetailCard v-if="property" :property="property" :images="images" @open-login="handleOpenLogin" />
 
         <div class="row mt-4 " v-if="property">
             <div class="col-md-8">
@@ -17,12 +17,12 @@
                 </div>
                 <div class="row mt-4 mb-5">
                     <h5 class="component-title">房源位置</h5>
-                    <MapView v-if="fullAddress" :address="fullAddress" />
+                    <MapView v-if="fullAddress" :address="fullAddress" :key="fullAddress" />
                 </div>
                 <div class="row mt-4 mb-5">
                     <h5 class="component-title">推薦房源</h5>
                     <div>
-                        <PropertyCarouselSmall :list="featuredProperties" />
+                        <PropertyCarouselSmall :list="featuredProperties" @open-login="handleOpenLogin" />
                     </div>
                 </div>
             </div>
@@ -46,13 +46,13 @@ import MapView from '@/components/map/MapView.vue'
 import PropertyCarouselSmall from '@/components/carousel/PropertyCarouselSmall.vue'
 import BackToTop from '@/components/common/BackToTop.vue'
 import Footer from '@/components/common/Footer.vue';
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const route = useRoute()
-const propertyId = route.params.id
+const propertyId = ref(route.params.id)
 const property = ref(null)
 const images = ref([])
 const landlord = ref(null)
@@ -130,27 +130,31 @@ const fallbackList = [
 ]
 
 const fullAddress = computed(() => {
-  return [
-    property.value?.city,
-    property.value?.district,
-    property.value?.address
-  ].filter(Boolean).join('')
+    return [
+        property.value?.city,
+        property.value?.district,
+        property.value?.address
+    ].filter(Boolean).join('')
 })
 
-onMounted(async () => {
+async function loadPropertyDetail(id) {
     try {
-        console.log("房源 ID:", propertyId);
-        console.log("API 呼叫 URL:", `${API_BASE_URL}/api/PropertySearch/${propertyId}`);
-        const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/${propertyId}`)
+        console.log("房源 ID:", id);
+        console.log("API 呼叫 URL:", `${API_BASE_URL}/api/PropertySearch/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/${id}`)
         property.value = res.data.property
         images.value = res.data.images
         landlord.value = res.data.landlord
-        } catch (error) {
+    } catch (error) {
         console.error('取得房源失敗:', error)
         property.value = fallbackProperty
         images.value = fallbackImages
         landlord.value = fallbackLandlord
     }
+}
+
+onMounted(async () => {
+    await loadPropertyDetail(route.params.id)
 
     try {
         const res2 = await axios.get(`${API_BASE_URL}/api/PropertySearch/recommendedProperties`)
@@ -160,6 +164,18 @@ onMounted(async () => {
         featuredProperties.value = fallbackList
     }
 })
+
+watch(() => route.params.id, async (newId, oldId) => {
+    if (newId !== oldId) {
+        await loadPropertyDetail(newId)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+})
+
+const emit = defineEmits(['open-login'])
+function handleOpenLogin() {
+    emit('open-login')
+}
 </script>
 
 <style scoped>

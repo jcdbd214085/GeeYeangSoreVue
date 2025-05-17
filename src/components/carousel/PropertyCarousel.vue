@@ -8,6 +8,7 @@ import PropertyCard from '@/components/cards/PropertyCard.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import { computed } from 'vue'
 
+const emit = defineEmits(['open-login'])
 const props = defineProps({
     list: {
         type: Array,
@@ -88,7 +89,7 @@ const propertyList = computed(() => props.list.length > 0 ? props.list : fallbac
         :autoplay="{ delay: 3000, pauseOnMouseEnter: true }" :space-between="20"
         :breakpoints="{ 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }">
         <SwiperSlide v-for="(item, i) in propertyList" :key="i">
-            <PropertyCard v-bind="item" class="no-animation" />
+            <PropertyCard v-bind="item" class="no-animation" @open-login="$emit('open-login')" />
         </SwiperSlide>
     </Swiper>
 </template>

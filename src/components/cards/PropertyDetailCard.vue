@@ -54,7 +54,30 @@ import { Navigation, Thumbs } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/thumbs'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
+import { useUserStore } from '@/stores/user.js'
+
+const emit = defineEmits(['open-login'])
+const userStore = useUserStore()
+const favoriteStore = useFavoriteStore()
+const isFavorited = computed(() =>
+    favoriteStore.list.some(item => item.propertyId === props.property.propertyId)
+)
+
+async function toggleFavorite() {
+    if (!userStore.isLogin) {
+        favoriteStore.pendingFavoriteId = props.propertyId
+        emit('open-login')
+        return
+    }
+
+    if (isFavorited.value) {
+        await favoriteStore.removeFavorite(props.property.propertyId)
+    } else {
+        await favoriteStore.addFavorite(props.property.propertyId)
+    }
+}
 
 const thumbsSwiper = ref(null)
 
@@ -71,11 +94,7 @@ function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString()
 }
 
-const isFavorited = ref(false)
 
-function toggleFavorite() {
-    isFavorited.value = !isFavorited.value
-}
 </script>
 
 <style scoped>

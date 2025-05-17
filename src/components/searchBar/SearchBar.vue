@@ -1,7 +1,8 @@
 <template>
   <div class="search-container position-absolute">
     <!-- 搜尋欄 -->
-    <form class="search-bar d-flex bg-white p-2 rounded-pill" @click.stop="showFilter = true" @submit.prevent="emitSearch">
+    <form class="search-bar d-flex bg-white p-2 rounded-pill" @click.stop="showFilter = true"
+      @submit.prevent="emitSearch">
       <input class="form-control" v-model="searchKeyword" placeholder="輸入物件標題或地址" />
       <button class="btn btn-primary" type="submit">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -31,8 +32,8 @@
             <label class="fw-bold mb-1">類型</label>
             <select class="form-select" v-model="type">
               <option>不限</option>
-              <option>整層出租</option>
-              <option>整棟出租</option>
+              <option>整層住家</option>
+              <option>整棟住家</option>
               <option>套房</option>
               <option>雅房</option>
               <option>其他</option>
@@ -43,9 +44,9 @@
             <select class="form-select" v-model="buildingType">
               <option>不限</option>
               <option>公寓</option>
-              <option>電梯大樓</option>
+              <option>大樓</option>
               <option>透天</option>
-              <option>別墅</option>
+              <option>華廈</option>
             </select>
           </div>
         </div>
@@ -89,14 +90,8 @@
         <div class="mb-3">
           <label class="fw-bold mb-1">特色</label>
           <div class="d-flex flex-wrap gap-2">
-            <button
-              v-for="feature in featureOptions"
-              :key="feature"
-              type="button"
-              class="feature-btn"
-              :class="{ active: selectedFeatures.includes(feature) }"
-              @click="toggleFeature(feature)"
-            >
+            <button v-for="feature in featureOptions" :key="feature" type="button" class="feature-btn"
+              :class="{ active: selectedFeatures.includes(feature) }" @click="toggleFeature(feature)">
               {{ feature }}
             </button>
           </div>
@@ -215,7 +210,7 @@ function emitSearch() {
   nextTick(() => {
     const section = document.getElementById('property-list-section')
     if (section) {
-    section.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      section.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   })
 }

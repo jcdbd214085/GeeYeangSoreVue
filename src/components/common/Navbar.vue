@@ -1,19 +1,10 @@
 <template>
   <!-- 導航列元件 -->
-  <nav
-    class="navbar navbar-expand-lg fixed-top"
-    id="mainNav"
-    :class="{ 'navbar-scrolled': isScrolled }"
-  >
+  <nav class="navbar navbar-expand-lg fixed-top" id="mainNav" :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
       <!-- 左側 Logo 與名稱 -->
       <a class="navbar-brand" href="#">
-        <img
-          src="/image/logo2.png"
-          alt="租屋平台"
-          class="nav-logo"
-          style="height: 48px; width: 48px"
-        />
+        <img src="/image/logo2.png" alt="租屋平台" class="nav-logo" style="height: 48px; width: 48px" />
       </a>
       <span class="navbar-brand">居研所</span>
 
@@ -23,38 +14,20 @@
       </button>
 
       <!-- 導覽列內容（主選單與登入區） -->
-      <div
-        class="collapse navbar-collapse"
-        :class="{ show: menuOpen }"
-        id="navbarNav"
-      >
+      <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <!-- 靜態選單項目 -->
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              to="/"
-              exact-active-class="active"
-              @click="closeMenu"
-              >首頁</router-link
-            >
+            <router-link class="nav-link" to="/" exact-active-class="active" @click="closeMenu">首頁</router-link>
           </li>
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              to="/PropertySearch"
-              exact-active-class="active"
-              @click="closeMenu"
-              >搜尋房源</router-link
-            >
+            <router-link class="nav-link" to="/PropertySearch" exact-active-class="active"
+              @click="closeMenu">搜尋房源</router-link>
           </li>
 
           <!-- 聯絡我們（滑鼠移入展開） -->
-          <li
-            class="nav-item dropdown"
-            @mouseenter="isHelpAccordionOpen = true"
-            @mouseleave="isHelpAccordionOpen = false"
-          >
+          <li class="nav-item dropdown" @mouseenter="isHelpAccordionOpen = true"
+            @mouseleave="isHelpAccordionOpen = false">
             <a class="nav-link dropdown-toggle" href="#">資訊專區</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <router-link class="dropdown-item" to="/notice" @click="closeMenu">最新公告</router-link>
@@ -65,9 +38,8 @@
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li class="nav-item dropdown" v-if="isLandlord"
-              @mouseenter="isLandlordAccordionOpen = true"
-              @mouseleave="isLandlordAccordionOpen = false">
+          <li class="nav-item dropdown" v-if="isLandlord" @mouseenter="isLandlordAccordionOpen = true"
+            @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.isLandlord">
               <a class="nav-link dropdown-toggle" href="#">
                 房東專區
@@ -98,13 +70,7 @@
               <a class="nav-link" href="#" @click="openChatPopup">
                 <span class="icon-wrapper">
                   <i class="fa-solid fa-comments"></i>
-                  <Badge
-                    isDot
-                    color="#ff9800"
-                    :size="10"
-                    :top="'-2px'"
-                    :right="'-6px'"
-                  />
+                  <Badge isDot color="#ff9800" :size="10" :top="'-2px'" :right="'-6px'" />
                 </span>
                 聊天室
               </a>
@@ -112,45 +78,23 @@
             <!-- 收藏 -->
             <li class="nav-item nav-icon-item position-relative">
               <a class="nav-link" href="#" @click="toggleFavoritePopup">
-                <span class="icon-wrapper"
-                  ><i class="fa-solid fa-heart"></i
-                ></span>
+                <span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span>
                 收藏
               </a>
-              <FavoritePopup
-                :visible="showFavoritePopup"
-                :favorites="favoriteList"
-                @remove="removeFavorite"
-                @close="showFavoritePopup = false"
-              />
+              <FavoritePopup :visible="showFavoritePopup" @close="showFavoritePopup = false" />
             </li>
             <!-- 通知 -->
-            <li
-              class="nav-item nav-icon-item dropdown"
-              style="position: relative"
-            >
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                @click.prevent="toggleNotification"
-              >
-                <span class="icon-wrapper"
-                  ><i class="fa-solid fa-bell"></i
-                ></span>
+            <li class="nav-item nav-icon-item dropdown" style="position: relative">
+              <a class="nav-link dropdown-toggle" href="#" @click.prevent="toggleNotification">
+                <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
               <!-- 顯示通知清單 -->
-              <NewAlert
-                v-if="isNotificationOpen"
-                :notifications="notifications"
-              />
+              <NewAlert v-if="isNotificationOpen" :notifications="notifications" />
             </li>
             <!-- 個人頁面（滑鼠移入展開） -->
-            <li
-              class="nav-item nav-icon-item dropdown"
-              @mouseenter="isProfileAccordionOpen = true"
-              @mouseleave="isProfileAccordionOpen = false"
-            >
+            <li class="nav-item nav-icon-item dropdown" @mouseenter="isProfileAccordionOpen = true"
+              @mouseleave="isProfileAccordionOpen = false">
               <a class="nav-link dropdown-toggle" href="#">
                 <span class="icon-wrapper">
                   <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
@@ -158,28 +102,14 @@
                 個人頁面
               </a>
               <div class="accordion-menu" v-show="isProfileAccordionOpen">
-                <router-link
-                  class="dropdown-item"
-                  to="/UserHome/UserProfile"
-                  @click="closeMenu"
-                  >個人資料</router-link
-                >
-                <router-link
-                  class="dropdown-item"
-                  to="/user/favorite"
-                  @click="closeMenu"
-                  >我的收藏</router-link
-                >
-                <router-link class="dropdown-item" to="/chat" @click="closeMenu"
-                  >聊天室</router-link
-                >
+                <router-link class="dropdown-item" to="/UserHome/UserProfile" @click="closeMenu">個人資料</router-link>
+                <router-link class="dropdown-item" to="/user/favorite" @click="closeMenu">我的收藏</router-link>
+                <router-link class="dropdown-item" to="/chat" @click="closeMenu">聊天室</router-link>
               </div>
             </li>
             <!-- 登出按鈕 -->
             <li class="nav-item">
-              <Button color="outline-secondary" class="ms-2" @click="logout"
-                >登出</Button
-              >
+              <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
             </li>
           </template>
         </ul>
@@ -192,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, defineEmits } from "vue";
+import { ref, onMounted, onUnmounted, defineEmits, computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import { useChatPopupStore } from "@/stores/chatPopup";
 import Button from "@/components/buttons/button.vue";
@@ -205,10 +135,11 @@ import FavoritePopup from '@/components/favorite/FavoritePopup.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import axios from 'axios'
 import { storeToRefs } from 'pinia';
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
 
 const router = useRouter();
 const userStore = useUserStore();
-const { role, isLogin, isLandlord} = storeToRefs(userStore); 
+const { role, isLogin, isLandlord } = storeToRefs(userStore);
 const chatPopup = useChatPopupStore();
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
@@ -268,7 +199,9 @@ async function logout() {
 
   userStore.logout();
   chatPopup.$reset();
-  router.push('/'); 
+  favoriteStore.list = []
+  localStorage.removeItem('favorites')
+  router.push('/');
 }
 function openChatPopup(e) {
   e.preventDefault();
@@ -351,33 +284,9 @@ const favoriteList = ref([
     rentPrice: 16500,
   },
 ]);
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-//     favoriteList.value = res.data.slice(0, 5)
-//   } catch (error) {
-//     console.warn('取得收藏清單失敗，使用假資料', error)
-//   }
-// })
+const favoriteStore = useFavoriteStore()
+const favorites = computed(() => favoriteStore.list)
 
-
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-//     favoriteList.value = res.data.slice(0, 5) 
-//   } catch (error) {
-//     console.warn('取得收藏清單失敗，使用假資料', error)
-//   }
-// })
-
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-//     favoriteList.value = res.data.slice(0, 5) 
-//   } catch (error) {
-//     console.warn('取得收藏清單失敗，使用假資料', error)
-//   }
-// })
 
 function toggleFavoritePopup(e) {
   e.preventDefault();
@@ -394,12 +303,10 @@ const emit = defineEmits(["open-login"]);
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.6) 40%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.6) 40%,
+      rgba(255, 255, 255, 0) 100%);
   transition: all 0.4s ease;
   padding: 1.2rem 0;
   position: fixed;
@@ -670,4 +577,3 @@ const emit = defineEmits(["open-login"]);
   font-size: 24px;
 }
 </style>
-

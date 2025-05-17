@@ -3,126 +3,88 @@
     <h2 class="mb-4 section-title"><i class="fa-solid fa-heart"></i> 我的收藏</h2>
     <div class="row g-4">
       <div class="col-md-3" v-for="item in favorites" :key="item.propertyId">
-        <PropertyCard
-          :propertyId="item.propertyId"
-          :image="item.image"
-          :title="item.title"
-          :city="item.city"
-          :district="item.district"
-          :address="item.address"
-          :rentPrice="item.rentPrice"
-          :propertyType="item.propertyType"
-          :roomCount="item.roomCount"
-          :bathroomCount="item.bathroomCount"
-          class="small-card"
-        />
-        </div>
-        <div class="col-md-12 d-flex justify-content-center mt-4">
-            <Pagination :totalItems="favorites.length" :itemsPerPage="8" :currentPage="1"
-            :showFirstLastButtons="true" :showPageInfo="true" />
-        </div>
+        <PropertyCard :propertyId="item.propertyId" :image="item.image" :title="item.title" :city="item.city"
+          :district="item.district" :address="item.address" :rentPrice="item.rentPrice"
+          :propertyType="item.propertyType" :roomCount="item.roomCount" :bathroomCount="item.bathroomCount"
+          class="small-card" />
+      </div>
+      <div v-if="favorites.length === 0" class="empty-favorites">
+        <p class="text-muted fs-5">目前沒有收藏任何房源</p>
+        <router-link to="/PropertySearch" class="explore-btn">
+          去探索房源 <i class="fa-solid fa-chevron-right ms-1"></i>
+        </router-link>
+      </div>
+      <div class="col-md-12 d-flex justify-content-center mt-4">
+        <Pagination :totalItems="favorites.length" :itemsPerPage="8" :currentPage="1" :showFirstLastButtons="true"
+          :showPageInfo="true" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import PropertyCard from '@/components/cards/PropertyCard.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
-import Pagination from '@/components/Pagination/Pagination.vue';
+import Pagination from '@/components/Pagination/Pagination.vue'
+import { useFavoriteStore } from '@/stores/favoriteStore.js';
 
-const fallbackList = [
-  {
-    propertyId: 1,
-    image: propertyImg,
-    title: '物件1',
-    city: '台中市',
-    district: '西區',
-    address: '公益路二段 88 號',
-    rentPrice: 16800,
-    propertyType: '套房',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    propertyId: 2,
-    image: propertyImg,
-    title: '物件2',
-    city: '高雄市',
-    district: '前鎮區',
-    address: '海岸路 100 號 7 樓',
-    rentPrice: 16800,
-    propertyType: '套房',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    propertyId: 3,
-    image: propertyImg,
-    title: '物件3',
-    city: '高雄市',
-    district: '前鎮區',
-    address: '海岸路 100 號 7 樓',
-    rentPrice: 16800,
-    propertyType: '套房',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    propertyId: 4,
-    image: propertyImg,
-    title: '物件4',
-    city: '高雄市',
-    district: '前鎮區',
-    address: '海岸路 100 號 7 樓',
-    rentPrice: 16800,
-    propertyType: '套房',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    propertyId: 5,
-    image: propertyImg,
-    title: '物件5',
-    city: '高雄市',
-    district: '前鎮區',
-    address: '海岸路 100 號 7 樓',
-    rentPrice: 16800,
-    propertyType: '套房',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    propertyId: 6,
-    image: propertyImg,
-    title: '物件6',
-    city: '高雄市',
-    district: '前鎮區',
-    address: '海岸路 100 號 7 樓',
-    rentPrice: 16800,
-    propertyType: '套房',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-]
 
-const favorites = ref([])
-
-onMounted(async () => {
-  try {
-    const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-    favorites.value = res.data
-  } catch (error) {
-    console.warn('取得收藏資料失敗，使用假資料', error)
-    favorites.value = fallbackList
-  }
+const favoriteStore = useFavoriteStore()
+const favorites = computed(() => favoriteStore.list)
+onMounted(() => {
+  favoriteStore.fetchFavorites()
+})
+onMounted(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  favoriteStore.fetchFavorites()
 })
 </script>
 
 <style scoped>
 .section-title {
-    font-size: 1.8rem;
-    margin-bottom: 30px;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+}
+
+.empty-favorites {
+  position: relative;
+  height: 300px;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  margin-top: 40px;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.empty-favorites p {
+  font-size: 1.25rem;
+  margin-bottom: auto;
+  margin-top: 115px;
+}
+
+.explore-btn {
+  position: absolute;
+  bottom: 90px;
+  background-color: transparent;
+  color: #24B4A8 !important;
+  padding: 10px 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+  color: #3CDDD2 !important;
+}
+
+.explore-btn:active {
+  color: #007A75 !important;
 }
 </style>

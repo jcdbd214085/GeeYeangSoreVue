@@ -31,7 +31,7 @@
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount">
             <template #badge>
-              <BadgeList>推薦</BadgeList>
+              <BadgeList type="推薦" />
             </template>
           </PropertyCard>
         </div>
@@ -47,7 +47,7 @@
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount">
             <template #badge>
-              <BadgeList>新增</BadgeList>
+              <BadgeList type="New" />
             </template>
           </PropertyCard>
         </div>
@@ -279,5 +279,4 @@ const newList = [
   color: #fff;
   font-size: 28px;
 }
-
 </style>
