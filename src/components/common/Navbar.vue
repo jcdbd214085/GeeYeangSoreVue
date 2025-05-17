@@ -58,9 +58,13 @@
             <a class="nav-link dropdown-toggle" href="#">資訊專區</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <router-link class="dropdown-item" to="/notice" @click="closeMenu">最新公告</router-link>
-              <router-link class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
+
+
+              <router-link v-if="isLogin" class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
               <router-link class="dropdown-item" to="/guide" @click="closeMenu">指南手冊</router-link>
               <router-link class="dropdown-item" to="/about" @click="closeMenu">關於居研所</router-link>
+
+
             </div>
           </li>
 
@@ -86,16 +90,13 @@
 
         <!-- 右側登入與個人區域 -->
         <ul class="navbar-nav">
-          <!-- 未登入狀態 -->
-          <template v-if="!isLogin">
-            <li class="nav-item">
-              <Button color="primary" class="me-2" @click="$emit('open-login')">
-                登入/註冊
-              </Button>
-            </li>
-          </template>
-
-          <!-- 已登入狀態 -->
+          <!-- 如果尚未登入，顯示登入/註冊 -->
+          <li class="nav-item" v-if="!isLogin">
+            <Button color="primary" class="me-2 login-btn" @click="$emit('open-login')">
+              登入/註冊
+            </Button>
+          </li>
+          <!-- 如果已登入 -->
           <template v-else>
             <!-- 聊天室 -->
             <li class="nav-item nav-icon-item">
