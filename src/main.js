@@ -36,17 +36,22 @@ app.directive('intersect', intersect)
 
 // 確保 pinia 初始化後再呼叫 useUserStore
 const userStore = useUserStore();
+
+// 初始化登入狀態
+userStore.initFromLocalStorage();
+
 (async () => {
     try {
         const res = await fetch('/api/Auth/me', { credentials: 'include' })
         const data = await res.json()
         if (data.success) {
-            userStore.login('tenant', data.userName || data.user || '')
+            userStore.login(data.role, data.userName || data.user || '', data.isLandlord);
         } else {
-            userStore.logout()
+            userStore.logout();
         }
-    } catch {
-        userStore.logout()
+    } catch (e) {
+        console.error('驗證登入失敗', e);
+        userStore.logout();
     }
 })();
 

@@ -57,12 +57,12 @@
 import { useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
 import AvatarImage from '@/components/Avatar.vue'
-import { useChatPopupStore } from '@/stores/chatPopup'
 import { useFavoriteStore } from '@/stores/favoriteStore.js'
 import { useUserStore } from '@/stores/user.js'
+import axios from 'axios'
 
 const userStore = useUserStore()
-const emit = defineEmits(['open-login'])
+const emit = defineEmits(['open-login', 'open-chat'])
 const router = useRouter()
 const props = defineProps({
   propertyId: { type: [String, Number], required: true },
@@ -106,22 +106,23 @@ async function toggleFavorite() {
   }
 }
 
-const chatPopupStore = useChatPopupStore()
-
-function openChat() {
-  const landlordId = props.landlord.id
-  const chatAlreadyExists = chatPopupStore.openChats.some(c => c.id === landlordId)
-
-  if (!chatAlreadyExists) {
-    chatPopupStore.openChats.push({
-      id: landlordId,
-      name: props.landlord.name,
-      avatar: props.landlord.avatar
-    })
+async function openChat() {
+  try {
+    const res = await axios.get('/api/auth/me', { withCredentials: true })
+    if (!res.data.success) {
+      emit('open-login')
+      return
+    }
+    const myTenantId = res.data.tenantId
+    const landlordTenantId = props.landlord.id
+    if (String(myTenantId) === String(landlordTenantId)) {
+      alert('無法與自己對話')
+      return
+    }
+    emit('open-chat', landlordTenantId)
+  } catch (e) {
+    emit('open-login')
   }
-
-  chatPopupStore.activeChatId = landlordId
-  chatPopupStore.open()
 }
 </script>
 

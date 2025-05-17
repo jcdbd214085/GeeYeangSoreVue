@@ -13,14 +13,15 @@ import BackToTop from '@/components/common/BackToTop.vue'
 import LoginModal from '@/components/login/LoginModal.vue'
 
 import { useLoadingStore } from '@/stores/loadingStore'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 import QARobot from "@/components/QARobot/QARobot.vue";
 
 const loadingStore = useLoadingStore()
-
 const showLoginModal = ref(false)
+const showChatPopup = ref(false)
+const isUserReady = ref(false); // 新增登入狀態同步指標，使彈窗聊天室能同步
 function openLoginModal() {
   showLoginModal.value = true;
 }
@@ -28,34 +29,49 @@ function closeLoginModal() {
   showLoginModal.value = false;
 }
 const favoriteStore = useFavoriteStore()
+
+function openChatPopup() {
+  if (!isUserReady.value) return; //  防呆，尚未初始化完成不開啟
+  showChatPopup.value = true;
+}
+function closeChatPopup() {
+  showChatPopup.value = false;
+}
+
 const userStore = useUserStore();
-onMounted(() => {
+onMounted(async () => {
   userStore.initFromLocalStorage();
 
   // 嘗試從後端抓目前登入者（驗證 Session）
-   //try {
-   //  const res = await fetch('/api/auth/me', {
-   //    credentials: 'include' // 必加，才能帶 cookie 給後端
-   //  });
-
-    // if (res.ok) {
-    //  const data = await res.json();
-     //  userStore.login(data.role, data.userName, data.isLandlord); // 重新登入前端狀態
-     //  await favoriteStore.fetchFavorites()
-     //} else {
-     //  userStore.logout(); // Session 無效 → 登出前端狀態
-    // }
-  // } catch (err) {
-   //  console.error('Session 驗證失敗', err);
-   //}
-   
+  try {
+    const res = await fetch('/api/auth/me', {
+      credentials: 'include' // 必加，才能帶 cookie 給後端
+    });
+    if (res.ok) {
+      const data = await res.json();
+      userStore.login(data.role, data.userName, data.isLandlord);
+    } else {
+      userStore.logout(); // Session 無效 → 登出前端狀態
+    }
+  } catch (err) {
+    console.error('Session 驗證失敗', err);
+  } finally {
+    isUserReady.value = true; //無論成功或失敗都表示初始化完成
+  }
 });
+
+watch(
+  () => userStore.isLogin,
+  (newVal) => {
+    if (!newVal) closeChatPopup();
+  }
+);// 監聽登入狀態變化，登出後關閉彈窗聊天室
 
 </script>
 
 <template>
   <!-- 導覽列會出現在每個頁面上方 -->
-  <Navbar @open-login="openLoginModal" />
+  <Navbar @open-login="openLoginModal" @open-chat="openChatPopup" />
 
   <!-- 主要內容區，避免被 fixed-top 導覽列遮擋 -->
   <div class="main-content">
@@ -63,9 +79,12 @@ onMounted(() => {
   </div>
 
   <!-- 全站聊天室彈窗 -->
-  <ChatPopup />
-  <QARobot></QARobot>
-  <!-- 全站 Loading 畫面 -->
+  <ChatPopup
+    v-if="showChatPopup && isUserReady"
+    @close="closeChatPopup"
+  />
+  <QARobot></QARobot> 
+<!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />
   <BackToTop />

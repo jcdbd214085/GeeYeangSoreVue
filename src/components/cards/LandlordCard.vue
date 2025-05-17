@@ -25,8 +25,8 @@
 
 <script setup>
 import AvatarImage from '@/components/Avatar.vue'
-import { useChatPopupStore } from '@/stores/chatPopup'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
+import axios from 'axios'
 
 const props = defineProps({
     landlord: {
@@ -34,17 +34,25 @@ const props = defineProps({
         required: true
     }
 })
+const emit = defineEmits(['open-chat'])
 
-const chatPopupStore = useChatPopupStore()
-
-function openChat() {
-    const { id, name, avatar } = props.landlord
-    const exists = chatPopupStore.openChats.some(c => c.id === id)
-    if (!exists) {
-        chatPopupStore.openChats.push({ id, name, avatar })
+async function openChat() {
+    try {
+        const res = await axios.get('/api/auth/me', { withCredentials: true })
+        if (!res.data.success) {
+            alert('請先登入');
+            return;
+        }
+        const myTenantId = res.data.tenantId
+        const landlordTenantId = props.landlord.id
+        if (String(myTenantId) === String(landlordTenantId)) {
+            alert('無法與自己對話');
+            return;
+        }
+        emit('open-chat', landlordTenantId)
+    } catch (e) {
+        alert('請先登入');
     }
-    chatPopupStore.activeChatId = id
-    chatPopupStore.open()
 }
 </script>
 

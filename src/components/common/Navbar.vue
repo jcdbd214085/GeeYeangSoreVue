@@ -42,7 +42,7 @@
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li class="nav-item dropdown" v-if="isLandlord" @mouseenter="isLandlordAccordionOpen = true"
+          <li class="nav-item dropdown" v-if="isLogin" @mouseenter="isLandlordAccordionOpen = true"
             @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.isLandlord">
               <a class="nav-link dropdown-toggle" href="#">
@@ -75,7 +75,6 @@
               <a class="nav-link" href="#" @click="openChatPopup">
                 <span class="icon-wrapper">
                   <i class="fa-solid fa-comments"></i>
-                  <Badge isDot color="#ff9800" :size="10" :top="'-2px'" :right="'-6px'" />
                 </span>
                 聊天室
               </a>
@@ -133,7 +132,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, defineEmits, computed } from "vue";
 import { useUserStore } from "@/stores/user";
-import { useChatPopupStore } from "@/stores/chatPopup";
 import Button from "@/components/buttons/button.vue";
 import Avatar from "@/components/Avatar.vue";
 import Badge from "@/components/Badge.vue";
@@ -149,8 +147,7 @@ import { useFavoriteStore } from '@/stores/favoriteStore.js'
 
 const router = useRouter();
 const userStore = useUserStore();
-const { role, isLogin, isLandlord } = storeToRefs(userStore);
-const chatPopup = useChatPopupStore();
+const { role, isLogin, isLandlord} = storeToRefs(userStore); 
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
@@ -201,16 +198,19 @@ function loginAsBoth() {
   userStore.login("tenant", "房東房客A");
 }
 function logout() {
-  userStore.logout();
-  chatPopup.$reset();
-  favoriteStore.list = []
-  localStorage.removeItem('favorites')
-  router.push('/');
+  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    .finally(() => {
+      userStore.logout();
+      favoriteStore.list = [];
+      localStorage.removeItem('favorites');
+      router.push('/');
+    });
 }
 function openChatPopup(e) {
   e.preventDefault();
-  chatPopup.open();
+  emit("open-chat");
 }
+
 function goToLandlordRegister() {
   router.push("/landlord");
 }
@@ -301,7 +301,7 @@ function removeFavorite(id) {
   favoriteList.value = favoriteList.value.filter((f) => f.propertyId !== id);
 }
 
-const emit = defineEmits(["open-login"]);
+const emit = defineEmits(["open-login", "open-chat"]);
 </script>
 
 <style scoped>
