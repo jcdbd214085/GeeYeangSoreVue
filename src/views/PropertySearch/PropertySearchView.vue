@@ -39,9 +39,10 @@
                 <i class="fa-solid fa-star"></i> 推薦房東
             </h2>
             <div v-intersect="'fadeInRight'">
-                <LandlordCarousel :list="landlordProperties" @open-login="handleOpenLogin" />
+                <LandlordCarousel :list="landlordProperties" @open-login="handleOpenLogin" @open-chat="handleOpenChat" />
             </div>
         </div>
+        <ChatPopup v-if="isChatOpen" :key="currentChatTenantId" @close="isChatOpen = false" />
     </section>
 
 
@@ -58,6 +59,7 @@ import Pagination from '@/components/Pagination/Pagination.vue';
 import { ref, onMounted, computed, reactive, watch } from 'vue'
 import axios from 'axios'
 import { useFavoriteStore } from '@/stores/favoriteStore'
+import ChatPopup from '@/components/chat/ChatPopup.vue'
 
 const favoriteStore = useFavoriteStore()
 const emit = defineEmits(['open-login'])
@@ -120,6 +122,13 @@ async function handleSearch(filter) {
 }
 function handleOpenLogin() {
     emit('open-login')
+}
+
+const isChatOpen = ref(false)
+const currentChatTenantId = ref(null)
+function handleOpenChat(landlordTenantId) {
+    currentChatTenantId.value = landlordTenantId
+    isChatOpen.value = true
 }
 </script>
 

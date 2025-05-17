@@ -69,7 +69,7 @@
           from: msg.from,
           to: msg.to,
           type: msg.type || msg.messageType || 'text',
-          content: msg.content,
+          content: msg.content || msg.text,
           time: msg.time
         });
       }

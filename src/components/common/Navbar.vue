@@ -42,7 +42,7 @@
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li class="nav-item dropdown" v-if="isLandlord" @mouseenter="isLandlordAccordionOpen = true"
+          <li class="nav-item dropdown" v-if="isLogin" @mouseenter="isLandlordAccordionOpen = true"
             @mouseleave="isLandlordAccordionOpen = false">
             <template v-if="userStore.isLandlord">
               <a class="nav-link dropdown-toggle" href="#">
@@ -198,11 +198,13 @@ function loginAsBoth() {
   userStore.login("tenant", "房東房客A");
 }
 function logout() {
-  userStore.logout();
-  chatPopup.$reset();
-  favoriteStore.list = []
-  localStorage.removeItem('favorites')
-  router.push('/');
+  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    .finally(() => {
+      userStore.logout();
+      favoriteStore.list = [];
+      localStorage.removeItem('favorites');
+      router.push('/');
+    });
 }
 function openChatPopup(e) {
   e.preventDefault();

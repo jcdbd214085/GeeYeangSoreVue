@@ -28,11 +28,11 @@
             </div>
             <div class="col-md-4">
                 <div style="position: sticky; top: 100px;">
-                    <LandlordCard :landlord="landlord" />
+                    <LandlordCard :landlord="landlord" @open-chat="handleOpenChat" />
                 </div>
             </div>
         </div>
-
+        <ChatPopup v-if="isChatOpen" :key="currentChatTenantId" @close="isChatOpen = false" />
     </div>
 
 </template>
@@ -49,6 +49,7 @@ import Footer from '@/components/common/Footer.vue';
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
+import ChatPopup from '@/components/chat/ChatPopup.vue'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const route = useRoute()
@@ -57,6 +58,8 @@ const property = ref(null)
 const images = ref([])
 const landlord = ref(null)
 const featuredProperties = ref([])
+const isChatOpen = ref(false)
+const currentChatTenantId = ref(null)
 
 const allFeatures = [
     { key: 'dog', label: '可養狗', icon: 'fa-solid fa-dog' },
@@ -175,6 +178,11 @@ watch(() => route.params.id, async (newId, oldId) => {
 const emit = defineEmits(['open-login'])
 function handleOpenLogin() {
     emit('open-login')
+}
+
+function handleOpenChat(landlordTenantId) {
+    currentChatTenantId.value = landlordTenantId
+    isChatOpen.value = true
 }
 </script>
 
