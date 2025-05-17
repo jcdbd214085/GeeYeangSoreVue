@@ -24,6 +24,13 @@
       </select>
     </div>
     <div v-if="currentTab === 'active' && activeProperties.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg width="80" height="80" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="16" fill="#F5F5F5"/>
+          <path d="M20 44V32L32 22L44 32V44C44 45.1046 43.1046 46 42 46H22C20.8954 46 20 45.1046 20 44Z" fill="#B0BEC5"/>
+          <rect x="28" y="36" width="8" height="10" rx="1" fill="#90A4AE"/>
+        </svg>
+      </div>
       <p>你沒有刊登中的物件，先來刊登一間吧！</p>
     </div>
     <div v-if="currentTab === 'active' && activeProperties.length > 0" class="property-list-listview">
@@ -39,12 +46,31 @@
         </div>
       </div>
     </div>
+    <div v-if="currentTab === 'draft'">
+      <div v-if="drafts.length === 0">目前沒有草稿</div>
+      <div v-for="(draft, idx) in drafts" :key="draft.savedAt" class="property-list-row">
+        <div class="property-list-info">
+          <div class="property-list-title">{{ draft.data.title || '未命名草稿' }}</div>
+          <div class="property-list-rent">儲存於：{{ draft.savedAt }}</div>
+        </div>
+        <div class="property-list-actions">
+          <button class="edit-btn" @click="editDraft(draft)">編輯</button>
+          <button class="edit-btn danger" @click="deleteDraft(idx)">刪除</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import Button from '@/components/buttons/button.vue';
+import axios from 'axios';
+
+const router = useRouter();
+const userStore = useUserStore();
 
 const tabs = [
   { label: '刊登中', value: 'active' },
@@ -58,41 +84,8 @@ const filterType = ref('');
 const sort = ref('updated');
 
 // 只用 activeProperties
-const activeProperties = ref([
-  {
-    id: 1,
-    title: '台中市西屯區獨立套房 (VIP1)',
-    cover: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-    rent: 11400,
-    status: 'active',
-    city: '台中市',
-    district: '西屯區',
-    address: '逢甲路100號',
-    created: '2024-05-10T10:00:00Z',
-  },
-  {
-    id: 2,
-    title: '台北市大安區精選套房 (VIP2)',
-    cover: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
-    rent: 16800,
-    status: 'active',
-    city: '台北市',
-    district: '大安區',
-    address: '信義路三段200號',
-    created: '2024-05-09T09:00:00Z',
-  },
-  {
-    id: 3,
-    title: '新北市板橋區置頂豪宅 (VIP3)',
-    cover: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=400&q=80',
-    rent: 32000,
-    status: 'active',
-    city: '新北市',
-    district: '板橋區',
-    address: '文化路一段300號',
-    created: '2024-05-08T08:00:00Z',
-  },
-]);
+const activeProperties = ref([]);
+const drafts = ref([]);
 
 const filteredActiveProperties = computed(() => {
   let list = activeProperties.value;
@@ -115,14 +108,60 @@ const filteredActiveProperties = computed(() => {
   return list;
 });
 
+// 檢查登入狀態和權限
+onMounted(async () => {
+  try {
+    let token = localStorage.getItem('token');
+    if (!token) {
+      const res = await axios.get('/api/Auth/me', { withCredentials: true });
+      if (!res.data.success || !res.data.isLandlord) {
+        router.push('/login');
+        return;
+      }
+      token = res.data.token;
+      localStorage.setItem('token', token);
+    }
+    // 取得物件列表
+    const propertyRes = await axios.get('/api/landlord/landlordcreate/my-properties', {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true
+    });
+    activeProperties.value = (propertyRes.data || []).map(p => ({
+      id: p.hPropertyId,
+      title: p.hPropertyTitle,
+      address: p.hAddress,
+      rent: p.hRentPrice,
+      propertyType: p.hPropertyType,
+      updated: p.hLastUpdated,
+      created: p.hPublishedDate,
+      cover: (p.hPropertyImages && p.hPropertyImages.length > 0) ? p.hPropertyImages[0].hImageUrl : ''
+    }));
+    // 取得草稿
+    drafts.value = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
+  } catch (error) {
+    console.error('驗證失敗或取得物件失敗:', error);
+    router.push('/login');
+  }
+});
+
 function onAddProperty() {
-  window.location.href = '/landlord/property-create';
+  // 使用 router 進行頁面跳轉，而不是 window.location
+  router.push('/landlord/property-create');
 }
 function onEdit(item) {
-  window.location.href = `/landlord/property-edit?id=${item.id}`;
+  // 使用 router 進行頁面跳轉，而不是 window.location
+  router.push(`/landlord/property-edit?id=${item.id}`);
 }
 function onDeactivate(item) {
   alert('下架物件 ' + item.title + '（待串接 API）');
+}
+function deleteDraft(idx) {
+  drafts.value.splice(idx, 1);
+  localStorage.setItem('propertyDrafts', JSON.stringify(drafts.value));
+}
+function editDraft(draft) {
+  localStorage.setItem('propertyDetail', JSON.stringify(draft.data));
+  router.push('/landlord/property-edit');
 }
 </script>
 
@@ -281,5 +320,21 @@ function onDeactivate(item) {
   .property-list-listview {
     gap: 1.2rem;
   }
+}
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem;
+  color: #888;
+}
+.empty-icon {
+  margin-bottom: 1.2rem;
+}
+.empty-state p {
+  text-align: center;
+  font-size: 1.08rem;
+  margin: 0.2rem 0;
 }
 </style> 

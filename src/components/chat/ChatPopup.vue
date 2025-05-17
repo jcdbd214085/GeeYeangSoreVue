@@ -1,7 +1,6 @@
 <template>
     <!-- 聊天彈窗元件 -->
     <div v-if="isOpen" class="chat-popup">
-        <div v-if="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
         <div class="chat-popup-header">
             <div class="chat-tabs">
                 <div v-for="c in contacts" :key="c.id" :class="['chat-tab', { active: c.id === activeContactId }]"
@@ -12,11 +11,7 @@
             <button class="close-btn" @click="closePopup">✖</button>
         </div>
         <div class="chat-popup-body" ref="chatBodyRef">
-            <ChatWindow
-             v-if="user.value && user.value.id !== null"
-            :messages="messages"
-            :user="user.value"
-            />
+            <ChatWindow :messages="messages" :user="user" />
         </div>
         <ChatInput :showSend="false" @send="sendMessage" />
     </div>
@@ -32,20 +27,18 @@ import avatar1 from '@/assets/images/avatar/avatar1.png';
 import defaultAvatar from '@/assets/images/avatar/default.png';
 import Avatar from '@/components/Avatar.vue';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '@/stores/user';
 
 const chatStore = useChatPopupStore();
-const userStore = useUserStore();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const SIGNALR_URL = `${import.meta.env.VITE_API_BASE_URL}/hub`;
+
 
 const { isOpen } = storeToRefs(chatStore);
 const contacts = ref([]);
 const activeContactId = ref(null);
 const messages = ref([]);
-const user = ref({ id: null, name: userStore.username || '我' });
+const user = ref({ id: null, name: '我' });
 const chatBodyRef = ref(null);
-const errorMsg = ref('');
 
 let connection = null;
 
@@ -72,19 +65,18 @@ async function setupSignalR() {
         }
     });
     connection.on('ReceiveError', (errMsg) => {
-        errorMsg.value = errMsg;
+        alert(errMsg);
     });
     try {
         await connection.start();
     } catch (err) {
-        errorMsg.value = 'SignalR 連線失敗';
+        alert('SignalR 連線失敗');
     }
 }
 
 async function fetchChatList() {
     try {
-        const res = await axios.get(`${API_BASE_URL}/api/chat/chatlist`, { withCredentials: true });
-        console.log('chatlist res', res.data);
+        const res = await axios.get(`${API_BASE_URL}/api/Chat/chatlist`, { withCredentials: true });
         if (res.data.success) {
             contacts.value = res.data.data.map(msg => ({
                 id: msg.hSenderId,
@@ -93,27 +85,23 @@ async function fetchChatList() {
                 avatar: defaultAvatar,
                 time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : '',
             }));
-            user.value.id = res.data.selfId;
-            user.value.name = userStore.username || '我';
+            if (res.data.data.length > 0 && res.data.data[0].hReceiverId) {
+                user.value.id = res.data.data[0].hReceiverId;
+            }
             if (contacts.value.length > 0) {
                 activeContactId.value = contacts.value[0].id;
                 fetchMessages(activeContactId.value);
             }
-        } else {
-            errorMsg.value = res.data.message || '取得聊天室列表失敗';
         }
     } catch (e) {
-        errorMsg.value = 'API 連線失敗';
         contacts.value = [];
         messages.value = [];
-        console.error('fetchChatList error', e);
     }
 }
 
 async function fetchMessages(otherId) {
     try {
-        const res = await axios.get(`${API_BASE_URL}/api/chat/history/${otherId}`, { withCredentials: true });
-        console.log('history res', res.data);
+        const res = await axios.get(`${API_BASE_URL}/api/Chat/history/${otherId}`, { withCredentials: true });
         if (res.data.success) {
             messages.value = res.data.data.map(msg => ({
                 id: msg.hMessageId,
@@ -122,16 +110,14 @@ async function fetchMessages(otherId) {
                 text: msg.hContent,
                 time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : ''
             }));
-            await nextTick();
             scrollToBottom();
         } else {
-            errorMsg.value = res.data.message || '取得聊天紀錄失敗';
             messages.value = [];
+            scrollToBottom();
         }
     } catch (e) {
-        errorMsg.value = 'API 連線失敗';
         messages.value = [];
-        console.error('fetchMessages error', e);
+        scrollToBottom();
     }
 }
 
@@ -143,7 +129,7 @@ function switchChat(id) {
 
 function sendMessage(text) {
     if (!connection || connection.state !== 'Connected') {
-        errorMsg.value = 'SignalR 尚未連線';
+        alert('SignalR 尚未連線');
         return;
     }
     connection.invoke('SendMessage', String(user.value.id), String(activeContactId.value), text)
@@ -151,7 +137,6 @@ function sendMessage(text) {
             console.log('訊息送出成功');
         })
         .catch(err => {
-            errorMsg.value = '送出失敗';
             console.error(' 送出失敗：', err);
         });
 }
@@ -168,31 +153,7 @@ function scrollToBottom() {
     });
 }
 
-onMounted(async () => {
-    // 優先從 userStore 取得登入者資訊
-    if (!userStore.isLogin) {
-        errorMsg.value = '請先登入';
-        return;
-    }
-    // 嘗試取得 selfId
-    let selfId = null;
-    try {
-        const res = await axios.get(`${API_BASE_URL}/api/chat/chatlist`, { withCredentials: true });
-        if (res.data.success && res.data.selfId) {
-            selfId = res.data.selfId;
-        } else {
-            // fallback: 再呼叫 /api/auth/me
-            const authRes = await axios.get('/api/auth/me', { withCredentials: true });
-            if (authRes.data && authRes.data.id) {
-                selfId = authRes.data.id;
-            }
-        }
-    } catch (e) {
-        errorMsg.value = '無法取得登入者資訊';
-        return;
-    }
-    user.value.id = selfId;
-    user.value.name = userStore.username || '我';
+onMounted(() => {
     fetchChatList();
     setupSignalR();
     scrollToBottom();

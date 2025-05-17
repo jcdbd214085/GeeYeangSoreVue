@@ -17,10 +17,6 @@
             <label>區域</label>
             <input v-model="form.district" placeholder="請輸入區域" />
           </div>
-          <div class="form-group">
-            <label>路段</label>
-            <input v-model="form.road" placeholder="請輸入路段" />
-          </div>
           <div class="form-group address-group">
             <label>地址</label>
             <input v-model="form.address" placeholder="請填寫地址" />
@@ -38,7 +34,7 @@
             <input type="file" multiple @change="onFileChange" />
             <div class="upload-tip">最少2張，最多15張，拖曳可調整順序。</div>
             <draggable v-model="form.photos" class="photo-preview" item-key="idx" :animation="200">
-              <template #item="{element, index}">
+              <template #item="{ element, index }">
                 <img :src="element" class="preview-img" />
               </template>
             </draggable>
@@ -79,113 +75,32 @@
           </div>
           <div class="form-group">
             <label>坪數</label>
-            <input v-model="form.ping" placeholder="坪數" type="number" min="0" />
-            <span>坪</span>
+            <div class="layout-flex">
+              <input v-model="form.ping" placeholder="坪數" type="number" min="0" />
+              <span>坪</span>
+            </div>
           </div>
-          <div class="form-group full-width">
+          <div class="form-group">
+            <label>租金</label>
+            <div class="layout-flex">
+              <div class="layout-item">
+                <input v-model="form.rent" type="number" min="0" placeholder="租金金額" />
+              </div>
+              <div class="layout-item">
+                <span>元/月</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label>格局</label>
             <div class="layout-flex">
               <div class="layout-item">
                 <input v-model="form.room" type="number" min="0" placeholder="房" />房
               </div>
               <div class="layout-item">
-                <input v-model="form.living" type="number" min="0" placeholder="廳" />廳
-              </div>
-              <div class="layout-item">
                 <input v-model="form.bath" type="number" min="0" placeholder="衛浴" />衛浴
               </div>
-              <div class="layout-item">
-                <input v-model="form.balcony" type="number" min="0" placeholder="陽台" />陽台
-              </div>
-              <div class="layout-item">
-                <input v-model="form.kitchen" type="number" min="0" placeholder="廚房" />廚房
-              </div>
             </div>
-          </div>
-        </div>
-      </section>
-      <!-- 聯絡方式卡片 -->
-      <section class="form-card">
-        <h3 class="form-title">聯絡方式</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>身分<span class="required">*</span></label>
-            <div class="radio-group">
-              <label v-for="type in identityTypes" :key="type" class="radio-label">
-                <input type="radio" v-model="form.identity" :value="type" /> {{ type }}
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>LINE ID</label>
-            <input v-model="form.lineId" placeholder="請輸入LINE ID" />
-            <div class="input-tip">因海外詐騙集團常用LINE作為詐騙工具，為保障您的資產安全，建議不填寫LINE ID。</div>
-          </div>
-          <div class="form-group">
-            <label>手機號碼</label>
-            <input v-model="form.phone" placeholder="請輸入手機號碼" />
-          </div>
-          <div class="form-group">
-            <label>市內電話</label>
-            <input v-model="form.tel" placeholder="請輸入市內電話" />
-          </div>
-        </div>
-      </section>
-      <!-- 租賃條件卡片 -->
-      <section class="form-card">
-        <h3 class="form-title">租賃條件</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>車位</label>
-            <div class="tag-group">
-              <span v-for="type in parkingTypes" :key="type" :class="['tag', {selected: form.parking === type}]" @click="toggleParking(type)">{{ type }}</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>產權登記<span class="required">*</span></label>
-            <div class="radio-group">
-              <label class="radio-label"><input type="radio" v-model="form.ownership" value="有" />有</label>
-              <label class="radio-label"><input type="radio" v-model="form.ownership" value="無" />無</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>建物面積</label>
-            <input v-model="form.area" type="number" min="0" placeholder="0" />
-            <span>坪</span>
-          </div>
-          <div class="form-group">
-            <label>法定用途</label>
-            <select v-model="form.usage">
-              <option disabled value="">請選擇</option>
-              <option v-for="usage in usageTypes" :key="usage" :value="usage">{{ usage }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>最短租期<span class="required">*</span></label>
-            <select v-model="form.minLease">
-              <option v-for="lease in leaseTerms" :key="lease" :value="lease">{{ lease }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>租金</label>
-            <input v-model="form.rent" type="number" min="0" placeholder="租金金額" />
-            <span>元/月</span>
-          </div>
-          <div class="form-group">
-            <label>租金包含</label>
-            <div class="tag-group">
-              <span v-for="type in rentIncludes" :key="type" :class="['tag', {selected: form.rentIncludes.includes(type)}]" @click="toggleRentInclude(type)">{{ type }}</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>押金</label>
-            <input v-model="form.deposit" type="number" min="0" placeholder="0" />
-            <span>元</span>
-          </div>
-          <div class="form-group">
-            <label>管理費</label>
-            <input v-model="form.managementFee" type="number" min="0" placeholder="0" />
-            <span>元/月</span>
           </div>
         </div>
       </section>
@@ -195,15 +110,8 @@
         <Button color="outline-secondary" type="button" @click="onSaveExit">儲存退出</Button>
         <Button color="primary" type="submit">下一步</Button>
       </div>
-      <Alert
-        v-model:show="showAlert"
-        title="儲存提示"
-        message="已儲存並退出"
-        type="success"
-        :confirmText="'確認'"
-        :cancelText="'取消'"
-        @confirm="handleAlertConfirm"
-      />
+      <Alert v-model:show="showAlert" title="儲存提示" message="已儲存並退出" type="success" :confirmText="'確認'"
+        :cancelText="'取消'" @confirm="handleAlertConfirm" />
     </form>
   </div>
 </template>
@@ -249,18 +157,15 @@ const form = ref({
   rent: '',
   rentIncludes: [],
   deposit: '',
+  imageFiles: [],
+  HScore: '',
+  HIsVip: false,
+  HIsShared: false,
 });
 
-const cities = ['台北市', '新北市', '桃園市'];
-const spaceTypes = ['整層', '獨立套房', '分租套房', '雅房'];
-const buildingTypes = ['透天', '公寓', '電梯大樓', '別墅'];
-const identityTypes = ['房東', '仲介', '代管', '代理人'];
-const parkingTypes = ['有機車車位', '有汽車車位'];
-const conditionTypes = ['限女性', '限男性'];
-const usageTypes = ['住家用', '商業用', '辦公用'];
-const leaseTerms = ['一年', '半年', '三個月'];
-const rentIncludes = ['電費', '水費', '瓦斯費', '第四台', '網路費', '管理費', '清潔費'];
-
+const cities = ['台北市', '新北市', '基隆市', '桃園市', '彰化縣', '新竹市', '苗栗縣', '台中市', '宜蘭縣', '南投縣', '雲林縣', '嘉義縣', '台南市', '高雄市', '屏東縣', '花蓮縣', '台東縣', '澎湖縣', '金門縣', '連江縣'];
+const spaceTypes = ['整棟住家', '整層住家', '套房', '雅房'];
+const buildingTypes = ['透天', '公寓', '大樓', '華廈'];
 const showAlert = ref(false);
 const router = useRouter();
 
@@ -272,11 +177,13 @@ function toggleRentInclude(val) {
 function onFileChange(e) {
   const files = e.target.files;
   for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    form.value.imageFiles.push(file);
     const reader = new FileReader();
     reader.onload = (event) => {
       form.value.photos.push(event.target.result);
     };
-    reader.readAsDataURL(files[i]);
+    reader.readAsDataURL(file);
   }
 }
 function goBack() {
@@ -284,6 +191,16 @@ function goBack() {
   window.history.back();
 }
 function onSaveExit() {
+  // 儲存草稿
+  const features = JSON.parse(localStorage.getItem('propertyFeatures') || '[]');
+  const draft = {
+    step: 'detail',
+    data: { ...form.value, features, HScore: '', HIsVip: false, HIsShared: false },
+    savedAt: new Date().toISOString()
+  };
+  let drafts = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
+  drafts.push(draft);
+  localStorage.setItem('propertyDrafts', JSON.stringify(drafts));
   showAlert.value = true;
 }
 function handleAlertConfirm() {
@@ -293,6 +210,21 @@ function toggleParking(type) {
   form.value.parking = (form.value.parking === type) ? '' : type;
 }
 function onSubmit() {
+  // 取得features
+  const features = JSON.parse(localStorage.getItem('propertyFeatures') || '[]');
+  // 整合資料
+  const propertyDetail = {
+    ...form.value,
+    features,
+    photos: form.value.photos,
+    imageFiles: form.value.imageFiles.map(f => ({ name: f.name })),
+    HScore: '',
+    HIsVip: false,
+    HIsShared: false
+  };
+  localStorage.setItem('propertyDetail', JSON.stringify(propertyDetail));
+  // 圖片檔案暫存於window
+  window._propertyImageFiles = form.value.imageFiles;
   // 跳轉到曝光方案選擇頁面
   router.push('/landlord/property-plan-select');
 }
@@ -306,12 +238,14 @@ function onSubmit() {
   border-radius: 18px;
   padding: 2.5rem 2.5rem 2rem 2.5rem;
 }
+
 h2 {
   color: var(--main-color);
   margin-bottom: 2rem;
   font-weight: bold;
   text-align: center;
 }
+
 .form-card {
   background: #fff;
   border-radius: 16px;
@@ -319,6 +253,7 @@ h2 {
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   margin-bottom: 2.2rem;
 }
+
 .form-title {
   color: var(--main-color);
   font-size: 1.2rem;
@@ -326,81 +261,101 @@ h2 {
   margin-bottom: 1.2rem;
   letter-spacing: 1px;
 }
+
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.2rem 2.2rem;
 }
+
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 }
+
 .full-width {
   grid-column: 1 / 3;
 }
+
 label {
   font-weight: 600;
   color: #333;
   margin-bottom: 0.2rem;
 }
+
 .required {
   color: #f44336;
   margin-left: 0.2rem;
 }
-input, select, textarea {
+
+input,
+select,
+textarea {
   padding: 0.6rem 1rem;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   font-size: 1rem;
   background: #fafbfc;
 }
-input:focus, select:focus, textarea:focus {
+
+input:focus,
+select:focus,
+textarea:focus {
   outline: 2px solid var(--main-color);
   border-color: var(--main-color);
   background: #f0fafd;
 }
+
 textarea {
   min-height: 80px;
   resize: vertical;
   max-width: 100%;
 }
+
 .radio-group {
   display: flex;
   gap: 1.2rem;
   flex-wrap: wrap;
 }
+
 .radio-label {
   display: flex;
   align-items: center;
   gap: 0.3rem;
 }
+
 .layout-flex {
   display: flex;
   gap: 0.7rem;
   flex-wrap: wrap;
   align-items: center;
 }
+
 .layout-item {
   display: flex;
   align-items: center;
   gap: 0.2rem;
 }
+
 .floor-flex {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .upload-tip {
   color: #888;
   font-size: 0.95rem;
 }
+
 .photo-preview {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: 0.5rem;
 }
+
 .preview-img {
   width: 80px;
   height: 80px;
@@ -408,11 +363,13 @@ textarea {
   border-radius: 8px;
   border: 1px solid #eee;
 }
+
 .tag-group {
   display: flex;
   gap: 0.7rem;
   flex-wrap: wrap;
 }
+
 .tag {
   padding: 0.4rem 1.2rem;
   border-radius: 1rem;
@@ -423,33 +380,40 @@ textarea {
   font-size: 1rem;
   transition: all 0.2s;
 }
+
 .tag.selected {
   background: var(--main-color);
   color: #fff;
   border: none;
 }
+
 .input-tip {
   color: #888;
   font-size: 0.95rem;
   margin-top: 0.2rem;
 }
+
 .form-actions.center {
   display: flex;
   justify-content: center;
   gap: 1.5rem;
   margin-top: 2.5rem;
 }
+
 @media (max-width: 900px) {
   .property-detail-container {
     padding: 1rem 0.5rem;
   }
+
   .form-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+
   .full-width {
     grid-column: 1 / 2;
   }
+
   .form-actions.center {
     flex-direction: column;
     align-items: stretch;
@@ -457,4 +421,4 @@ textarea {
     margin-top: 1.2rem;
   }
 }
-</style> 
+</style>
