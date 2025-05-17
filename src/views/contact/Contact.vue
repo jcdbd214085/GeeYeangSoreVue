@@ -54,14 +54,6 @@ function handleSubmit() {
         :maxlength="20"
     />
 
-    <Input
-        v-model="email"
-        label="Email"
-        type="email"
-        placeholder="example@mail.com"
-        prefix-icon="fa fa-envelope"
-        :maxlength="50"
-    />
 
     <Input
         v-model="phone"
