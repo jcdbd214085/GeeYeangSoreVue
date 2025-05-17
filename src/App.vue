@@ -15,6 +15,7 @@ import LoginModal from '@/components/login/LoginModal.vue'
 import { useLoadingStore } from '@/stores/loadingStore'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import QARobot from "@/components/QARobot/QARobot.vue";
 
 const loadingStore = useLoadingStore()
@@ -26,10 +27,28 @@ function openLoginModal() {
 function closeLoginModal() {
   showLoginModal.value = false;
 }
-
+const favoriteStore = useFavoriteStore()
 const userStore = useUserStore();
 onMounted(() => {
   userStore.initFromLocalStorage();
+
+  // 嘗試從後端抓目前登入者（驗證 Session）
+   //try {
+   //  const res = await fetch('/api/auth/me', {
+   //    credentials: 'include' // 必加，才能帶 cookie 給後端
+   //  });
+
+    // if (res.ok) {
+    //  const data = await res.json();
+     //  userStore.login(data.role, data.userName, data.isLandlord); // 重新登入前端狀態
+     //  await favoriteStore.fetchFavorites()
+     //} else {
+     //  userStore.logout(); // Session 無效 → 登出前端狀態
+    // }
+  // } catch (err) {
+   //  console.error('Session 驗證失敗', err);
+   //}
+   
 });
 
 </script>
@@ -40,7 +59,7 @@ onMounted(() => {
 
   <!-- 主要內容區，避免被 fixed-top 導覽列遮擋 -->
   <div class="main-content">
-    <RouterView />
+    <RouterView @open-login="openLoginModal" />
   </div>
 
   <!-- 全站聊天室彈窗 -->
@@ -57,6 +76,7 @@ onMounted(() => {
 
 <style scoped>
 .main-content {
-  padding-top: 80px; /* 根據 Navbar 實際高度調整 */
+  padding-top: 80px;
+  /* 根據 Navbar 實際高度調整 */
 }
 </style>

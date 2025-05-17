@@ -26,7 +26,7 @@
 <script setup>
 import AvatarImage from '@/components/Avatar.vue'
 import { useChatPopupStore } from '@/stores/chatPopup'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
     landlord: {
@@ -107,7 +107,7 @@ function openChat() {
 }
 
 .landlord-btn {
-    color: #4ecdc4;
+    color: #24B4A8;
     text-decoration: none;
     font-weight: 500;
     font-size: 1rem;

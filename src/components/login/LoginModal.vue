@@ -10,42 +10,24 @@
           </button>
 
           <!-- 隱私權政策 -->
-          <PrivacyPolicyModal
-            :show="showPrivacyModal"
-            @close="showPrivacyModal = false"
-          />
+          <PrivacyPolicyModal :show="showPrivacyModal" @close="showPrivacyModal = false" />
 
           <!-- 登入表單 -->
           <div class="form-box login">
             <form @submit.prevent="handleLogin">
               <h1>會員登入</h1>
               <div class="input-box">
-                <input
-                  v-model="login.username"
-                  type="text"
-                  placeholder="電子信箱"
-                  required
-                />
+                <input v-model="login.username" type="text" placeholder="電子信箱" required />
                 <i class="fa-solid fa-envelope"></i>
               </div>
               <div class="input-box">
-                <input
-                  v-model="login.password"
-                  :type="showLoginPassword ? 'text' : 'password'"
-                  placeholder="密碼"
-                  required
-                />
-                <div
-                  class="eye-icon-wrapper"
-                  @click="showLoginPassword = !showLoginPassword"
-                >
-                  <i
-                    :class="
-                      showLoginPassword
-                        ? 'fa-solid fa-eye-slash'
-                        : 'fa-solid fa-eye'
-                    "
-                  ></i>
+                <input v-model="login.password" :type="showLoginPassword ? 'text' : 'password'" placeholder="密碼"
+                  required />
+                <div class="eye-icon-wrapper" @click="showLoginPassword = !showLoginPassword">
+                  <i :class="showLoginPassword
+                    ? 'fa-solid fa-eye-slash'
+                    : 'fa-solid fa-eye'
+                    "></i>
                 </div>
               </div>
 
@@ -71,76 +53,41 @@
             <form @submit.prevent="handleRegister">
               <h1>會員註冊</h1>
               <div class="input-box">
-                <input
-                  v-model="register.username"
-                  type="text"
-                  placeholder="姓名"
-                  required
-                />
+                <input v-model="register.username" type="text" placeholder="姓名" required />
                 <i class="fa-solid fa-user"></i>
               </div>
               <div class="input-box">
-                <input
-                  v-model="register.userphone"
-                  type="text"
-                  placeholder="手機"
-                  required
-                  pattern="^09\d{8}$"
-                  title="請輸入正確的手機號碼（例如：0912345678）"
-                />
+                <input v-model="register.userphone" type="text" placeholder="手機" required pattern="^09\d{8}$"
+                  title="請輸入正確的手機號碼（例如：0912345678）" />
                 <i class="fa-solid fa-phone"></i>
               </div>
               <div class="input-box">
-                <input
-                  v-model="register.email"
-                  type="email"
-                  placeholder="電子信箱"
-                  required
-                />
+                <input v-model="register.email" type="email" placeholder="電子信箱" required />
                 <i class="fa-solid fa-envelope"></i>
               </div>
               <!-- 註冊表單的密碼欄位 -->
               <div class="input-box">
-                <input
-                  v-model="register.password"
-                  :type="showRegisterPassword ? 'text' : 'password'"
-                  placeholder="密碼"
-                  required
-                  ref="passwordInputRef"
-                  @input="
+                <input v-model="register.password" :type="showRegisterPassword ? 'text' : 'password'" placeholder="密碼"
+                  required ref="passwordInputRef" @input="
                     register.passwordError = '';
-                    passwordInputRef.setCustomValidity('');
-                  "
-                />
-                <div
-                  class="eye-icon-wrapper"
-                  @click="showRegisterPassword = !showRegisterPassword"
-                >
-                  <i
-                    :class="
-                      showRegisterPassword
-                        ? 'fa-solid fa-eye-slash'
-                        : 'fa-solid fa-eye'
-                    "
-                  ></i>
+                  passwordInputRef.setCustomValidity('');
+                  " />
+                <div class="eye-icon-wrapper" @click="showRegisterPassword = !showRegisterPassword">
+                  <i :class="showRegisterPassword
+                    ? 'fa-solid fa-eye-slash'
+                    : 'fa-solid fa-eye'
+                    "></i>
                 </div>
               </div>
 
               <!-- 同意條款勾選 -->
               <div class="input-box agree-box">
                 <label class="agree-label">
-                  <input
-                    type="checkbox"
-                    ref="agreeCheckboxRef"
-                    required
-                    @invalid="handleAgreeInvalid"
-                    @input="handleAgreeInput"
-                  />
+                  <input type="checkbox" ref="agreeCheckboxRef" required @invalid="handleAgreeInvalid"
+                    @input="handleAgreeInput" />
                   <span>
                     我已閱讀並同意
-                    <a href="#" @click.prevent="showPrivacyModal = true"
-                      >隱私權政策</a
-                    >
+                    <a href="#" @click.prevent="showPrivacyModal = true">隱私權政策</a>
                   </span>
                 </label>
                 <!-- 錯誤訊息顯示區塊 -->
@@ -151,19 +98,9 @@
 
               <!-- 驗證碼欄位與發送按鈕：並排放置 -->
               <div class="input-box verify-box">
-                <input
-                  v-model="register.verificationCode"
-                  type="text"
-                  placeholder="請輸入驗證碼"
-                  required
-                />
-                <button
-                  type="button"
-                  class="verify-btn"
-                  :class="{ 'disabled-btn': countdown > 0 }"
-                  :disabled="countdown > 0"
-                  @click="sendVerificationCode"
-                >
+                <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
+                <button type="button" class="verify-btn" :class="{ 'disabled-btn': countdown > 0 }"
+                  :disabled="countdown > 0" @click="sendVerificationCode">
                   <span v-if="countdown > 0">
                     <div>{{ countdown }} 秒後</div>
                     <div>可重新發送</div>
@@ -212,6 +149,8 @@ const emit = defineEmits(["close"]);
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
 import { useUserStore } from "@/stores/user";
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
+const favoriteStore = useFavoriteStore()
 const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
@@ -317,12 +256,16 @@ if (httpdata.success) {
   alert(httpdata.message || "登入失敗");
 }
     // 判斷回傳格式
-    if (httpdata.success) {
-      userStore.login(
-        httpdata.role || "tenant",
-        httpdata.userName || data.user || "",
-        httpdata.isLandlord || false
-      );
+
+    if (data.success) {
+      userStore.login(data.role || 'tenant', data.userName || data.user || '', data.isLandlord || false)
+      
+      await favoriteStore.fetchFavorites();
+      if (favoriteStore.pendingFavoriteId) {
+        await favoriteStore.addFavorite(favoriteStore.pendingFavoriteId)
+        favoriteStore.pendingFavoriteId = null
+      }
+
       // 登入成功自動關閉彈窗
       emit("close");
     } else {
@@ -473,12 +416,14 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
 }
+
 .modal-wrapper {
   background-color: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .modal-content {
   box-shadow: none;
   border: none;
@@ -587,7 +532,8 @@ form {
 .input-box input {
   width: 100%;
   padding: 13px 50px 13px 20px;
-  background: #ffffff; /*  改成白底 */
+  background: #ffffff;
+  /*  改成白底 */
   border-radius: 8px;
   border: none;
   outline: none;
@@ -602,11 +548,13 @@ form {
   top: 0;
   right: 0;
   height: 100%;
-  width: 60px; /* 依需要調整寬度 */
+  width: 60px;
+  /* 依需要調整寬度 */
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(163, 222, 215, 0.5); /* 白色半透明網底 */
+  background: rgba(163, 222, 215, 0.5);
+  /* 白色半透明網底 */
   cursor: pointer;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -615,15 +563,19 @@ form {
 
 /* 驗證碼倒數按鈕呈現唯讀狀態 */
 .verify-btn.disabled-btn {
-  background-color: #ccc; /* 改成灰色背景 */
-  cursor: not-allowed; /* 滑鼠顯示禁止 */
-  pointer-events: none; /* 避免 hover 效果 */
+  background-color: #ccc;
+  /* 改成灰色背景 */
+  cursor: not-allowed;
+  /* 滑鼠顯示禁止 */
+  pointer-events: none;
+  /* 避免 hover 效果 */
   color: #727171;
 }
 
 /* 當滑鼠滑過 .eye-icon-wrapper 時的樣式 */
 .eye-icon-wrapper:hover {
-  background-color: #f8dfc6; /* 滑過時淡黃色提示 */
+  background-color: #f8dfc6;
+  /* 滑過時淡黃色提示 */
 }
 
 /* 設定 .eye-icon-wrapper 裡面的 <i> 標籤樣式 */
@@ -773,9 +725,12 @@ form {
 
 /*  註冊 / 登入切換按鈕 hover：白底藍綠字 */
 .toggle-panel .btn:hover {
-  background-color: #ffffff; /* 白底 */
-  color: #4ecdc4; /* 藍綠字 */
-  border: 2px solid #4ecdc4; /* 邊框也改成藍綠 */
+  background-color: #ffffff;
+  /* 白底 */
+  color: #4ecdc4;
+  /* 藍綠字 */
+  border: 2px solid #4ecdc4;
+  /* 邊框也改成藍綠 */
   transition: all 0.3s ease;
 }
 
@@ -783,14 +738,17 @@ form {
 .google-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center; /*  垂直置中補強 */
-  height: 48px; /*  統一高度為 48px */
+  justify-content: center;
+  /*  垂直置中補強 */
+  height: 48px;
+  /*  統一高度為 48px */
   gap: 10px;
   background-color: #f0f9f8;
   color: #db4437;
   border: 2px solid #db4437;
   border-radius: 6px;
-  padding: 0 16px; /*  左右 padding 固定，高度由 height 控制 */
+  padding: 0 16px;
+  /*  左右 padding 固定，高度由 height 控制 */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -860,20 +818,29 @@ form {
   position: absolute;
   top: 15px;
   right: 20px;
-  width: 28px; /* 固定寬度 */
-  height: 28px; /* 固定高度 */
-  background: #ffffff; /* 白色圓底 */
+  width: 28px;
+  /* 固定寬度 */
+  height: 28px;
+  /* 固定高度 */
+  background: #ffffff;
+  /* 白色圓底 */
   border: none;
-  border-radius: 50%; /* 做成圓形 */
-  font-size: 18px; /* 字體大小 */
-  font-weight: bold; /* X 加粗 */
-  color: #32a49c; /* 字體顏色 */
+  border-radius: 50%;
+  /* 做成圓形 */
+  font-size: 18px;
+  /* 字體大小 */
+  font-weight: bold;
+  /* X 加粗 */
+  color: #32a49c;
+  /* 字體顏色 */
   cursor: pointer;
   z-index: 10;
-  display: flex; /* 讓 X 置中 */
+  display: flex;
+  /* 讓 X 置中 */
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* 陰影感 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  /* 陰影感 */
   transition: background-color 0.3s, color 0.3s;
 }
 
