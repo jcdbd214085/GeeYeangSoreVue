@@ -28,14 +28,30 @@
           <h2>設定新密碼</h2>
           <p>請輸入符合規則的新密碼。</p>
           <div class="input-box">
-            <input
-              v-model="newPassword"
-              type="password"
-              placeholder="請輸入新密碼"
-              required
-              @input="passwordError = ''"
-            />
+<input
+  v-model="newPassword"
+  :type="showPassword ? 'text' : 'password'" 
+  placeholder="請輸入新密碼"
+  required
+  @input="passwordError = ''"
+/>
+
             <i class="fa-solid fa-lock"></i>
+
+<!-- 眼睛圖示按鈕 -->
+<button
+  type="button"
+  class="toggle-eye-btn"
+  @click="showPassword = !showPassword"
+>
+  <i 
+  :class="[
+    showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye',
+    'eye-icon'
+  ]"
+></i>
+</button>
+
           </div>
           <p v-if="passwordError" class="error-msg">{{ passwordError }}</p>
           <button class="btn" @click="resetPassword">重設密碼</button>
@@ -57,19 +73,23 @@ const email = ref('');
 const code = ref('');
 const newPassword = ref('');
 const passwordError = ref('');
-const countdown = ref(300); // 5分鐘倒數
+const countdown = ref(600); // 5分鐘倒數
 let timer = null;
 
 const router = useRouter();
 
+const showPassword = ref(false); // 控制密碼顯示/隱藏
+
 const startCountdown = () => {
   timer = setInterval(() => {
     countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(timer);
-      alert("驗證碼已過期，請重新申請。");
-      step.value = 1;
-    }
+if (countdown.value <= 0) {
+  clearInterval(timer);
+  if (step.value === 2) {
+    alert("驗證碼已過期，請重新申請。");
+    step.value = 1;
+  }
+}
   }, 1000);
 };
 
@@ -85,7 +105,7 @@ const sendCode = async () => {
     if (res.ok && result.success) {
       alert('驗證碼已發送，請至信箱查收');
       step.value = 2;
-      countdown.value = 300;
+      countdown.value = 600;
       startCountdown();
     } else {
       alert(result.message || '發送失敗');
@@ -120,6 +140,7 @@ const validatePassword = (password, email) => {
     return '密碼需至少10字元，包含大小寫英文字母、數字與特殊符號，且不可含空白';
   return '';
 };
+
 
 const resetPassword = async () => {
   passwordError.value = validatePassword(newPassword.value, email.value);
@@ -268,7 +289,7 @@ input::placeholder {
 
 .input-box input {
   width: 100%;
-  padding: 13px 20px 13px 60px;
+  padding: 13px 48px 13px 60px; /* 預留右側48px空間放眼睛 */
   background: #ffffff;
   border-radius: 8px;
   border: none;
@@ -299,4 +320,29 @@ input::placeholder {
   pointer-events: none;
   box-sizing: border-box;
 }
+
+/* 眼睛 */
+.toggle-eye-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 48px;
+  height: 100%;
+  border: none;
+  background: none;
+  color: #999;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.eye-icon {
+  background: none !important; /* 移除背景 */
+  pointer-events: none;
+}
+
+
 </style>
