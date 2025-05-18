@@ -135,7 +135,7 @@
   <!-- 忘記密碼 -->
 <ForgotPasswordModal
   v-if="showForgotPasswordModal"
-  @close="showForgotPasswordModal = false"
+  @close="handleForgotClose"
 />
 
 </template>
@@ -145,6 +145,13 @@
 import { ref, onMounted } from "vue";
 // 加入 defineEmits
 const emit = defineEmits(["close"]);
+
+//加入忘記密碼彈窗 控制回登入畫面刷新
+const handleForgotClose = () => {
+  showForgotPasswordModal.value = false;
+  showLogin(); // ✅ 回到登入畫面
+};
+
 
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
