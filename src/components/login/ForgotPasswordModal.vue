@@ -64,6 +64,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+//引入吐司提示
+import { useToast } from 'vue-toastification';
+const toast = useToast();
+
 
 const emit = defineEmits(['close']);
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -86,7 +90,8 @@ const startCountdown = () => {
 if (countdown.value <= 0) {
   clearInterval(timer);
   if (step.value === 2) {
-    alert("驗證碼已過期，請重新申請。");
+    console.warn("驗證碼過期");
+    toast.warning("驗證碼已過期，請重新申請。");
     step.value = 1;
   }
 }
@@ -94,43 +99,56 @@ if (countdown.value <= 0) {
 };
 
 const sendCode = async () => {
-  if (!email.value) return alert('請輸入信箱');
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/forgot-password/send-code`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value })
-    });
-    const result = await res.json();
-    if (res.ok && result.success) {
-      alert('驗證碼已發送，請至信箱查收');
-      step.value = 2;
-      countdown.value = 600;
-      startCountdown();
-    } else {
-      alert(result.message || '發送失敗');
-    }
-  } catch (err) {
-    alert('發送失敗');
+  if (!email.value) {
+  toast.warning('請輸入信箱');
+  return;
+}
+
+try {
+  const res = await fetch(`${API_BASE_URL}/api/forgot-password/send-code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email.value })
+  });
+
+  const result = await res.json();
+
+  if (res.ok && result.success) {
+    console.log("驗證碼發送成功", result);
+    toast.success('驗證碼已發送，請至信箱查收');
+    step.value = 2;
+    countdown.value = 600;
+    startCountdown();
+  } else {
+    console.warn("發送失敗", result);
+    toast.error(result.message || '發送失敗');
   }
+} catch (err) {
+  console.error("發送驗證碼錯誤", err);
+  toast.error('發送失敗，請稍後再試');
+}
 };
 
 const verifyCode = async () => {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/forgot-password/verify-code`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, code: code.value })
-    });
-    const result = await res.json();
-    if (res.ok && result.success) {
-      step.value = 3;
-    } else {
-      alert(result.message || '驗證失敗');
-    }
-  } catch (err) {
-    alert('驗證失敗');
+  const res = await fetch(`${API_BASE_URL}/api/forgot-password/verify-code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email.value, code: code.value })
+  });
+
+  const result = await res.json();
+
+  if (res.ok && result.success) {
+    step.value = 3;
+  } else {
+    console.warn("驗證碼錯誤", result);
+    toast.error(result.message || '驗證失敗');
   }
+} catch (err) {
+  console.error("驗證碼驗證失敗", err);
+  toast.error('驗證失敗，請稍後再試');
+}
 };
 
 const validatePassword = (password, email) => {
@@ -147,21 +165,30 @@ const resetPassword = async () => {
   if (passwordError.value) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/forgot-password/reset`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, code: code.value, newPassword: newPassword.value })
-    });
-    const result = await res.json();
-    if (res.ok && result.success) {
-      alert('密碼重設成功，請重新登入');
-      emit('close');
-    } else {
-      alert(result.message || '密碼重設失敗');
-    }
-  } catch (err) {
-    alert('密碼重設失敗');
+  const res = await fetch(`${API_BASE_URL}/api/forgot-password/reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: email.value,
+      code: code.value,
+      newPassword: newPassword.value
+    })
+  });
+
+  const result = await res.json();
+
+  if (res.ok && result.success) {
+    console.log("密碼重設成功", result);
+    toast.success('密碼重設成功，請重新登入');
+    emit('close');
+  } else {
+    console.warn("密碼重設失敗", result);
+    toast.error(result.message || '密碼重設失敗');
   }
+} catch (err) {
+  console.error("密碼重設發生錯誤", err);
+  toast.error('密碼重設失敗，請稍後再試');
+}
 };
 </script>
 
