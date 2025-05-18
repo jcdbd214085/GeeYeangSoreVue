@@ -232,6 +232,10 @@ const showLogin = () => {
 // 登入事件處理
 const handleLogin = async () => {
   try {
+
+    // 🟡 Step 1：取得 reCAPTCHA token
+    const recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
+
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: "POST",
       headers: {
@@ -241,6 +245,7 @@ const handleLogin = async () => {
       body: JSON.stringify({
         txtAccount: login.value.username,
         txtPassword: login.value.password,
+        recaptchaToken: recaptchaToken, // ✅ 加入reCAPTCHA token
       }),
     });
 
