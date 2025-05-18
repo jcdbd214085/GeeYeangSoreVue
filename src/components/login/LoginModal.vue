@@ -233,44 +233,28 @@ const handleLogin = async () => {
     });
 
     // 檢查 HTTP 狀態碼
-const httpdata = await res.json();
+const data = await res.json();
 
 if (res.status === 401) {
-  alert(httpdata.message || "帳號或密碼錯誤");
+  alert(data.message || "帳號或密碼錯誤");
   return;
 }
 
 if (!res.ok) {
-  alert(httpdata.message || "伺服器錯誤，請稍後再試");
+  alert(data.message || "伺服器錯誤，請稍後再試");
   return;
 }
 
-if (httpdata.success) {
+if (data.success) {
   userStore.login(
-    httpdata.role || "tenant",
-    httpdata.userName || httpdata.user || "",
-    httpdata.isLandlord || false
+    data.role || "tenant",
+    data.userName || data.user || "",
+    data.isLandlord || false
   );
   emit("close");
 } else {
-  alert(httpdata.message || "登入失敗");
+  alert(data.message || "登入失敗");
 }
-    // 判斷回傳格式
-
-    if (data.success) {
-      userStore.login(data.role || 'tenant', data.userName || data.user || '', data.isLandlord || false)
-      
-      await favoriteStore.fetchFavorites();
-      if (favoriteStore.pendingFavoriteId) {
-        await favoriteStore.addFavorite(favoriteStore.pendingFavoriteId)
-        favoriteStore.pendingFavoriteId = null
-      }
-
-      // 登入成功自動關閉彈窗
-      emit("close");
-    } else {
-      alert(httpdata.message || "登入失敗");
-    }
   } catch (err) {
     alert(err.message || "登入時發生錯誤");
   }
