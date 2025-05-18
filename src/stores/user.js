@@ -9,8 +9,7 @@ export const useUserStore = defineStore('user', {
     }),
     actions: {
         login(role = 'tenant', username = '', isLandlord = false) {
-            this.logout();
-
+            this.logout(); // 防止重複登入
             this.isLogin = true;
             this.role = role;
             this.username = username;
