@@ -9,10 +9,13 @@ export const useUserStore = defineStore('user', {
     }),
     actions: {
         login(role = 'tenant', username = '', isLandlord = false) {
+            this.logout();
+
             this.isLogin = true;
             this.role = role;
             this.username = username;
             this.isLandlord = isLandlord;
+
             localStorage.setItem('userRole', role);
             localStorage.setItem('isLogin', 'true');
             localStorage.setItem('isLandlord', isLandlord.toString());
@@ -23,6 +26,7 @@ export const useUserStore = defineStore('user', {
             this.role = '';
             this.username = '';
             this.isLandlord = false;
+
             localStorage.removeItem('userRole');
             localStorage.removeItem('isLogin');
             localStorage.removeItem('isLandlord');

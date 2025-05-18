@@ -149,7 +149,12 @@ const emit = defineEmits(["close"]);
 //加入忘記密碼彈窗 控制回登入畫面刷新
 const handleForgotClose = () => {
   showForgotPasswordModal.value = false;
-  showLogin(); // ✅ 回到登入畫面
+  // 重置登入表單
+  login.value = {
+    username: '',
+    password: ''
+  };
+  showLogin(); // 回到登入畫面
 };
 
 

@@ -156,7 +156,6 @@ const resetPassword = async () => {
     if (res.ok && result.success) {
       alert('密碼重設成功，請重新登入');
       emit('close');
-      router.push('/login'); // ✅ 自動導向登入頁
     } else {
       alert(result.message || '密碼重設失敗');
     }
