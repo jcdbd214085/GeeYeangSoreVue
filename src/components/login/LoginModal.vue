@@ -233,8 +233,17 @@ const showLogin = () => {
 const handleLogin = async () => {
   try {
 
-    // 🟡 Step 1：取得 reCAPTCHA token
-    const recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
+// ✅ Step 1：取得 reCAPTCHA token（正式環境：驗證失敗就 return）
+let recaptchaToken = '';
+try {
+  await new Promise(resolve => grecaptcha.ready(resolve));
+  recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
+} catch (err) {
+  console.error('❌ 無法取得 Google reCAPTCHA 驗證，拒絕登入', err);
+  alert("系統驗證失敗，請重新整理頁面或稍後再試");
+  return;
+}
+
 
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: "POST",
