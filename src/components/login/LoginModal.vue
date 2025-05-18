@@ -143,6 +143,8 @@
 <script setup>
 // 引入 Composition API
 import { ref, onMounted } from "vue";
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 // 加入 defineEmits
 const emit = defineEmits(["close"]);
 
@@ -232,17 +234,16 @@ const showLogin = () => {
 // 登入事件處理
 const handleLogin = async () => {
   try {
-
-// ✅ Step 1：取得 reCAPTCHA token（正式環境：驗證失敗就 return）
-let recaptchaToken = '';
-try {
-  await new Promise(resolve => grecaptcha.ready(resolve));
-  recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
-} catch (err) {
-  console.error('❌ 無法取得 Google reCAPTCHA 驗證，拒絕登入', err);
-  alert("系統驗證失敗，請重新整理頁面或稍後再試");
-  return;
-}
+    // ✅ Step 1：取得 reCAPTCHA token（正式環境：驗證失敗就 return）
+    let recaptchaToken = '';
+    try {
+      await new Promise(resolve => grecaptcha.ready(resolve));
+      recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
+    } catch (err) {
+      console.error('❌ 無法取得 Google reCAPTCHA 驗證，拒絕登入', err);
+      toast.error("系統驗證失敗，請重新整理頁面或稍後再試");
+      return;
+    }
 
 
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
@@ -262,12 +263,14 @@ try {
 const data = await res.json();
 
 if (res.status === 401) {
-  alert(data.message || "帳號或密碼錯誤");
+  console.warn("登入失敗，401 未授權", data);
+  toast.error(data.message || "帳號或密碼錯誤");
   return;
 }
 
 if (!res.ok) {
-  alert(data.message || "伺服器錯誤，請稍後再試");
+  console.error("登入失敗，非 200 回應", data);
+  toast.error(data.message || "伺服器錯誤，請稍後再試");
   return;
 }
 
@@ -277,13 +280,18 @@ if (data.success) {
     data.userName || data.user || "",
     data.isLandlord || false
   );
+  toast.success("登入成功！歡迎回來");
   emit("close");
 } else {
-  alert(data.message || "登入失敗");
+  console.warn("登入回傳 success: false", data);
+  toast.error(data.message || "登入失敗");
 }
   } catch (err) {
-    alert(err.message || "登入時發生錯誤");
-  }
+  console.error("登入發生例外錯誤", err);
+  toast.error(err.message || "登入時發生錯誤");
+}
+
+
 };
 
 // 註冊事件處理
@@ -323,33 +331,39 @@ const handleRegister = async () => {
       body: JSON.stringify(requestData),
     });
 
-    if (!res.ok) {
-      const errRes = await res.json();
-      alert(errRes.message || "註冊失敗");
-      return;
-    }
+if (!res.ok) {
+  const errRes = await res.json();
+  console.error("註冊失敗", errRes);
+  toast.error(errRes.message || "註冊失敗");
+  return;
+}
 
-    const result = await res.json();
-    if (result.success) {
-      alert(result.message || "註冊成功，請登入");
-      showLogin(); // 自動切換回登入畫面
-    } else {
-      alert(result.message || "註冊失敗");
-    }
-  } catch (err) {
-    alert("註冊時發生錯誤，請稍後再試");
-    console.error("註冊錯誤", err);
-  }
+const result = await res.json();
+if (result.success) {
+  console.log("註冊成功", result);
+  toast.success(result.message || "註冊成功，請登入");
+  showLogin();
+} else {
+  console.warn("註冊回傳失敗", result);
+  toast.error(result.message || "註冊失敗");
+}
+
+} catch (err) {
+  console.error("註冊發生例外", err);
+  toast.error("註冊時發生錯誤，請稍後再試");
+}
+
 };
 
 // 發送驗證碼事件
 const sendVerificationCode = async () => {
   if (countdown.value > 0 || isSending.value) return; // 防止重複點擊
 
-  if (!register.value.email) {
-    alert("請先輸入電子信箱");
-    return;
-  }
+if (!register.value.email) {
+  console.warn("使用者尚未輸入 email");
+  toast.warning("請先輸入電子信箱");
+  return;
+}
 
   isSending.value = true; // 鎖定按鈕
 
@@ -365,13 +379,16 @@ const sendVerificationCode = async () => {
       }),
     });
 
-    const result = await res.text(); // 回傳是字串
+const result = await res.text(); // 回傳是字串
 
-    if (!res.ok) {
-      throw new Error(result || "發送驗證碼失敗");
-    }
+if (!res.ok) {
+  console.error("驗證碼 API 回傳錯誤", result);
+  throw new Error(result || "發送驗證碼失敗");
+}
 
-    alert(result || "驗證碼已發送，請查看信箱 📩");
+console.log("驗證碼發送成功", result);
+toast.success(result || "驗證碼已發送，請查看信箱 📩");
+
 
     // ✅ 開始倒數
     resendText.value = "重新發送";
@@ -383,7 +400,8 @@ const sendVerificationCode = async () => {
       }
     }, 1000);
   } catch (err) {
-    alert(err.message || "寄送驗證碼時發生錯誤");
+  console.error("發送驗證碼錯誤", err);
+  toast.error(err.message || "寄送驗證碼時發生錯誤");
   } finally {
     isSending.value = false; // 發送結束解除鎖定
   }
