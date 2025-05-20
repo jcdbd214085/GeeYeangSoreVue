@@ -435,6 +435,10 @@ const handleGoogleLogin = () => {
     scope: 'openid email profile',
     callback: async (response) => {
       const idToken = response.credential; // ✅ 拿 id_token
+
+  // ✅ 呼叫後端 API **之前**
+  console.log("測試傳送給後端的 idToken：", idToken);
+
       if (!idToken) {
         toast.error("Google 登入失敗，請稍後再試");
         return;
@@ -460,6 +464,7 @@ const handleGoogleLogin = () => {
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ idToken }) // 或後端接受 profile
+          
         });
 
         const result = await res.json();
@@ -489,8 +494,14 @@ const handleGoogleLogin = () => {
 
 
 
+// onMounted 時初始化 Google 登入
 onMounted(() => {
   showCloseBtn.value = true;
+
+  google.accounts.id.initialize({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    callback: handleGoogleCallback,
+  });
 });
 </script>
 
