@@ -126,7 +126,7 @@ onMounted(() => {
 <style scoped>
 /* Base styles */
 .about-section {
-  background: linear-gradient(180deg, #f5f7fa 0%, #e9ecef 100%);
+  background:white;
   padding: 5rem 0;
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -146,21 +146,20 @@ onMounted(() => {
 }
 
 .section-divider {
-  width: 80px;
+  width: auto;
   height: 5px;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: #3CDDD2;
   margin: 0 auto 1.5rem;
   border-radius: 3px;
 }
 
 .section-subtitle {
   font-size: 1.25rem;
-  color: #4b5563;
   max-width: 600px;
   margin: 0 auto;
 }
 
-/* Loading state */
+
 .loading-state {
   padding: 4rem 0;
 }
@@ -243,6 +242,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  color: #222222;
 }
 
 .about-number {
@@ -251,7 +251,7 @@ onMounted(() => {
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  background: linear-gradient(135deg, #3b82f6, #10b981);
+  background: #3CDDD2;
   color: white;
   border-radius: 50%;
   font-weight: 700;
@@ -299,7 +299,7 @@ onMounted(() => {
 }
 
 .about-text {
-  color: #374151;
+  color: #666666;
   line-height: 1.75;
   font-size: 1.05rem;
   margin-bottom: 1.5rem;
@@ -325,15 +325,6 @@ hr {
   gap: 0.5rem;
 }
 
-/* Contact section */
-.contact-section {
-  background: white;
-  border-radius: 16px;
-  padding: 3rem;
-  margin-top: 4rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
 .contact-section h4 {
   font-size: 1.75rem;
   font-weight: 700;
@@ -341,47 +332,6 @@ hr {
   margin-bottom: 1rem;
 }
 
-.contact-subtitle {
-  color: #4b5563;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-}
-
-.contact-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background: #3b82f6;
-  border-color: #3b82f6;
-}
-
-.btn-primary:hover {
-  background: #2563eb;
-  border-color: #2563eb;
-  transform: translateY(-2px);
-}
-
-.btn-outline-primary {
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-
-.btn-outline-primary:hover {
-  background: #eff6ff;
-  transform: translateY(-2px);
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .about-section {
     padding: 3rem 0;
