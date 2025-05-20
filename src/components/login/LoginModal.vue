@@ -38,7 +38,7 @@
               <p>——使用其他方式登入——</p>
               <div class="social-icons">
                 <!-- Google登入icon -->
-                <button class="social-btn google-btn">
+                <button class="social-btn google-btn" @click.prevent="handleGoogleLogin">
                   <span class="icon-circle">
                     <i class="fa-brands fa-google"></i>
                   </span>
@@ -427,6 +427,67 @@ const validatePassword = (password, email) => {
 
   return "";
 };
+
+//第三方Google登入
+const handleGoogleLogin = () => {
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    scope: 'openid email profile',
+    callback: async (response) => {
+      const idToken = response.credential; // ✅ 拿 id_token
+      if (!idToken) {
+        toast.error("Google 登入失敗，請稍後再試");
+        return;
+      }
+
+      try {
+        // ✅ 向 Google 的 userinfo API 取得 id_token
+        const resUser = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            Authorization: `Bearer ${idToken}`
+          }
+        });
+
+        const profile = await resUser.json();
+        if (!profile.sub) {
+          toast.error("無法取得 Google 使用者資訊");
+          return;
+        }
+
+        // ✅ 傳送 id_token 到後端（這裡你可以直接用 access_token 也可以，視後端支援）
+        const res = await fetch(`${API_BASE_URL}/api/Auth/google-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ idToken }) // 或後端接受 profile
+        });
+
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          toast.error(result.message || "Google 登入失敗");
+          return;
+        }
+
+        userStore.login(
+          result.role || "tenant",
+          result.userName || result.user || "",
+          result.isLandlord || false
+        );
+
+        toast.success("Google 登入成功！");
+        emit("close");
+      } catch (err) {
+        console.error("Google 登入錯誤", err);
+        toast.error("登入時發生錯誤，請稍後再試");
+      }
+    }
+  });
+
+  client.requestAccessToken(); // ✅ 這才是正確觸發 popup 登入流程
+};
+
+
+
 
 onMounted(() => {
   showCloseBtn.value = true;
