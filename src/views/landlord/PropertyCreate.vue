@@ -14,7 +14,7 @@
       </div>
       <div class="form-actions">
         <Button color="outline-secondary" type="button" @click="goBack">返回</Button>
-        <Button color="outline-secondary" type="button" @click="onSaveExit">儲存退出</Button>
+        <Button color="outline-secondary" type="button" @click="onSaveExit">儲存草稿</Button>
         <Button color="primary" type="submit">下一步</Button>
       </div>
     </form>
@@ -35,6 +35,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
 import Alert from '@/components/alert/Alert.vue';
+import axios from 'axios';
 
 const router = useRouter();
 const showAlert = ref(false);
@@ -65,37 +66,59 @@ const features = [
   { label: '房東同住', value: 'LandlordShared',  img: 'https://img.icons8.com/stickers/100/caretaker.png'},
   { label: '有陽台', value: 'Balcony',  img: 'https://img.icons8.com/stickers/100/balcony.png'},
   { label: '有公設', value: 'PublicEquipment',  img: 'https://img.icons8.com/stickers/100/outdoor-swimming-pool.png'},
-
-  
 ];
-function toggleFeature(val) {
-  const idx = form.value.features.indexOf(val);
-  if (idx === -1) form.value.features.push(val);
-  else form.value.features.splice(idx, 1);
-}
-function onSubmit() {
-  // 將選擇的features存到localStorage
-  localStorage.setItem('propertyFeatures', JSON.stringify(form.value.features));
-  // 跳轉到詳細資料填寫頁面
-  router.push('/landlord/property-detail-form');
+function toggleFeature(value) {
+  const index = form.value.features.indexOf(value);
+  if (index === -1) {
+    form.value.features.push(value);
+  } else {
+    form.value.features.splice(index, 1);
+  }
 }
 function goBack() {
   router.push('/landlord/property-manage');
 }
-function onSaveExit() {
-  // 儲存草稿
-  const draft = {
-    step: 'create',
-    data: { ...form.value },
-    savedAt: new Date().toISOString()
-  };
-  let drafts = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
-  drafts.push(draft);
-  localStorage.setItem('propertyDrafts', JSON.stringify(drafts));
+async function onSaveExit() {
   showAlert.value = true;
 }
 function handleAlertConfirm() {
   router.push('/landlord/property-manage');
+}
+async function onSubmit() {
+  // 將特色資料轉換為 PropertyFeature 格式
+  const propertyFeature = {
+    HAllowsDogs: form.value.features.includes('AllowsDogs'),
+    HAllowsCats: form.value.features.includes('AllowsCats'),
+    HAllowsAnimals: form.value.features.includes('AllowsAnimals'),
+    HAllowsCooking: form.value.features.includes('AllowsCooking'),
+    HHasFurniture: form.value.features.includes('HasFurniture'),
+    HInternet: form.value.features.includes('Internet'),
+    HAirConditioning: form.value.features.includes('AirConditioning'),
+    HTv: form.value.features.includes('Tv'),
+    HRefrigerator: form.value.features.includes('Refrigerator'),
+    HWashingMachine: form.value.features.includes('WashingMachine'),
+    HBed: form.value.features.includes('Bed'),
+    HWaterHeater: form.value.features.includes('WaterHeater'),
+    HGasStove: form.value.features.includes('GasStove'),
+    HCableTv: form.value.features.includes('CableTv'),
+    HWaterDispenser: form.value.features.includes('WaterDispenser'),
+    HParking: form.value.features.includes('Parking'),
+    HSocialHousing: form.value.features.includes('SocialHousing'),
+    HShortTermRent: form.value.features.includes('ShortTermRent'),
+    HPublicElectricity: form.value.features.includes('PublicElectricity'),
+    HPublicWatercharges: form.value.features.includes('PublicWatercharges'),
+    HLandlordShared: form.value.features.includes('LandlordShared'),
+    HBalcony: form.value.features.includes('Balcony'),
+    HPublicEquipment: form.value.features.includes('PublicEquipment')
+  };
+
+  // 將資料傳遞到下一步
+  router.push({
+    path: '/landlord/property-detail-form',
+    query: {
+      features: JSON.stringify(propertyFeature)
+    }
+  });
 }
 </script>
 

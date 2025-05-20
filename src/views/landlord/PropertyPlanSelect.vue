@@ -23,189 +23,93 @@
     </div>
     <div class="plan-actions">
       <Button color="outline-secondary" @click="goBack">上一步</Button>
-      <Button color="outline-secondary" @click="onSaveExit">儲存退出</Button>
+      <Button color="outline-secondary" type="button" @click="onSaveExit">儲存草稿</Button>
       <Button color="primary" :disabled="!selectedPlan" @click="onConfirm">確認刊登</Button>
     </div>
-    <Alert
-      v-model:show="showSaveAlert"
-      title="儲存提示"
-      message="已儲存並退出"
-      type="success"
-      :confirmText="'確認'"
-      :cancelText="'取消'"
-      @confirm="handleAlertConfirm"
-    />
-    <Alert
-      v-model:show="showPublishAlert"
-      title="房源申請通過"
-      message="您的房源已成功申請通過，請至物件管理頁面查看。"
-      type="info"
-      :confirmText="'確認'"
-      :cancelText="'取消'"
-      @confirm="handleAlertConfirm"
-    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
-import Alert from '@/components/alert/Alert.vue';
 import axios from 'axios';
-import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
+const route = useRoute();
 const selectedPlan = ref('');
-const showSaveAlert = ref(false);
-const showPublishAlert = ref(false);
-const drafts = ref([]);
-const userStore = useUserStore();
 const plans = [
-  {
-    id: 'vip1',
-    label: '🟡 VIP1 入門方案',
-    price: 100,
-    days: 15,
-    color: 'vip1',
-    features: [
-      '🕒 刊登天數：15 天',
-      '🚫 無排序更新',
-      '🚫 無標籤、無數據報告',
-      '👉 最經濟實惠的選擇，快速上架無負擔！',
-    ],
-    desc: '適合剛開始嘗試刊登的房東',
-  },
-  {
-    id: 'vip2',
-    label: '🟠 VIP2 推薦方案',
-    price: 200,
-    days: 30,
-    color: 'vip2',
-    features: [
-      '🕒 刊登天數：30 天',
-      '🔁 排序每 3 天自動更新',
-      '🏷 顯示「推薦」標籤',
-      '📈 系統推薦排序優先（更多人看到）',
-      '👉 高 CP 值選擇，適合希望快速出租的房東！',
-    ],
-    desc: '提升曝光，加快出租速度',
-  },
-  {
-    id: 'vip3',
-    label: '🔴 VIP3 精選方案',
-    price: 300,
-    days: 45,
-    color: 'vip3',
-    features: [
-      '🕒 刊登天數：45 天',
-      '🔁 每日自動更新排序，穩居前排',
-      '🏷 顯示「精選」標籤，最醒目',
-      '📈 頁面置頂推薦 + 首頁優先顯示',
-      '👉 適合高價物件、緊急出租或想最大化曝光的你！',
-    ],
-    desc: '最強曝光，讓你的物件霸佔首頁！',
-  },
+  { id: 'vip1', label: '🟡 VIP1 入門方案', price: 100, days: 15, color: 'vip1', features: ['🕒 刊登天數：15 天','🚫 無排序更新','🚫 無標籤、無數據報告','👉 最經濟實惠的選擇，快速上架無負擔！'], desc: '適合剛開始嘗試刊登的房東' },
+  { id: 'vip2', label: '🟠 VIP2 推薦方案', price: 200, days: 30, color: 'vip2', features: ['🕒 刊登天數：30 天','🔁 排序每 3 天自動更新','🏷 顯示「推薦」標籤','📈 系統推薦排序優先（更多人看到）','👉 高 CP 值選擇，適合希望快速出租的房東！'], desc: '提升曝光，加快出租速度' },
+  { id: 'vip3', label: '🔴 VIP3 精選方案', price: 300, days: 45, color: 'vip3', features: ['🕒 刊登天數：45 天','🔁 每日自動更新排序，穩居前排','🏷 顯示「精選」標籤，最醒目','📈 頁面置頂推薦 + 首頁優先顯示','👉 適合高價物件、緊急出租或想最大化曝光的你！'], desc: '最強曝光，讓你的物件霸佔首頁！' },
 ];
+
 function selectPlan(id) {
   selectedPlan.value = id;
 }
+
 function goBack() {
   router.back();
 }
-function onSaveExit() {
-  // 儲存草稿
-  const propertyDetail = JSON.parse(localStorage.getItem('propertyDetail') || '{}');
-  const draft = {
-    step: 'plan',
-    data: { ...propertyDetail, selectedPlan: selectedPlan.value },
-    savedAt: new Date().toISOString()
-  };
-  let drafts = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
-  drafts.push(draft);
-  localStorage.setItem('propertyDrafts', JSON.stringify(drafts));
-  showSaveAlert.value = true;
-}
-async function onConfirm() {
-  // 取得詳細資料
-  const propertyDetail = JSON.parse(localStorage.getItem('propertyDetail') || '{}');
-  // 取得 landlordId 與 token
-  let landlordId = localStorage.getItem('landlordId');
-  if (!landlordId && userStore.isLogin) {
-    // 若store有user資訊
-    const res = await axios.get('/api/Auth/me', { withCredentials: true });
-    landlordId = res.data.landlordId;
-    localStorage.setItem('landlordId', landlordId);
-  }
-  const token = localStorage.getItem('token');
-  // 1. HProperty
-  const property = {
-    HLandlordId: landlordId,
-    HPropertyTitle: propertyDetail.title,
-    HDescription: propertyDetail.description,
-    HAddress: propertyDetail.address,
-    HCity: propertyDetail.city,
-    HDistrict: propertyDetail.district,
-    HRentPrice: propertyDetail.rent,
-    HPropertyType: propertyDetail.spaceType,
-    HRoomCount: propertyDetail.room,
-    HBathroomCount: propertyDetail.bath,
-    HArea: propertyDetail.ping,
-    HFloor: propertyDetail.floor,
-    HTotalFloors: propertyDetail.totalFloor,
-    HBuildingType: propertyDetail.buildingType,
-    HIsDelete: false
-  };
-  // 2. HPropertyFeature
-  const featureMap = {};
-  (propertyDetail.features || []).forEach(f => featureMap['H' + f] = true);
-  const propertyFeature = {
-    HLandlordId: landlordId,
-    ...featureMap,
-    HIsDelete: false
-  };
-  // 3. HAd
-  const ad = {
-    HLandlordId: landlordId,
-    HAdName: selectedPlan.value,
-    HStatus: 'Active',
-    HAdPrice: plans.find(p => p.id === selectedPlan.value)?.price,
-    HIsDelete: false
-  };
-  // FormData
-  const formData = new FormData();
-  formData.append('property', JSON.stringify(property));
-  formData.append('propertyFeature', JSON.stringify(propertyFeature));
-  formData.append('ad', JSON.stringify(ad));
-  // 圖片檔案
-  const imageFiles = window._propertyImageFiles || [];
-  imageFiles.forEach(file => {
-    formData.append('images', file);
-  });
+
+async function onSaveExit() {
   try {
-    const res = await axios.post('/api/landlord/landlordcreate/full-create', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`
-      },
-      withCredentials: true
-    });
-    if (res.data.success) {
-      localStorage.removeItem('propertyDetail');
-      localStorage.removeItem('propertyFeatures');
-      window._propertyImageFiles = undefined;
-      showPublishAlert.value = true;
+    const id = route.query.id;
+    if (!id) {
+      alert('找不到物件ID');
+      return;
     }
-  } catch (e) {
-    alert('刊登失敗，請稍後再試');
+
+    // 更新物件狀態為草稿
+    await axios.put(`/api/landlord/property/${id}/draft`, {}, { withCredentials: true });
+    router.push('/landlord/property-manage');
+  } catch (error) {
+    console.error('Error:', error);
+    alert(error.response?.data?.message || '儲存失敗，請稍後再試');
   }
 }
-function handleAlertConfirm() {
-  router.push('/landlord/property-manage');
+
+async function onConfirm() {
+  try {
+    const id = route.query.id;
+    if (!id) {
+      alert('找不到物件ID');
+      return;
+    }
+
+    // 取得選擇的方案
+    const plan = plans.find(p => p.id === selectedPlan.value);
+    if (!plan) {
+      alert('請選擇方案');
+      return;
+    }
+
+    // 組成 ad 物件
+    const ad = {
+      HAdName: plan.label,
+      HCategory: plan.id,
+      HAdPrice: plan.price,
+      HStatus: 'Active',
+      HIsDelete: false,
+      HStartDate: new Date(),
+      HEndDate: new Date(Date.now() + plan.days * 24 * 60 * 60 * 1000)
+    };
+
+    // 更新物件狀態和廣告資訊
+    const response = await axios.put(`/api/landlord/property/${id}/activate`, {
+      ad: ad
+    }, { withCredentials: true });
+
+    if (response.data.success) {
+      router.push('/landlord/property-manage');
+    } else {
+      alert(response.data.message || '刊登失敗');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert(error.response?.data?.message || '刊登失敗，請稍後再試');
+  }
 }
-onMounted(() => {
-  drafts.value = JSON.parse(localStorage.getItem('propertyDrafts') || '[]');
-});
 </script>
 
 <style scoped>

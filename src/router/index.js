@@ -72,7 +72,7 @@ const router = createRouter({
     },
     //房東編輯
     {
-      path: "/landlord/property-edit",
+      path: "/landlord/property-edit/:id",
       name: "landlord-property-edit",
       component: () => import("@/views/landlord/PropertyEdit.vue"),
     },
