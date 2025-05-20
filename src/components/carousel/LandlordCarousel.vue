@@ -3,8 +3,13 @@
         :space-between="30">
         <SwiperSlide v-for="(item, i) in effectiveList" :key="i">
             <LandlordPropertyCard v-bind="item.property" :landlord="item.landlord" class="no-animation"
+            :badgeType="item.property.badgeType"
                 @open-login="$emit('open-login')"
-                @open-chat="$emit('open-chat', $event)" />
+                @open-chat="$emit('open-chat', $event)">
+            <template #badge v-if="item.property.badgeType">
+  <BadgeList :type="item.property.badgeType" />
+</template>
+            </LandlordPropertyCard>
         </SwiperSlide>
     </Swiper>
 </template>
@@ -19,6 +24,7 @@ import LandlordPropertyCard from '@/components/cards/LandlordPropertyCard.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import avatarImg from '@/assets/images/avatar/default.png'
 import { computed } from 'vue'
+import BadgeList from '@/components/BadgeList.vue'
 
 const emit = defineEmits(['open-login', 'open-chat'])
 const props = defineProps({

@@ -50,7 +50,11 @@ import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 import ChatPopup from '@/components/chat/ChatPopup.vue'
+import { useLoadingStore } from '@/stores/loadingStore.js'
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
 
+const favoriteStore = useFavoriteStore()
+const loadingStore = useLoadingStore()
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const route = useRoute()
 const propertyId = ref(route.params.id)
@@ -142,6 +146,7 @@ const fullAddress = computed(() => {
 
 async function loadPropertyDetail(id) {
     try {
+        loadingStore.show()
         console.log("房源 ID:", id);
         console.log("API 呼叫 URL:", `${API_BASE_URL}/api/PropertySearch/${id}`);
         const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/${id}`)
@@ -153,10 +158,13 @@ async function loadPropertyDetail(id) {
         property.value = fallbackProperty
         images.value = fallbackImages
         landlord.value = fallbackLandlord
+    } finally {
+        loadingStore.hide()
     }
 }
 
 onMounted(async () => {
+    await favoriteStore.fetchFavorites()
     await loadPropertyDetail(route.params.id)
 
     try {

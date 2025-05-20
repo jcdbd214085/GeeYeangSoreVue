@@ -5,7 +5,11 @@
             992: { slidesPerView: 3 }
         }">
         <SwiperSlide v-for="(item, i) in propertyList" :key="i">
-            <PropertyCard v-bind="item" class="no-animation small-card" @open-login="$emit('open-login')" />
+            <PropertyCard v-bind="item" class="no-animation small-card" @open-login="$emit('open-login')" >
+            <template #badge v-if="item.badgeType">
+                    <BadgeList :type="item.badgeType" />
+            </template>
+        </PropertyCard>
         </SwiperSlide>
     </Swiper>
 </template>
@@ -17,6 +21,7 @@ import 'swiper/css/navigation'
 import PropertyCard from '@/components/cards/PropertyCard.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import { computed } from 'vue'
+import BadgeList from '@/components/BadgeList.vue'
 
 const emit = defineEmits(['open-login'])
 const props = defineProps({
