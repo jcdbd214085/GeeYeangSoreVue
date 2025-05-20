@@ -38,7 +38,7 @@
               <p>——使用其他方式登入——</p>
               <div class="social-icons">
                 <!-- Google登入icon -->
-                <button class="social-btn google-btn">
+                <button class="social-btn google-btn" @click.prevent="handleGoogleLogin">
                   <span class="icon-circle">
                     <i class="fa-brands fa-google"></i>
                   </span>
@@ -135,7 +135,7 @@
   <!-- 忘記密碼 -->
 <ForgotPasswordModal
   v-if="showForgotPasswordModal"
-  @close="showForgotPasswordModal = false"
+  @close="handleForgotClose"
 />
 
 </template>
@@ -143,8 +143,22 @@
 <script setup>
 // 引入 Composition API
 import { ref, onMounted } from "vue";
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 // 加入 defineEmits
 const emit = defineEmits(["close"]);
+
+//加入忘記密碼彈窗 控制回登入畫面刷新
+const handleForgotClose = () => {
+  showForgotPasswordModal.value = false;
+  // 重置登入表單
+  login.value = {
+    username: '',
+    password: ''
+  };
+  showLogin(); // 回到登入畫面
+};
+
 
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
@@ -220,6 +234,18 @@ const showLogin = () => {
 // 登入事件處理
 const handleLogin = async () => {
   try {
+    // ✅ Step 1：取得 reCAPTCHA token（正式環境：驗證失敗就 return）
+    let recaptchaToken = '';
+    try {
+      await new Promise(resolve => grecaptcha.ready(resolve));
+      recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
+    } catch (err) {
+      console.error('❌ 無法取得 Google reCAPTCHA 驗證，拒絕登入', err);
+      toast.error("系統驗證失敗，請重新整理頁面或稍後再試");
+      return;
+    }
+
+
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: "POST",
       headers: {
@@ -229,51 +255,43 @@ const handleLogin = async () => {
       body: JSON.stringify({
         txtAccount: login.value.username,
         txtPassword: login.value.password,
+        recaptchaToken: recaptchaToken, // ✅ 加入reCAPTCHA token
       }),
     });
 
     // 檢查 HTTP 狀態碼
-const httpdata = await res.json();
+const data = await res.json();
 
 if (res.status === 401) {
-  alert(httpdata.message || "帳號或密碼錯誤");
+  console.warn("登入失敗，401 未授權", data);
+  toast.error(data.message || "帳號或密碼錯誤");
   return;
 }
 
 if (!res.ok) {
-  alert(httpdata.message || "伺服器錯誤，請稍後再試");
+  console.error("登入失敗，非 200 回應", data);
+  toast.error(data.message || "伺服器錯誤，請稍後再試");
   return;
 }
 
-if (httpdata.success) {
+if (data.success) {
   userStore.login(
-    httpdata.role || "tenant",
-    httpdata.userName || httpdata.user || "",
-    httpdata.isLandlord || false
+    data.role || "tenant",
+    data.userName || data.user || "",
+    data.isLandlord || false
   );
+  toast.success("登入成功！歡迎回來");
   emit("close");
 } else {
-  alert(httpdata.message || "登入失敗");
+  console.warn("登入回傳 success: false", data);
+  toast.error(data.message || "登入失敗");
 }
-    // 判斷回傳格式
-
-    if (data.success) {
-      userStore.login(data.role || 'tenant', data.userName || data.user || '', data.isLandlord || false)
-      
-      await favoriteStore.fetchFavorites();
-      if (favoriteStore.pendingFavoriteId) {
-        await favoriteStore.addFavorite(favoriteStore.pendingFavoriteId)
-        favoriteStore.pendingFavoriteId = null
-      }
-
-      // 登入成功自動關閉彈窗
-      emit("close");
-    } else {
-      alert(httpdata.message || "登入失敗");
-    }
   } catch (err) {
-    alert(err.message || "登入時發生錯誤");
-  }
+  console.error("登入發生例外錯誤", err);
+  toast.error(err.message || "登入時發生錯誤");
+}
+
+
 };
 
 // 註冊事件處理
@@ -313,33 +331,39 @@ const handleRegister = async () => {
       body: JSON.stringify(requestData),
     });
 
-    if (!res.ok) {
-      const errRes = await res.json();
-      alert(errRes.message || "註冊失敗");
-      return;
-    }
+if (!res.ok) {
+  const errRes = await res.json();
+  console.error("註冊失敗", errRes);
+  toast.error(errRes.message || "註冊失敗");
+  return;
+}
 
-    const result = await res.json();
-    if (result.success) {
-      alert(result.message || "註冊成功，請登入");
-      showLogin(); // 自動切換回登入畫面
-    } else {
-      alert(result.message || "註冊失敗");
-    }
-  } catch (err) {
-    alert("註冊時發生錯誤，請稍後再試");
-    console.error("註冊錯誤", err);
-  }
+const result = await res.json();
+if (result.success) {
+  console.log("註冊成功", result);
+  toast.success(result.message || "註冊成功，請登入");
+  showLogin();
+} else {
+  console.warn("註冊回傳失敗", result);
+  toast.error(result.message || "註冊失敗");
+}
+
+} catch (err) {
+  console.error("註冊發生例外", err);
+  toast.error("註冊時發生錯誤，請稍後再試");
+}
+
 };
 
 // 發送驗證碼事件
 const sendVerificationCode = async () => {
   if (countdown.value > 0 || isSending.value) return; // 防止重複點擊
 
-  if (!register.value.email) {
-    alert("請先輸入電子信箱");
-    return;
-  }
+if (!register.value.email) {
+  console.warn("使用者尚未輸入 email");
+  toast.warning("請先輸入電子信箱");
+  return;
+}
 
   isSending.value = true; // 鎖定按鈕
 
@@ -355,13 +379,16 @@ const sendVerificationCode = async () => {
       }),
     });
 
-    const result = await res.text(); // 回傳是字串
+const result = await res.text(); // 回傳是字串
 
-    if (!res.ok) {
-      throw new Error(result || "發送驗證碼失敗");
-    }
+if (!res.ok) {
+  console.error("驗證碼 API 回傳錯誤", result);
+  throw new Error(result || "發送驗證碼失敗");
+}
 
-    alert(result || "驗證碼已發送，請查看信箱 📩");
+console.log("驗證碼發送成功", result);
+toast.success(result || "驗證碼已發送，請查看信箱 📩");
+
 
     // ✅ 開始倒數
     resendText.value = "重新發送";
@@ -373,7 +400,8 @@ const sendVerificationCode = async () => {
       }
     }, 1000);
   } catch (err) {
-    alert(err.message || "寄送驗證碼時發生錯誤");
+  console.error("發送驗證碼錯誤", err);
+  toast.error(err.message || "寄送驗證碼時發生錯誤");
   } finally {
     isSending.value = false; // 發送結束解除鎖定
   }
@@ -400,8 +428,80 @@ const validatePassword = (password, email) => {
   return "";
 };
 
+//第三方Google登入
+const handleGoogleLogin = () => {
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    scope: 'openid email profile',
+    callback: async (response) => {
+      const idToken = response.credential; // ✅ 拿 id_token
+
+  // ✅ 呼叫後端 API **之前**
+  console.log("測試傳送給後端的 idToken：", idToken);
+
+      if (!idToken) {
+        toast.error("Google 登入失敗，請稍後再試");
+        return;
+      }
+
+      try {
+        // ✅ 向 Google 的 userinfo API 取得 id_token
+        const resUser = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            Authorization: `Bearer ${idToken}`
+          }
+        });
+
+        const profile = await resUser.json();
+        if (!profile.sub) {
+          toast.error("無法取得 Google 使用者資訊");
+          return;
+        }
+
+        // ✅ 傳送 id_token 到後端（這裡你可以直接用 access_token 也可以，視後端支援）
+        const res = await fetch(`${API_BASE_URL}/api/Auth/google-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ idToken }) // 或後端接受 profile
+          
+        });
+
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          toast.error(result.message || "Google 登入失敗");
+          return;
+        }
+
+        userStore.login(
+          result.role || "tenant",
+          result.userName || result.user || "",
+          result.isLandlord || false
+        );
+
+        toast.success("Google 登入成功！");
+        emit("close");
+      } catch (err) {
+        console.error("Google 登入錯誤", err);
+        toast.error("登入時發生錯誤，請稍後再試");
+      }
+    }
+  });
+
+  client.requestAccessToken(); // ✅ 這才是正確觸發 popup 登入流程
+};
+
+
+
+
+// onMounted 時初始化 Google 登入
 onMounted(() => {
   showCloseBtn.value = true;
+
+  google.accounts.id.initialize({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    callback: handleGoogleCallback,
+  });
 });
 </script>
 

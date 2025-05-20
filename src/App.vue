@@ -40,6 +40,17 @@ function closeChatPopup() {
 
 const userStore = useUserStore();
 onMounted(async () => {
+
+  // ✅ 載入 Google reCAPTCHA v3 script（防止重複）
+  if (!window.grecaptcha) {
+    const recaptchaScript = document.createElement('script')
+    recaptchaScript.src = 'https://www.google.com/recaptcha/api.js?render=6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw'
+    recaptchaScript.async = true
+    recaptchaScript.defer = true
+    document.head.appendChild(recaptchaScript)
+  }
+
+  // ✅ 初始化使用者狀態
   userStore.initFromLocalStorage();
 
   // 嘗試從後端抓目前登入者（驗證 Session）
@@ -98,4 +109,29 @@ watch(
   padding-top: 80px;
   /* 根據 Navbar 實際高度調整 */
 }
+</style>
+
+<style>
+
+/* 調整 reCAPTCHA v3 徽章樣式 */
+.grecaptcha-badge {
+  left: 0 !important;
+  right: auto !important;
+  bottom: 0 !important;
+  z-index: 1000 !important;
+  position: fixed !important;
+
+  transform: scale(0.5); /* ✅ 調整大小 */
+  transform-origin: bottom left; /* ✅ 縮放以左下角為基準 */
+  opacity: 0.2; /* 降低透明度 */
+}
+
+.grecaptcha-badge:hover {
+  transform: scale(1);
+  opacity: 1;
+}
+
+
+
+
 </style>
