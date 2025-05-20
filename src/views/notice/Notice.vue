@@ -199,7 +199,7 @@ onMounted(() => {
 <style scoped>
 /* Base styles */
 .announcement-section {
-  background: linear-gradient(180deg, #f5f7fa 0%, #e9ecef 100%);
+  background: white;
   padding: 5rem 0;
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -221,14 +221,14 @@ onMounted(() => {
 .section-divider {
   width: 80px;
   height: 5px;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+  background: #3CDDD2;
   margin: 0 auto 1.5rem;
   border-radius: 3px;
 }
 
 .section-subtitle {
   font-size: 1.25rem;
-  color: #4b5563;
+  color: #666666;
   max-width: 600px;
   margin: 0 auto 1.5rem;
 }
@@ -241,7 +241,7 @@ onMounted(() => {
 .search-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #3CDDD2;
   border-radius: 8px;
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -313,6 +313,7 @@ onMounted(() => {
   gap: 1.5rem;
 }
 
+
 .announcement-card {
   background: white;
   border-radius: 16px;
@@ -330,6 +331,7 @@ onMounted(() => {
   display: flex;
   gap: 2rem;
   padding: 2rem;
+  border: 1px solid #3CDDD2;
 }
 
 .image-container {
@@ -360,7 +362,7 @@ onMounted(() => {
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #222222;
   margin: 0;
 }
 
@@ -369,7 +371,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   background: #10b981;
-  color: white;
+  color: #666666;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.25rem 0.5rem;

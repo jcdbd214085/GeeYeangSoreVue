@@ -1,6 +1,7 @@
 ﻿<script setup>
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import Button from "@/components/buttons/button.vue";
 
 let Titles = ref([]);
 const loading = ref(true);
@@ -71,7 +72,8 @@ onMounted(() => {
                 >
                   <div class="d-flex align-items-center">
                     <div class="faq-number">{{ index + 1 }}</div>
-                    <span class="ms-3">{{ item.hTitle }}</span>
+                    <span class="ms-3" style="color: #222222;">{{ item.hTitle }}</span>
+
                   </div>
                 </button>
               </h2>
@@ -114,22 +116,22 @@ onMounted(() => {
       </div>
 
       <!-- Footer Section with Contact Info -->
-      <div class="row mt-5">
-        <div class="col-12 text-center">
-          <div class="additional-help p-4">
-            <h5>沒有找到您的問題?</h5>
-            <p>請聯繫我們的客戶服務團隊</p>
-            <button class="btn btn-primary">聯繫我們</button>
-          </div>
-        </div>
-      </div>
+<!--      <div class="row mt-5">-->
+<!--        <div class="col-12 text-center">-->
+<!--          <div class="additional-help p-4">-->
+<!--            <h5>沒有找到您的問題?</h5>-->
+<!--            <p>請聯繫我們的客戶服務團隊</p>-->
+<!--            <Button>聯繫我們</Button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
 
 <style scoped>
 .faq-section {
-  background-color: #f8f9fa;
+  background-color: white;
 }
 
 .section-title {
@@ -145,8 +147,8 @@ onMounted(() => {
 
 .section-divider {
   height: 4px;
-  width: 70px;
-  background: linear-gradient(90deg, #4e73df, #36b9cc);
+  width: auto;
+  background: #3CDDD2;
   margin: 0 auto 20px;
   border-radius: 2px;
 }
@@ -201,7 +203,7 @@ onMounted(() => {
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: linear-gradient(135deg, #4e73df, #36b9cc);
+  background: #3CDDD2;
   color: white;
   border-radius: 50%;
   font-size: 0.85rem;
@@ -210,9 +212,7 @@ onMounted(() => {
 
 /* FAQ Content */
 .faq-content {
-  color: #495057;
-  font-size: 1rem;
-  line-height: 1.7;
+  color: #666666;
 }
 
 /* Image Styling */
