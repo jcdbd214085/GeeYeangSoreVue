@@ -1,12 +1,11 @@
 <template>
   <div class="landlord-property-card d-flex" v-intersect="intersectAnimation">
     <!-- 房源內容 -->
-    <div class="left-section">
-      <div v-if="$slots.badge" class="card-badge">
+    <div class="left-section">  
+      <div class="image-wrapper" @click="goToDetail">
+        <div v-if="$slots.badge" class="card-badge">
         <slot name="badge"></slot>
-      </div>
-
-      <div @click="goToDetail">
+        </div>
         <img :src="image" alt="房源圖片" class="card-img" />
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
@@ -145,6 +144,17 @@ async function openChat() {
   border-bottom-left-radius: 15px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.image-wrapper {
+  position: relative; 
+}
+
+.card-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
 }
 
 .landlord-property-card:hover {

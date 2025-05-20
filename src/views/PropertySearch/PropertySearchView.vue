@@ -22,10 +22,24 @@
             <div class="row" :key="currentPage">
                 <div class="col-md-3" v-for="(item, i) in pagedList" :key="i"
                     v-intersect="pageDirection === 'next' ? '' : 'fadeInRight'">
-                    <PropertyCard :propertyId="item.propertyId" :image="item.image"
-                        :rentPrice="item.rentPrice" :title="item.title" :city="item.city" :district="item.district"
-                        :address="item.address" :roomCount="item.roomCount" :bathroomCount="item.bathroomCount"
-                        :propertyType="item.propertyType" class="small-card" @open-login="handleOpenLogin" />
+                    <PropertyCard
+                        :propertyId="item.propertyId"
+                        :image="item.image"
+                        :rentPrice="item.rentPrice"
+                        :title="item.title"
+                        :city="item.city"
+                        :district="item.district"
+                        :address="item.address"
+                        :roomCount="item.roomCount"
+                        :bathroomCount="item.bathroomCount"
+                        :propertyType="item.propertyType"
+                        class="small-card"
+                        @open-login="handleOpenLogin"
+                        >
+                        <template #badge v-if="item.badgeType">
+                            <BadgeList :type="item.badgeType" />
+                        </template>
+                    </PropertyCard>
                 </div>
                 <div class="col-md-12 d-flex justify-content-center mt-4">
                     <Pagination v-model="currentPage" :totalItems="propertyList.length" :itemsPerPage="itemsPerPage"
@@ -60,6 +74,7 @@ import { ref, onMounted, computed, reactive, watch } from 'vue'
 import axios from 'axios'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 import ChatPopup from '@/components/chat/ChatPopup.vue'
+import BadgeList from '@/components/BadgeList.vue'
 
 const favoriteStore = useFavoriteStore()
 const emit = defineEmits(['open-login'])
@@ -70,6 +85,9 @@ const itemsPerPage = 8
 const previousPage = ref(1)
 const pageDirection = ref('next')
 
+onMounted(async () => {
+  await favoriteStore.fetchFavorites() 
+})
 const pagedList = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     return propertyList.value.slice(start, start + itemsPerPage)

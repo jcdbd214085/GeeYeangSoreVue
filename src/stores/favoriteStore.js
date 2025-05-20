@@ -20,6 +20,9 @@ export const useFavoriteStore = defineStore('favorite', {
             }
         },
         async addFavorite(propertyId) {
+            if (this.list.some(item => item.propertyId === propertyId)) {
+                return { success: false, message: '已收藏過了' }
+            }
             try {
                 await axios.post(
                     `${API_BASE_URL}/api/Favorite/add`,
