@@ -26,116 +26,259 @@
       <Button color="outline-secondary" type="button" @click="onSaveExit">儲存草稿</Button>
       <Button color="primary" :disabled="!selectedPlan" @click="onConfirm">確認刊登</Button>
     </div>
+
+    <!-- Alert 元件 -->
+    <Alert
+      v-model:show="showAlert"
+      :title="alertConfig.title"
+      :type="alertConfig.type"
+      :confirmText="alertConfig.confirmText"
+      :cancelText="alertConfig.cancelText"
+      @confirm="handleAlertConfirm"
+      @cancel="handleAlertCancel"
+    >
+      {{ alertConfig.message }}
+    </Alert>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
+import Alert from '@/components/alert/Alert.vue';
 import axios from 'axios';
 
 const router = useRouter();
 const route = useRoute();
 const selectedPlan = ref('');
+const showAlert = ref(false);
+const alertConfig = reactive({
+  title: '',
+  message: '',
+  type: 'info',
+  confirmText: '確認',
+  cancelText: '取消'
+});
+
 const plans = [
   { id: 'vip1', label: '🟡 VIP1 入門方案', price: 100, days: 15, color: 'vip1', features: ['🕒 刊登天數：15 天','🚫 無排序更新','🚫 無標籤、無數據報告','👉 最經濟實惠的選擇，快速上架無負擔！'], desc: '適合剛開始嘗試刊登的房東' },
   { id: 'vip2', label: '🟠 VIP2 推薦方案', price: 200, days: 30, color: 'vip2', features: ['🕒 刊登天數：30 天','🔁 排序每 3 天自動更新','🏷 顯示「推薦」標籤','📈 系統推薦排序優先（更多人看到）','👉 高 CP 值選擇，適合希望快速出租的房東！'], desc: '提升曝光，加快出租速度' },
   { id: 'vip3', label: '🔴 VIP3 精選方案', price: 300, days: 45, color: 'vip3', features: ['🕒 刊登天數：45 天','🔁 每日自動更新排序，穩居前排','🏷 顯示「精選」標籤，最醒目','📈 頁面置頂推薦 + 首頁優先顯示','👉 適合高價物件、緊急出租或想最大化曝光的你！'], desc: '最強曝光，讓你的物件霸佔首頁！' },
 ];
 
+onMounted(() => {
+  // 從 localStorage 讀取表單資料
+  const formData = localStorage.getItem('propertyFormData');
+  if (!formData) {
+    showAlert.value = true;
+    alertConfig.title = '錯誤';
+    alertConfig.message = '找不到物件資料，請重新填寫';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
+    router.push('/landlord/property-detail-form');
+  }
+});
+
 function selectPlan(id) {
   selectedPlan.value = id;
 }
 
 function goBack() {
-  // 上一步：帶著物件ID回到 PropertyDetailForm.vue，讓表單進入編輯模式（避免重複新增）
-  const id = route.query.id;
-  if (id) {
-    router.push({
-      path: '/landlord/property-detail-form',
-      query: { id }
-    });
-  } else {
-    router.push('/landlord/property-detail-form');
-  }
+  router.push('/landlord/property-detail-form');
 }
 
 async function onSaveExit() {
   try {
-    const id = route.query.id;
-    if (!id) {
-      alert('找不到物件ID');
+    const formData = JSON.parse(localStorage.getItem('propertyFormData'));
+    if (!formData) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '找不到物件資料';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
       return;
     }
 
-    // 更新物件狀態為草稿
-    await axios.put(`/api/landlord/property/${id}/draft`, {}, { withCredentials: true });
-    router.push('/landlord/property-manage');
+    showAlert.value = true;
+    alertConfig.title = '確認儲存';
+    alertConfig.message = '確定要將此物件儲存為草稿嗎？';
+    alertConfig.type = 'info';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '取消';
   } catch (error) {
     console.error('Error:', error);
-    alert(error.response?.data?.message || '儲存失敗，請稍後再試');
+    showAlert.value = true;
+    alertConfig.title = '錯誤';
+    alertConfig.message = error.response?.data?.message || '儲存失敗，請稍後再試';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
   }
 }
 
 async function onConfirm() {
   try {
-    const id = route.query.id;
-    if (!id) {
-      alert('找不到物件ID');
+    const formData = JSON.parse(localStorage.getItem('propertyFormData'));
+    if (!formData) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '找不到物件資料';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
       return;
     }
 
     // 取得選擇的方案
     const plan = plans.find(p => p.id === selectedPlan.value);
     if (!plan) {
-      alert('請選擇方案');
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請選擇方案';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
       return;
     }
 
-    // 彈出選單讓用戶選擇付款時機
-    const payNow = window.confirm('請選擇付款方式：\n\n按「立即付款」= 立即付款\n按「稍後付款」= 稍後付款');
-
-    // 1. 建立 HAd，只傳 DTO 必填欄位
-    const createAdRes = await axios.put(
-      `/api/landlord/property/${id}/activate`,
-      {
-        hAdName: plan.label,
-        hCategory: plan.id.toUpperCase(),
-        hPlanId: Number(plan.id.replace('vip', ''))
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true
-      }
-    );
-
-    // 取出 adId
-    const adId = createAdRes.data.adId;
-
-    if (payNow) {
-      // 立即付款：呼叫金流 API 並導向付款頁面
-      const checkoutRes = await axios.post('/api/commerce/ecpay-html', {
-        AdId: adId,
-        TotalAmount: plan.price,
-        ItemName: plan.label
-      });
-
-      const win = window.open();
-      win.document.write(checkoutRes.data);
-      win.document.close();
-    } else {
-      // 稍後付款：跳轉回廣告管理頁
-      router.push('/landlord/admanage');
-    }
+    // 顯示付款選擇提示
+    showAlert.value = true;
+    alertConfig.title = '選擇付款方式';
+    alertConfig.message = '請選擇付款方式：\n\n立即付款 = 立即付款\n稍後付款 = 稍後付款';
+    alertConfig.type = 'info';
+    alertConfig.confirmText = '立即付款';
+    alertConfig.cancelText = '稍後付款';
   } catch (error) {
     console.error('Error:', error);
-    alert(error.response?.data?.message || '刊登失敗，請稍後再試');
+    showAlert.value = true;
+    alertConfig.title = '錯誤';
+    alertConfig.message = error.response?.data?.message || '刊登失敗，請稍後再試';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
   }
 }
 
+async function handleAlertConfirm() {
+  try {
+    const formData = JSON.parse(localStorage.getItem('propertyFormData'));
+    const plan = plans.find(p => p.id === selectedPlan.value);
+    
+    if (alertConfig.confirmText === '立即付款') {
+      // 立即付款：先呼叫金流 API
+      const checkoutRes = await axios.post('/api/commerce/ecpay-html', {
+        TotalAmount: plan.price,
+        ItemName: plan.label,
+        formData: formData // 傳遞表單資料到金流 API
+      });
+
+      // 開啟付款視窗
+      const win = window.open();
+      win.document.write(checkoutRes.data);
+      win.document.close();
+
+      // 清除 localStorage
+      localStorage.removeItem('propertyFormData');
+      
+      // 跳轉到管理頁面
+      router.push('/landlord/property-manage');
+    } else if (alertConfig.confirmText === '確認') {
+      // 儲存草稿
+      const formDataToSend = new FormData();
+      formDataToSend.append('property', JSON.stringify({
+        ...formData.property,
+        HStatus: '草稿'
+      }));
+      formDataToSend.append('propertyFeature', JSON.stringify(formData.propertyFeature));
+      formDataToSend.append('ad', JSON.stringify({
+        hAdName: plan.label,
+        hCategory: plan.id.toUpperCase(),
+        hPlanId: Number(plan.id.replace('vip', ''))
+      }));
+      
+      // 加入圖片
+      formData.images.forEach(img => {
+        if (img.file) {
+          formDataToSend.append('images', img.file);
+        }
+      });
+
+      // 儲存物件資料
+      await axios.post('/api/landlord/property', formDataToSend, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      // 清除 localStorage
+      localStorage.removeItem('propertyFormData');
+      
+      // 顯示成功訊息
+      showAlert.value = true;
+      alertConfig.title = '成功';
+      alertConfig.message = '已成功儲存為草稿';
+      alertConfig.type = 'success';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
+      
+      // 跳轉到管理頁面
+      router.push('/landlord/property-manage');
+    } else {
+      // 稍後付款：直接儲存為草稿並跳轉
+      const formDataToSend = new FormData();
+      formDataToSend.append('property', JSON.stringify({
+        ...formData.property,
+        HStatus: '草稿'
+      }));
+      formDataToSend.append('propertyFeature', JSON.stringify(formData.propertyFeature));
+      formDataToSend.append('ad', JSON.stringify({
+        hAdName: plan.label,
+        hCategory: plan.id.toUpperCase(),
+        hPlanId: Number(plan.id.replace('vip', ''))
+      }));
+      
+      // 加入圖片
+      formData.images.forEach(img => {
+        if (img.file) {
+          formDataToSend.append('images', img.file);
+        }
+      });
+
+      // 儲存物件資料
+      await axios.post('/api/landlord/property', formDataToSend, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      // 清除 localStorage
+      localStorage.removeItem('propertyFormData');
+      
+      // 跳轉到管理頁面
+      router.push('/landlord/property-manage');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showAlert.value = true;
+    alertConfig.title = '錯誤';
+    alertConfig.message = error.response?.data?.message || '刊登失敗，請稍後再試';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
+  }
+}
+
+function handleAlertCancel() {
+  // 如果是稍後付款的選項，執行確認刊登的邏輯
+  if (alertConfig.confirmText === '立即付款') {
+    handleAlertConfirm();
+  }
+}
 </script>
 
 <style scoped>

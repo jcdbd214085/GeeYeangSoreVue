@@ -1,9 +1,22 @@
 <template>
   <div class="ad-manage-container">
     <h2>刊登管理</h2>
+    <div class="filter-row">
+      <input v-model="search" class="search-input" placeholder="輸入物件標題、地址" />
+      <select v-model="filterStatus" class="filter-select">
+        <option value="">全部</option>
+        <option value="active">刊登中</option>
+        <option value="expired">已過期</option>
+      </select>
+      <select v-model="sort" class="filter-select">
+        <option value="title">名稱</option>
+        <option value="planDesc">廣告方案（由高到低）</option>
+        <option value="planAsc">廣告方案（由低到高）</option>
+      </select>
+    </div>
     <section class="ad-list-section">
       <h3>刊登列表</h3>
-      <div v-if="ads.length === 0" class="empty-state">
+      <div v-if="filteredAds.length === 0" class="empty-state">
         <div class="empty-icon">
           <svg width="80" height="80" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="64" height="64" rx="16" fill="#F5F5F5"/>
@@ -20,12 +33,20 @@
             <div class="ad-list-info">
               <div class="ad-list-title">{{ ad.title }}</div>
               <div class="ad-list-plan">
-                <span :class="['plan-badge', ad.plan.toLowerCase()]">{{ ad.planLabel }}</span>
+                <span :class="['plan-badge', ad.plan?.toLowerCase()]">{{ ad.planLabel }}</span>
               </div>
               <div class="ad-list-status">
                 <span :class="['status', ad.status === '進行中' ? 'active' : 'expired']">
                   {{ ad.status === '進行中' ? '刊登中' : '已過期' }}
                 </span>
+              </div>
+              <div class="ad-list-address">{{ ad.address || '' }}</div>
+              <div class="ad-list-price" v-if="ad.price">{{ ad.price }} 元/月</div>
+              <div class="ad-list-time">
+                <span class="time-label">刊登時間：</span>
+                <span>{{ ad.startTime ? new Date(ad.startTime).toLocaleDateString() : '未開始' }}</span>
+                <span class="time-separator">至</span>
+                <span>{{ ad.endTime ? new Date(ad.endTime).toLocaleDateString() : '未設定' }}</span>
               </div>
             </div>
             <div class="ad-list-actions">
@@ -35,7 +56,7 @@
         </div>
         <div class="pagination-container">
           <Pagination
-            :totalItems="ads.length"
+            :totalItems="filteredAds.length"
             :itemsPerPage="itemsPerPage"
             v-model="currentPage"
             :showFirstLastButtons="true"
@@ -56,11 +77,49 @@ import Pagination from '@/components/Pagination/Pagination.vue';
 const ads = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const search = ref('');
+const filterStatus = ref('');
+const sort = ref('title');
+
+const planPriceMap = {
+  VIP1: 100,
+  VIP2: 200,
+  VIP3: 300
+};
+
+const filteredAds = computed(() => {
+  let filtered = [...ads.value];
+  if (search.value) {
+    filtered = filtered.filter(ad =>
+      (ad.title?.toLowerCase().includes(search.value.toLowerCase()) ||
+      ad.address?.toLowerCase().includes(search.value.toLowerCase()))
+    );
+  }
+  if (filterStatus.value) {
+    if (filterStatus.value === 'active') {
+      filtered = filtered.filter(ad => ad.status === '進行中');
+    } else if (filterStatus.value === 'expired') {
+      filtered = filtered.filter(ad => ad.status !== '進行中');
+    }
+  }
+  switch (sort.value) {
+    case 'title':
+      filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      break;
+    case 'planDesc':
+      filtered.sort((a, b) => (planPriceMap[b.plan] || 0) - (planPriceMap[a.plan] || 0));
+      break;
+    case 'planAsc':
+      filtered.sort((a, b) => (planPriceMap[a.plan] || 0) - (planPriceMap[b.plan] || 0));
+      break;
+  }
+  return filtered;
+});
 
 const paginatedAds = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return ads.value.slice(start, end);
+  return filteredAds.value.slice(start, end);
 });
 
 function handlePageChange({ page }) {
@@ -123,9 +182,16 @@ async function loadAds() {
     ads.value = data.map(ad => ({
       id: ad.id,
       title: ad.propertyTitle,
+      address: ad.address || '',
+      propertyType: ad.propertyType || '',
+      price: ad.rentPrice || ad.price || '',
       plan: ad.plan,
       planLabel: plans.find(p => p.id === ad.plan)?.label || '未知方案',
       status: ad.status,
+      updated: ad.updatedAt || ad.updated || '',
+      created: ad.createdAt || ad.created || '',
+      startTime: ad.startDate || ad.startDate || '',
+      endTime: ad.endDate || ad.endDate || '',
       cover: ad.coverImage && ad.coverImage.startsWith('http') 
         ? ad.coverImage 
         : `https://localhost:7022${ad.coverImage}` || '/images/Property/default.jpg',
@@ -138,7 +204,7 @@ async function loadAds() {
 
 function onUpgrade(ad) {
   // TODO: 實作升級方案的功能
-  alert('升級廣告功能（待串接）');
+  alert('購買廣告功能（待串接）');
 }
 
 onMounted(() => {
@@ -318,5 +384,48 @@ onMounted(() => {
   margin-top: 2rem;
   display: flex;
   justify-content: center;
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+}
+.filter-select {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+}
+.ad-list-address {
+  color: #666;
+  font-size: 0.9rem;
+}
+.ad-list-price {
+  color: var(--main-color, #24B4A8);
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+.ad-list-time {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.time-label {
+  color: #888;
+}
+
+.time-separator {
+  margin: 0 0.5rem;
+  color: #888;
 }
 </style> 

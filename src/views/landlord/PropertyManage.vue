@@ -13,9 +13,10 @@
       <input v-model="search" class="search-input" placeholder="輸入物件標題、地址" />
       <select v-model="filterType" class="filter-select">
         <option value="">全部物件類別</option>
-        <option value="公寓">公寓</option>
-        <option value="透天">透天</option>
+        <option value="整層住家">整層住家</option>
+        <option value="雅房">雅房</option>
         <option value="套房">套房</option>
+        <option value="整棟住家">整棟住家</option>
       </select>
       <select v-model="sort" class="filter-select">
         <option value="updated">更新時間</option>
@@ -405,29 +406,45 @@ async function handleAlertConfirm() {
   
   try {
     let successMessage = '';
+    const propertyId = currentItem.hPropertyId || currentItem.id;
+    
+    if (!propertyId) {
+      throw new Error('找不到物件ID');
+    }
+
     switch (currentAction) {
       case 'deactivate':
-        await axios.put(`/api/landlord/property/${currentItem.id}/deactivate`, {}, { withCredentials: true });
+        await axios.put(`/api/landlord/property/${propertyId}/deactivate`, {}, { withCredentials: true });
         successMessage = '物件下架成功';
         break;
       case 'draft':
-        await axios.put(`/api/landlord/property/${currentItem.id}/draft`, {}, { withCredentials: true });
+        await axios.put(`/api/landlord/property/${propertyId}/draft`, {}, { withCredentials: true });
         successMessage = '物件已設為草稿';
         break;
       case 'delete':
-        await axios.delete(`/api/landlord/property/${currentItem.id}`, { withCredentials: true });
+        await axios.delete(`/api/landlord/property/${propertyId}`, { withCredentials: true });
         successMessage = '草稿刪除成功';
         break;
+        //這邊有問題要問念靜 
       case 'activate':
-        await axios.put(`/api/landlord/property/${currentItem.id}/activate`, {}, { withCredentials: true });
+        await axios.put(`/api/landlord/property/${propertyId}/activate`, {
+          hAdName: '',
+          hCategory: '',
+          hPlanId: 0
+        }, { withCredentials: true });
         successMessage = '物件上架成功';
         break;
     }
+    
     await loadProperties();
     showSuccessMessage('成功', successMessage);
   } catch (error) {
     console.error('Error performing action:', error);
-    alert('操作失敗，請稍後再試');
+    showSuccessMessage('錯誤', error.message || '操作失敗，請稍後再試');
+  } finally {
+    showAlert.value = false;
+    currentAction = null;
+    currentItem = null;
   }
 }
 

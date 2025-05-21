@@ -14,19 +14,9 @@
       </div>
       <div class="form-actions">
         <Button color="outline-secondary" type="button" @click="goBack">返回</Button>
-        <Button color="outline-secondary" type="button" @click="onSaveExit">儲存草稿</Button>
         <Button color="primary" type="submit">下一步</Button>
       </div>
     </form>
-    <Alert
-      v-model:show="showAlert"
-      title="儲存提示"
-      message="已儲存並退出"
-      type="success"
-      :confirmText="'確認'"
-      :cancelText="'取消'"
-      @confirm="handleAlertConfirm"
-    />
   </div>
 </template>
 
@@ -34,12 +24,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
-import Alert from '@/components/alert/Alert.vue';
 import axios from 'axios';
 
 const router = useRouter();
 const route = useRoute();
-const showAlert = ref(false);
 const form = ref({
   features: [],
 });
@@ -105,12 +93,7 @@ function toggleFeature(value) {
 function goBack() {
   router.push('/landlord/property-manage');
 }
-async function onSaveExit() {
-  showAlert.value = true;
-}
-function handleAlertConfirm() {
-  router.push('/landlord/property-manage');
-}
+
 async function onSubmit() {
   // 將特色資料轉換為 PropertyFeature 格式
   const propertyFeature = {
@@ -136,7 +119,8 @@ async function onSubmit() {
     HPublicWatercharges: form.value.features.includes('PublicWatercharges'),
     HLandlordShared: form.value.features.includes('LandlordShared'),
     HBalcony: form.value.features.includes('Balcony'),
-    HPublicEquipment: form.value.features.includes('PublicEquipment')
+    HPublicEquipment: form.value.features.includes('PublicEquipment'),
+    HIsDelete: 'false'
   };
 
   // 將資料傳遞到下一步

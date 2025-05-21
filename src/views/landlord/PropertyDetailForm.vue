@@ -115,18 +115,40 @@
         <Button color="primary" type="submit">下一步</Button>
       </div>
     </form>
+
+    <!-- Alert 元件 -->
+    <Alert
+      v-model:show="showAlert"
+      :title="alertConfig.title"
+      :type="alertConfig.type"
+      :confirmText="alertConfig.confirmText"
+      :cancelText="alertConfig.cancelText"
+      @confirm="handleAlertConfirm"
+      @cancel="handleAlertCancel"
+    >
+      {{ alertConfig.message }}
+    </Alert>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import Button from '@/components/buttons/button.vue';
+import Alert from '@/components/alert/Alert.vue';
 import draggable from 'vuedraggable';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
 const route = useRoute();
+const showAlert = ref(false);
+const alertConfig = reactive({
+  title: '',
+  message: '',
+  type: 'info',
+  confirmText: '確認',
+  cancelText: '取消'
+});
 const form = ref({
   // HProperty 所有欄位
   HPropertyTitle: '',
@@ -245,19 +267,19 @@ function removeImage(index) {
 }
 
 function goBack() {
-  // 上一步：帶著物件ID回到管理頁或其他頁面，避免重複新增
-  const id = route.query.id;
-  if (id) {
-    router.push({
-      path: '/landlord/property-manage',
-      query: { id }
-    });
-  } else {
-    router.push('/landlord/property-manage');
-  }
+  router.push('/landlord/property-create');
 }
 
 async function onSaveExit() {
+  showAlert.value = true;
+  alertConfig.title = '確認儲存';
+  alertConfig.message = '確定要將此物件儲存為草稿嗎？';
+  alertConfig.type = 'info';
+  alertConfig.confirmText = '確認';
+  alertConfig.cancelText = '取消';
+}
+
+async function handleAlertConfirm() {
   try {
     const formData = new FormData();
     
@@ -283,92 +305,6 @@ async function onSaveExit() {
       HStatus: '草稿',
       HLatitude: form.value.HLatitude,
       HLongitude: form.value.HLongitude,
-      HIsDelete: False
-    };
-
-    formData.append('property', JSON.stringify(propertyData));
-    formData.append('propertyFeature', JSON.stringify(form.value.features));
-    formData.append('ad', JSON.stringify({}));
-    
-    // 加入圖片
-    form.value.imageFiles.forEach(file => {
-      formData.append('images', file);
-    });
-
-    const response = await axios.post('/api/landlord/property', formData, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    if (response.data.success) {
-      router.push('/landlord/property-manage');
-    } else {
-      alert(response.data.message || '儲存失敗');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert(error.response?.data?.message || '儲存失敗，請稍後再試');
-  }
-}
-
-async function onSubmit() {
-  try {
-    // 驗證必填欄位
-    if (!form.value.HPropertyTitle) {
-      alert('請輸入物件標題');
-      return;
-    }
-    if (!form.value.HAddress) {
-      alert('請輸入物件地址');
-      return;
-    }
-    if (!form.value.HCity) {
-      alert('請選擇城市');
-      return;
-    }
-    if (!form.value.HDistrict) {
-      alert('請輸入區域');
-      return;
-    }
-    if (!form.value.HRentPrice || form.value.HRentPrice <= 0) {
-      alert('請輸入有效的租金金額');
-      return;
-    }
-    if (!form.value.HPropertyType) {
-      alert('請選擇物件類型');
-      return;
-    }
-    if (images.value.length < 2) {
-      alert('請至少上傳2張照片');
-      return;
-    }
-
-    const formData = new FormData();
-    
-    // 組裝 property 資料
-    const propertyData = {
-      HPropertyTitle: form.value.HPropertyTitle,
-      HDescription: form.value.HDescription,
-      HAddress: form.value.HAddress,
-      HCity: form.value.HCity,
-      HDistrict: form.value.HDistrict,
-      HZipcode: form.value.HZipcode,
-      HRentPrice: form.value.HRentPrice,
-      HPropertyType: form.value.HPropertyType,
-      HRoomCount: form.value.HRoomCount,
-      HBathroomCount: form.value.HBathroomCount,
-      HArea: form.value.HArea,
-      HFloor: form.value.HFloor,
-      HTotalFloors: form.value.HTotalFloors,
-      HAvailabilityStatus: '未出租',
-      HBuildingType: form.value.HBuildingType,
-      HIsVip: form.value.HIsVip,
-      HIsShared: form.value.HIsShared,
-      HStatus: '未驗證',
-      HLatitude: form.value.HLatitude,
-      HLongitude: form.value.HLongitude,
       HIsDelete: false
     };
 
@@ -389,19 +325,145 @@ async function onSubmit() {
     });
 
     if (response.data.success) {
-      // 將物件ID傳遞到下一步
-      router.push({
-        path: '/landlord/property-plan-select',
-        query: {
-          id: response.data.propertyId
-        }
-      });
+      showAlert.value = true;
+      alertConfig.title = '成功';
+      alertConfig.message = '已成功儲存為草稿';
+      alertConfig.type = 'success';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
+      router.push('/landlord/property-manage');
     } else {
-      alert(response.data.message || '儲存失敗');
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = response.data.message || '儲存失敗';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
     }
   } catch (error) {
     console.error('Error:', error);
-    alert(error.response?.data?.message || '儲存失敗，請稍後再試');
+    showAlert.value = true;
+    alertConfig.title = '錯誤';
+    alertConfig.message = error.response?.data?.message || '儲存失敗，請稍後再試';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
+  }
+}
+
+function handleAlertCancel() {
+  showAlert.value = false;
+}
+
+async function onSubmit() {
+  try {
+    // 驗證必填欄位
+    if (!form.value.HPropertyTitle) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請輸入物件標題';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+    if (!form.value.HAddress) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請輸入物件地址';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+    if (!form.value.HCity) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請選擇城市';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+    if (!form.value.HDistrict) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請輸入區域';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+    if (!form.value.HRentPrice || form.value.HRentPrice <= 0) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請輸入有效的租金金額';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+    if (!form.value.HPropertyType) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請選擇物件類型';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+    if (images.value.length < 2) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請至少上傳2張照片';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '返回';
+      return;
+    }
+
+    // 將表單資料存入 localStorage
+    const formData = {
+      property: {
+        HPropertyTitle: form.value.HPropertyTitle,
+        HDescription: form.value.HDescription,
+        HAddress: form.value.HAddress,
+        HCity: form.value.HCity,
+        HDistrict: form.value.HDistrict,
+        HZipcode: form.value.HZipcode,
+        HRentPrice: form.value.HRentPrice,
+        HPropertyType: form.value.HPropertyType,
+        HRoomCount: form.value.HRoomCount,
+        HBathroomCount: form.value.HBathroomCount,
+        HArea: form.value.HArea,
+        HFloor: form.value.HFloor,
+        HTotalFloors: form.value.HTotalFloors,
+        HAvailabilityStatus: '未出租',
+        HBuildingType: form.value.HBuildingType,
+        HIsVip: form.value.HIsVip,
+        HIsShared: form.value.HIsShared,
+        HStatus: '草稿',
+        HLatitude: form.value.HLatitude,
+        HLongitude: form.value.HLongitude,
+        HIsDelete: false
+      },
+      propertyFeature: form.value.features,
+      images: images.value
+    };
+
+    // 儲存到 localStorage
+    localStorage.setItem('propertyFormData', JSON.stringify(formData));
+
+    // 直接跳轉到方案選擇頁面
+    router.push('/landlord/property-plan-select');
+  } catch (error) {
+    console.error('Error:', error);
+    showAlert.value = true;
+    alertConfig.title = '錯誤';
+    alertConfig.message = error.response?.data?.message || '發生錯誤，請稍後再試';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
   }
 }
 </script>

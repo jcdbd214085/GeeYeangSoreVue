@@ -366,7 +366,7 @@ async function saveData() {
       HBuildingType: form.HBuildingType,
       HIsVip: form.HIsVip,
       HIsShared: form.HIsShared,
-      HStatus: '已驗證',
+      HStatus: form.HStatus,
       HLatitude: form.HLatitude,
       HLongitude: form.HLongitude
     };
