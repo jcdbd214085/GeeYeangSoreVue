@@ -37,7 +37,7 @@
         <p>你沒有刊登中的物件，先來刊登一間吧！</p>
       </div>
       <div v-else class="property-list-listview">
-        <div v-for="item in filteredActiveProperties" :key="item.id" class="property-list-row">
+        <div v-for="item in paginatedActiveProperties" :key="item.id" class="property-list-row">
           <img :src="item.cover" class="property-list-cover" />
           <div class="property-list-info">
             <div class="property-list-title">{{ item.title }}</div>
@@ -50,6 +50,16 @@
             <button class="edit-btn warning" @click="onDraft(item)">設為草稿</button>
           </div>
         </div>
+      </div>
+      <div class="pagination-container">
+        <Pagination
+          :totalItems="filteredActiveProperties.length"
+          :itemsPerPage="itemsPerPage"
+          v-model="activePage"
+          :showFirstLastButtons="true"
+          :showPageInfo="true"
+          @page-changed="handleActivePageChange"
+        />
       </div>
     </div>
 
@@ -65,7 +75,7 @@
         </div>
         <p>目前沒有未審核的物件</p>
       </div>
-      <div v-else v-for="item in filteredInactiveProperties" :key="item.id" class="property-list-row">
+      <div v-else v-for="item in paginatedInactiveProperties" :key="item.id" class="property-list-row">
         <img :src="item.cover" class="property-list-cover" />
         <div class="property-list-info">
           <div class="property-list-title">{{ item.title }}</div>
@@ -77,6 +87,16 @@
           <button class="edit-btn success" @click="onReactivate(item)">上架</button>
           <button class="edit-btn warning" @click="onDraft(item)">設為草稿</button>
         </div>
+      </div>
+      <div class="pagination-container">
+        <Pagination
+          :totalItems="filteredInactiveProperties.length"
+          :itemsPerPage="itemsPerPage"
+          v-model="inactivePage"
+          :showFirstLastButtons="true"
+          :showPageInfo="true"
+          @page-changed="handleInactivePageChange"
+        />
       </div>
     </div>
 
@@ -92,7 +112,7 @@
         </div>
         <p>目前沒有已出租的物件</p>
       </div>
-      <div v-else v-for="item in filteredRentedProperties" :key="item.id" class="property-list-row">
+      <div v-else v-for="item in paginatedRentedProperties" :key="item.id" class="property-list-row">
         <img :src="item.cover" class="property-list-cover" />
         <div class="property-list-info">
           <div class="property-list-title">{{ item.title }}</div>
@@ -104,6 +124,16 @@
           <button class="edit-btn danger" @click="onDeactivate(item)">下架</button>
           <button class="edit-btn warning" @click="onDraft(item)">設為草稿</button>
         </div>
+      </div>
+      <div class="pagination-container">
+        <Pagination
+          :totalItems="filteredRentedProperties.length"
+          :itemsPerPage="itemsPerPage"
+          v-model="rentedPage"
+          :showFirstLastButtons="true"
+          :showPageInfo="true"
+          @page-changed="handleRentedPageChange"
+        />
       </div>
     </div>
 
@@ -119,7 +149,7 @@
         </div>
         <p>目前沒有草稿</p>
       </div>
-      <div v-else v-for="item in filteredDrafts" :key="item.id" class="property-list-row">
+      <div v-else v-for="item in paginatedDrafts" :key="item.id" class="property-list-row">
         <img :src="item.cover" class="property-list-cover" />
         <div class="property-list-info">
           <div class="property-list-title">{{ item.title || '未命名草稿' }}</div>
@@ -132,6 +162,16 @@
           <button class="edit-btn success" @click="onReactivate(item)">上架</button>
           <button class="edit-btn danger" @click="deleteDraft(item.id)">刪除</button>
         </div>
+      </div>
+      <div class="pagination-container">
+        <Pagination
+          :totalItems="filteredDrafts.length"
+          :itemsPerPage="itemsPerPage"
+          v-model="draftsPage"
+          :showFirstLastButtons="true"
+          :showPageInfo="true"
+          @page-changed="handleDraftsPageChange"
+        />
       </div>
     </div>
   </div>
@@ -163,6 +203,7 @@ import { useRouter } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
 import Alert from '@/components/alert/Alert.vue';
 import axios from 'axios';
+import Pagination from '@/components/Pagination/Pagination.vue';
 
 const router = useRouter();
 const tabs = [
@@ -179,6 +220,13 @@ const activeProperties = ref([]);
 const inactiveProperties = ref([]);
 const rentedProperties = ref([]);
 const drafts = ref([]);
+const itemsPerPage = 10;
+
+// 分頁相關
+const activePage = ref(1);
+const inactivePage = ref(1);
+const rentedPage = ref(1);
+const draftsPage = ref(1);
 
 const showAlert = ref(false);
 const showSuccessAlert = ref(false);
@@ -239,6 +287,31 @@ const filteredActiveProperties = computed(() => filterAndSort(activeProperties.v
 const filteredInactiveProperties = computed(() => filterAndSort(inactiveProperties.value));
 const filteredRentedProperties = computed(() => filterAndSort(rentedProperties.value));
 const filteredDrafts = computed(() => drafts.value);
+
+// 分頁後的資料
+const paginatedActiveProperties = computed(() => {
+  const start = (activePage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredActiveProperties.value.slice(start, end);
+});
+
+const paginatedInactiveProperties = computed(() => {
+  const start = (inactivePage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredInactiveProperties.value.slice(start, end);
+});
+
+const paginatedRentedProperties = computed(() => {
+  const start = (rentedPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredRentedProperties.value.slice(start, end);
+});
+
+const paginatedDrafts = computed(() => {
+  const start = (draftsPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredDrafts.value.slice(start, end);
+});
 
 async function loadProperties() {
   try {
@@ -369,7 +442,7 @@ async function onDeactivate(item) {
     message: '確定要下架此物件嗎？下架後將不會顯示在搜尋結果中。',
     type: 'warning',
     confirmText: '確定下架',
-    cancelText: '取消'
+    cancelText: '取消'  
   });
 }
 
@@ -414,6 +487,23 @@ async function deleteDraft(id) {
     confirmText: '確定刪除',
     cancelText: '取消'
   });
+}
+
+// 分頁處理函數
+function handleActivePageChange({ page }) {
+  activePage.value = page;
+}
+
+function handleInactivePageChange({ page }) {
+  inactivePage.value = page;
+}
+
+function handleRentedPageChange({ page }) {
+  rentedPage.value = page;
+}
+
+function handleDraftsPageChange({ page }) {
+  draftsPage.value = page;
 }
 </script>
 
@@ -597,6 +687,12 @@ async function deleteDraft(id) {
   text-align: center;
   font-size: 1.08rem;
   margin: 0.2rem 0;
+}
+
+.pagination-container {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
 @media (max-width: 700px) {
