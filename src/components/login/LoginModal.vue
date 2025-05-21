@@ -814,16 +814,13 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: #f0f9f8;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.google-btn:hover {
-  background: #f5f5f5;
-}
 
 /*  驗證碼欄位容器（輸入+按鈕） */
 .input-box.verify-box {
