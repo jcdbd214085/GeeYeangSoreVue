@@ -7,6 +7,7 @@
         <option value="">全部</option>
         <option value="active">刊登中</option>
         <option value="expired">已過期</option>
+        <option value="pending">稍後付款</option>
       </select>
       <select v-model="sort" class="filter-select">
         <option value="title">名稱</option>
@@ -36,8 +37,8 @@
                 <span :class="['plan-badge', ad.plan?.toLowerCase()]">{{ ad.planLabel }}</span>
               </div>
               <div class="ad-list-status">
-                <span :class="['status', ad.status === '進行中' ? 'active' : 'expired']">
-                  {{ ad.status === '進行中' ? '刊登中' : '已過期' }}
+                <span :class="['status', ad.status === '進行中' ? 'active' : ad.status === '稍後付款' ? 'pending' : 'expired']">
+                  {{ ad.status === '進行中' ? '刊登中' : ad.status === '稍後付款' ? '稍後付款' : '已過期' }}
                 </span>
               </div>
               <div class="ad-list-address">{{ ad.address || '' }}</div>
@@ -100,6 +101,8 @@ const filteredAds = computed(() => {
       filtered = filtered.filter(ad => ad.status === '進行中');
     } else if (filterStatus.value === 'expired') {
       filtered = filtered.filter(ad => ad.status !== '進行中');
+    } else if (filterStatus.value === 'pending') {
+      filtered = filtered.filter(ad => ad.status === '稍後付款');
     }
   }
   switch (sort.value) {
@@ -314,6 +317,13 @@ onMounted(() => {
   background: rgba(244, 67, 54, 0.1);
   border: 1px solid #f44336;
 }
+
+.status.pending {
+  color: #FF9800;
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid #FF9800;
+}
+
 
 .ad-list-actions {
   display: flex;

@@ -192,6 +192,8 @@
     v-model:show="showSuccessAlert"
     :title="successAlertConfig.title"
     :type="successAlertConfig.type"
+    :singleButton="successAlertConfig.singleButton"
+    :singleButtonText="successAlertConfig.singleButtonText"
     :showFooter="false"
   >
     {{ successAlertConfig.message }}
@@ -236,13 +238,17 @@ const alertConfig = reactive({
   message: '',
   type: 'info',
   confirmText: '確認',
-  cancelText: '取消'
+  cancelText: '取消',
+  singleButton: false,
+  singleButtonText: '確認'
 });
 
 const successAlertConfig = reactive({
   title: '',
   message: '',
-  type: 'success'
+  type: 'success',
+  singleButton: true,
+  singleButtonText: '確認'
 });
 
 let currentAction = null;
@@ -389,6 +395,9 @@ function showSuccessMessage(title, message) {
   successAlertConfig.title = title;
   successAlertConfig.message = message;
   showSuccessAlert.value = true;
+  successAlertConfig.type = 'success';
+  successAlertConfig.singleButton = true;
+  successAlertConfig.singleButtonText = '確認';
   setTimeout(() => {
     showSuccessAlert.value = false;
   }, 2000);

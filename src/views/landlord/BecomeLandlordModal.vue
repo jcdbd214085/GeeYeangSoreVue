@@ -75,7 +75,8 @@
           message="您的申請已送出，請靜待審核結果。"
           type="success"
           confirmText="知道了"
-          cancelText="返回"
+          :singleButton="true"
+          :singleButtonText="'知道了'"
           :closeOnClickOverlay="false"
           @confirm="onAlertConfirm"
         />

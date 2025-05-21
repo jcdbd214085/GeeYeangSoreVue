@@ -34,6 +34,8 @@
       :type="alertConfig.type"
       :confirmText="alertConfig.confirmText"
       :cancelText="alertConfig.cancelText"
+      :singleButton="alertConfig.singleButton"
+      :singleButtonText="alertConfig.singleButtonText"
       @confirm="handleAlertConfirm"
       @cancel="handleAlertCancel"
     >
@@ -58,7 +60,9 @@ const alertConfig = reactive({
   message: '',
   type: 'info',
   confirmText: '確認',
-  cancelText: '取消'
+  cancelText: '取消',
+  singleButton: false,
+  singleButtonText: '確認'
 });
 
 const plans = [
@@ -77,6 +81,8 @@ onMounted(() => {
     alertConfig.type = 'error';
     alertConfig.confirmText = '確認';
     alertConfig.cancelText = '';
+    alertConfig.singleButton = true;
+    alertConfig.singleButtonText = '確認';
     router.push('/landlord/property-detail-form');
   }
 });
@@ -99,15 +105,29 @@ async function onSaveExit() {
       alertConfig.type = 'error';
       alertConfig.confirmText = '確認';
       alertConfig.cancelText = '';
+      alertConfig.singleButton = true;
+      alertConfig.singleButtonText = '確認';
       return;
     }
-
+    if (!selectedPlan.value) {
+      showAlert.value = true;
+      alertConfig.title = '錯誤';
+      alertConfig.message = '請選擇方案';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
+      alertConfig.singleButton = true;
+      alertConfig.singleButtonText = '確認';
+      return;
+    }
     showAlert.value = true;
     alertConfig.title = '確認儲存';
     alertConfig.message = '確定要將此物件儲存為草稿嗎？';
     alertConfig.type = 'info';
     alertConfig.confirmText = '確認';
     alertConfig.cancelText = '取消';
+    alertConfig.singleButton = false;
+    alertConfig.singleButtonText = '確認';
   } catch (error) {
     console.error('Error:', error);
     showAlert.value = true;
@@ -116,6 +136,8 @@ async function onSaveExit() {
     alertConfig.type = 'error';
     alertConfig.confirmText = '確認';
     alertConfig.cancelText = '';
+    alertConfig.singleButton = true;
+    alertConfig.singleButtonText = '確認';
   }
 }
 
@@ -224,6 +246,8 @@ async function handleAlertConfirm() {
       alertConfig.type = 'success';
       alertConfig.confirmText = '確認';
       alertConfig.cancelText = '';
+      alertConfig.singleButton = true;
+      alertConfig.singleButtonText = '確認';
       
       // 跳轉到管理頁面
       router.push('/landlord/property-manage');
