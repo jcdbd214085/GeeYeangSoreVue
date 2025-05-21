@@ -31,13 +31,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
 import Alert from '@/components/alert/Alert.vue';
 import axios from 'axios';
 
 const router = useRouter();
+const route = useRoute();
 const showAlert = ref(false);
 const form = ref({
   features: [],
@@ -67,6 +68,32 @@ const features = [
   { label: '有陽台', value: 'Balcony',  img: 'https://img.icons8.com/stickers/100/balcony.png'},
   { label: '有公設', value: 'PublicEquipment',  img: 'https://img.icons8.com/stickers/100/outdoor-swimming-pool.png'},
 ];
+
+onMounted(async () => {
+  const id = route.query.id;
+  if (id) {
+    // 編輯模式，自動載入資料
+    await fetchPropertyData(id);
+  }
+  if (route.query.features) {
+    form.value.features = JSON.parse(route.query.features);
+  }
+});
+
+async function fetchPropertyData(id) {
+  try {
+    const res = await axios.get(`/api/landlord/property/${id}`);
+    if (res.data && res.data.property) {
+      Object.assign(form.value, res.data.property);
+      // 有圖片、features等，這裡也要一併處理
+      // images.value = res.data.property.images || [];
+      // form.value.features = res.data.property.features || [];
+    }
+  } catch (e) {
+    alert('載入物件資料失敗');
+  }
+}
+
 function toggleFeature(value) {
   const index = form.value.features.indexOf(value);
   if (index === -1) {

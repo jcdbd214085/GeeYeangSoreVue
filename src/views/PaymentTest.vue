@@ -19,8 +19,8 @@ import { ref, watch, nextTick } from 'vue';
 const form = ref({
   ItemName: '測試商品',
   TotalAmount: 100,
-  AdId: 1,
-  PropertyId: 101 // <-- 你可以輸入任何現有的 HPropertyId
+  AdId: 133,
+  PropertyId: 69 // <-- 你可以輸入任何現有的 HPropertyId
 });
 
 const result = ref('');

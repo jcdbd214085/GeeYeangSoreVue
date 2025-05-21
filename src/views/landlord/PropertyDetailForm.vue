@@ -54,7 +54,7 @@
             <label>空間</label>
             <div class="radio-group">
               <label v-for="type in spaceTypes" :key="type" class="radio-label">
-                <input type="radio" v-model="form.spaceType" :value="type" /> {{ type }}
+                <input type="radio" v-model="form.HPropertyType" :value="type" /> {{ type }}
               </label>
             </div>
           </div>
@@ -158,11 +158,44 @@ const form = ref({
 
 const images = ref([]);
 
-onMounted(() => {
+onMounted(async () => {
+  const id = route.query.id;
+  if (id) {
+    // 編輯模式，自動載入資料
+    await fetchPropertyData(id);
+  }
   if (route.query.features) {
     form.value.features = JSON.parse(route.query.features);
   }
 });
+
+async function fetchPropertyData(id) {
+  try {
+    const res = await axios.get(`/api/landlord/property/${id}`);
+    if (res.data && res.data.property) {
+      Object.assign(form.value, res.data.property);
+      // 還原房源特色
+      if (res.data.propertyFeature && typeof res.data.propertyFeature === 'object') {
+        form.value.features = Object.keys(res.data.propertyFeature)
+          .filter(key => res.data.propertyFeature[key]);
+      }
+      // 還原圖片
+      if (res.data.images && Array.isArray(res.data.images)) {
+        images.value = res.data.images.map(img => ({
+          url: img.url,
+          file: null
+        }));
+      } else if (res.data.propertyImages && Array.isArray(res.data.propertyImages)) {
+        images.value = res.data.propertyImages.map(img => ({
+          url: img.url,
+          file: null
+        }));
+      }
+    }
+  } catch (e) {
+    alert('載入物件資料失敗');
+  }
+}
 
 const cities = ['台北市', '新北市', '基隆市', '桃園市', '彰化縣', '新竹市', '苗栗縣', '台中市', '宜蘭縣', '南投縣', '雲林縣', '嘉義縣', '台南市', '高雄市', '屏東縣', '花蓮縣', '台東縣', '澎湖縣', '金門縣', '連江縣'];
 const spaceTypes = ['整棟住家', '整層住家', '套房', '雅房'];
@@ -212,7 +245,16 @@ function removeImage(index) {
 }
 
 function goBack() {
-  router.back();
+  // 上一步：帶著物件ID回到管理頁或其他頁面，避免重複新增
+  const id = route.query.id;
+  if (id) {
+    router.push({
+      path: '/landlord/property-manage',
+      query: { id }
+    });
+  } else {
+    router.push('/landlord/property-manage');
+  }
 }
 
 async function onSaveExit() {
@@ -240,11 +282,13 @@ async function onSaveExit() {
       HIsShared: form.value.HIsShared,
       HStatus: '草稿',
       HLatitude: form.value.HLatitude,
-      HLongitude: form.value.HLongitude
+      HLongitude: form.value.HLongitude,
+      HIsDelete: False
     };
 
     formData.append('property', JSON.stringify(propertyData));
     formData.append('propertyFeature', JSON.stringify(form.value.features));
+    formData.append('ad', JSON.stringify({}));
     
     // 加入圖片
     form.value.imageFiles.forEach(file => {
@@ -324,11 +368,13 @@ async function onSubmit() {
       HIsShared: form.value.HIsShared,
       HStatus: '未驗證',
       HLatitude: form.value.HLatitude,
-      HLongitude: form.value.HLongitude
+      HLongitude: form.value.HLongitude,
+      HIsDelete: false
     };
 
     formData.append('property', JSON.stringify(propertyData));
     formData.append('propertyFeature', JSON.stringify(form.value.features));
+    formData.append('ad', JSON.stringify({}));
     
     // 加入圖片
     form.value.imageFiles.forEach(file => {

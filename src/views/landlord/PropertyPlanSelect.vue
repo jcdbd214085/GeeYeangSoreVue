@@ -49,7 +49,16 @@ function selectPlan(id) {
 }
 
 function goBack() {
-  router.back();
+  // 上一步：帶著物件ID回到 PropertyDetailForm.vue，讓表單進入編輯模式（避免重複新增）
+  const id = route.query.id;
+  if (id) {
+    router.push({
+      path: '/landlord/property-detail-form',
+      query: { id }
+    });
+  } else {
+    router.push('/landlord/property-detail-form');
+  }
 }
 
 async function onSaveExit() {
@@ -84,32 +93,49 @@ async function onConfirm() {
       return;
     }
 
-    // 組成 ad 物件
-    const ad = {
-      HAdName: plan.label,
-      HCategory: plan.id,
-      HAdPrice: plan.price,
-      HStatus: 'Active',
-      HIsDelete: false,
-      HStartDate: new Date(),
-      HEndDate: new Date(Date.now() + plan.days * 24 * 60 * 60 * 1000)
-    };
+    // 彈出選單讓用戶選擇付款時機
+    const payNow = window.confirm('請選擇付款方式：\n\n按「立即付款」= 立即付款\n按「稍後付款」= 稍後付款');
 
-    // 更新物件狀態和廣告資訊
-    const response = await axios.put(`/api/landlord/property/${id}/activate`, {
-      ad: ad
-    }, { withCredentials: true });
+    // 1. 建立 HAd，只傳 DTO 必填欄位
+    const createAdRes = await axios.put(
+      `/api/landlord/property/${id}/activate`,
+      {
+        hAdName: plan.label,
+        hCategory: plan.id.toUpperCase(),
+        hPlanId: Number(plan.id.replace('vip', ''))
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      }
+    );
 
-    if (response.data.success) {
-      router.push('/landlord/property-manage');
+    // 取出 adId
+    const adId = createAdRes.data.adId;
+
+    if (payNow) {
+      // 立即付款：呼叫金流 API 並導向付款頁面
+      const checkoutRes = await axios.post('/api/commerce/ecpay-html', {
+        AdId: adId,
+        TotalAmount: plan.price,
+        ItemName: plan.label
+      });
+
+      const win = window.open();
+      win.document.write(checkoutRes.data);
+      win.document.close();
     } else {
-      alert(response.data.message || '刊登失敗');
+      // 稍後付款：跳轉回廣告管理頁
+      router.push('/landlord/admanage');
     }
   } catch (error) {
     console.error('Error:', error);
     alert(error.response?.data?.message || '刊登失敗，請稍後再試');
   }
 }
+
 </script>
 
 <style scoped>
