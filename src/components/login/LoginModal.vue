@@ -716,6 +716,16 @@ form {
   justify-content: center;
 }
 
+/* Google 登入按鈕樣式 */
+.google-btn {
+  transition: all 0.3s ease;
+}
+
+.google-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /*  註冊/登入 切換背景框 */
 .toggle-box {
   position: absolute;
@@ -805,22 +815,6 @@ form {
   /* 邊框也改成藍綠 */
   transition: all 0.3s ease;
 }
-
-/*  Google 登入按鈕 */
-.google-btn {
-  width: 100%;
-  height: 40px;
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f9f8;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
 
 /*  驗證碼欄位容器（輸入+按鈕） */
 .input-box.verify-box {
