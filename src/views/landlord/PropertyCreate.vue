@@ -14,31 +14,20 @@
       </div>
       <div class="form-actions">
         <Button color="outline-secondary" type="button" @click="goBack">返回</Button>
-        <Button color="outline-secondary" type="button" @click="onSaveExit">儲存草稿</Button>
         <Button color="primary" type="submit">下一步</Button>
       </div>
     </form>
-    <Alert
-      v-model:show="showAlert"
-      title="儲存提示"
-      message="已儲存並退出"
-      type="success"
-      :confirmText="'確認'"
-      :cancelText="'取消'"
-      @confirm="handleAlertConfirm"
-    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import Button from '@/components/buttons/button.vue';
-import Alert from '@/components/alert/Alert.vue';
 import axios from 'axios';
 
 const router = useRouter();
-const showAlert = ref(false);
+const route = useRoute();
 const form = ref({
   features: [],
 });
@@ -67,6 +56,32 @@ const features = [
   { label: '有陽台', value: 'Balcony',  img: 'https://img.icons8.com/stickers/100/balcony.png'},
   { label: '有公設', value: 'PublicEquipment',  img: 'https://img.icons8.com/stickers/100/outdoor-swimming-pool.png'},
 ];
+
+onMounted(async () => {
+  const id = route.query.id;
+  if (id) {
+    // 編輯模式，自動載入資料
+    await fetchPropertyData(id);
+  }
+  if (route.query.features) {
+    form.value.features = JSON.parse(route.query.features);
+  }
+});
+
+async function fetchPropertyData(id) {
+  try {
+    const res = await axios.get(`/api/landlord/property/${id}`);
+    if (res.data && res.data.property) {
+      Object.assign(form.value, res.data.property);
+      // 有圖片、features等，這裡也要一併處理
+      // images.value = res.data.property.images || [];
+      // form.value.features = res.data.property.features || [];
+    }
+  } catch (e) {
+    alert('載入物件資料失敗');
+  }
+}
+
 function toggleFeature(value) {
   const index = form.value.features.indexOf(value);
   if (index === -1) {
@@ -78,12 +93,7 @@ function toggleFeature(value) {
 function goBack() {
   router.push('/landlord/property-manage');
 }
-async function onSaveExit() {
-  showAlert.value = true;
-}
-function handleAlertConfirm() {
-  router.push('/landlord/property-manage');
-}
+
 async function onSubmit() {
   // 將特色資料轉換為 PropertyFeature 格式
   const propertyFeature = {
@@ -109,7 +119,8 @@ async function onSubmit() {
     HPublicWatercharges: form.value.features.includes('PublicWatercharges'),
     HLandlordShared: form.value.features.includes('LandlordShared'),
     HBalcony: form.value.features.includes('Balcony'),
-    HPublicEquipment: form.value.features.includes('PublicEquipment')
+    HPublicEquipment: form.value.features.includes('PublicEquipment'),
+    HIsDelete: 'false'
   };
 
   // 將資料傳遞到下一步

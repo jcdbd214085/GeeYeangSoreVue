@@ -30,7 +30,9 @@ const toggleExpand = (id) => {
 async function fetchData() {
   try {
     loading.value = true;
-    const res = await axios.get(`${API_BASE_URL}/api/About/about`);
+    const res = await axios.get(`${API_BASE_URL}/api/About/about`, {
+      withCredentials: true //加入此行可以帶入登入者資訊，傳給後端做驗證
+    });
     const newsList = res.data.response;
     console.log("取得關於我們資料:", newsList);
     receiveData.value = newsList;

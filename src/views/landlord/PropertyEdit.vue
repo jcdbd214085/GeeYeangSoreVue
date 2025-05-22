@@ -125,6 +125,8 @@
       :type="alertConfig.type"
       :confirmText="alertConfig.confirmText"
       :cancelText="alertConfig.cancelText"
+      :singleButton="alertConfig.singleButton"
+      :singleButtonText="alertConfig.singleButtonText"
       @confirm="handleAlertConfirm"
       @cancel="handleAlertCancel"
     >
@@ -205,7 +207,9 @@ const alertConfig = reactive({
   message: '',
   type: 'info',
   confirmText: '確認',
-  cancelText: '取消'
+  cancelText: '取消',
+  singleButton: false,
+  singleButtonText: '確認'
 });
 const alertMode = ref('');
 
@@ -366,7 +370,7 @@ async function saveData() {
       HBuildingType: form.HBuildingType,
       HIsVip: form.HIsVip,
       HIsShared: form.HIsShared,
-      HStatus: '已驗證',
+      HStatus: form.HStatus,
       HLatitude: form.HLatitude,
       HLongitude: form.HLongitude
     };
@@ -420,7 +424,9 @@ async function saveData() {
     alertConfig.message = '資料儲存成功！';
     alertConfig.type = 'success';
     alertConfig.confirmText = '確定';
-    alertConfig.cancelText = '返回';
+    alertConfig.cancelText = '';
+    alertConfig.singleButton = true;
+    alertConfig.singleButtonText = '確認';
     alertMode.value = 'success';
     showAlert.value = true;
   } catch (err) {

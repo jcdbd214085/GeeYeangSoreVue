@@ -10,8 +10,13 @@
       </div>
       <div class="alert-footer">
         <slot name="footer">
-          <button class="btn-cancel" @click="onCancel">{{ cancelText }}</button>
-          <button class="btn-confirm" @click="onConfirm">{{ confirmText }}</button>
+          <template v-if="props.singleButton">
+            <button class="btn-confirm" @click="onConfirm">{{ singleButtonText }}</button>
+          </template>
+          <template v-else>
+            <button class="btn-cancel" @click="onCancel">{{ cancelText }}</button>
+            <button class="btn-confirm" @click="onConfirm">{{ confirmText }}</button>
+          </template>
         </slot>
       </div>
     </div>
@@ -50,6 +55,14 @@ const props = defineProps({
   closeOnClickOverlay: {
     type: Boolean,
     default: true
+  },
+  singleButton: {
+    type: Boolean,
+    default: false
+  },
+  singleButtonText: {
+    type: String,
+    default: '確認'
   }
 });
 

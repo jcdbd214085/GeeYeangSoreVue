@@ -24,8 +24,8 @@ const loading = ref(true);
 
 onMounted(async () => {
   try {
-    // 呼叫後端 API 查詢交易狀態（這段要你後端支援查詢）
-    const res = await axios.get(`/api/ecpay/query-status/${orderId}`);
+    // 呼叫後端 API 查詢交易狀態（修正路徑）
+    const res = await axios.get(`/api/commerce/query-status/${orderId}`);
     status.value = res.data?.success ? 'Success' : 'Failed';
   } catch (e) {
     status.value = 'Failed';
