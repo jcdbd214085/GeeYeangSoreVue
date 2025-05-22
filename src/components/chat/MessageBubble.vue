@@ -1,4 +1,3 @@
-
 <script setup>
 const props = defineProps({
   message: {
@@ -13,11 +12,18 @@ const props = defineProps({
 
 const msgType = props.message?.type || 'text'; // fallback
 const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const emit = defineEmits(['delete-message']);
 
 function getImageUrl(rawUrl) {
   if (!rawUrl) return '/images/chat/placeholder.png'; // fallback 預設圖片
   if (rawUrl.startsWith('http')) return rawUrl; // 已是絕對網址
   return VITE_API_BASE_URL + rawUrl; // 拼完整網址
+}
+
+function confirmDelete() {
+  if (window.confirm('確定要刪除此訊息嗎？')) {
+    emit('delete-message', props.message.id || props.message.hMessageId);
+  }
 }
 </script>
 
@@ -40,6 +46,10 @@ function getImageUrl(rawUrl) {
     <!-- 未來擴充：檔案、語音、貼圖... -->
 
     <div class="msg-time">{{ message.time }}</div>
+    <!-- 刪除按鈕 -->
+    <div class="bubble-actions">
+      <button class="delete-btn" @click="confirmDelete">刪除</button>
+    </div>
   </div>
 </template>
 
@@ -91,5 +101,26 @@ function getImageUrl(rawUrl) {
     font-size: 0.85rem;
     color: #888;
     text-align: right;
+}
+
+.bubble-actions {
+  margin-top: 0.3rem;
+  text-align: right;
+}
+
+.delete-btn {
+  background: transparent;
+  color: #ff4d4f;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: rgba(255,77,79,0.08);
+  color: #d9363e;
 }
 </style> 

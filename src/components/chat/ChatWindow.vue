@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { onUpdated, ref, watch, nextTick } from 'vue';
+import { onMounted, ref, nextTick, watch } from 'vue';
 import MessageBubble from './MessageBubble.vue';
 
 const props = defineProps({
@@ -27,22 +27,33 @@ const props = defineProps({
   }
 });
 
-const scrollAnchor = ref(null);
 const chatContainer = ref(null);
+let hasScrolled = false;
 
-// 自動滾到底（每次訊息更新）
-watch(
-  () => props.messages.length,
-  async () => {
-    await nextTick();
-    scrollAnchor.value?.scrollIntoView({ behavior: 'smooth' });
+onMounted(async () => {
+  await nextTick();
+  if (chatContainer.value && props.messages.length > 0) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    hasScrolled = true;
   }
+});
+
+watch(
+  () => props.messages,
+  async (newVal, oldVal) => {
+    if (!hasScrolled && chatContainer.value && newVal.length > 0) {
+      await nextTick();
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+      hasScrolled = true;
+    }
+  },
+  { immediate: true }
 );
 </script>
 
 <style scoped>
 .chat-window {
-  flex: 1;
+ 
   overflow-y: auto;
   padding: 1.2rem 1.5rem;
   display: flex;
