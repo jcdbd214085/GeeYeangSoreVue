@@ -37,13 +37,8 @@
               <button class="btn">登入</button>
               <p>——使用其他方式登入——</p>
               <div class="social-icons">
-                <!-- Google登入icon -->
-                <button class="social-btn google-btn">
-                  <span class="icon-circle">
-                    <i class="fa-brands fa-google"></i>
-                  </span>
-                  <span class="btn-text">使用 Google 登入</span>
-                </button>
+                <!-- Google登入按鈕 -->
+                <div class="google-btn"></div>
               </div>
             </form>
           </div>
@@ -261,6 +256,7 @@ const handleLogin = async () => {
 
     // 檢查 HTTP 狀態碼
 const data = await res.json();
+console.log('Backend login success data:', data); // ✅ 新增：印出後端返回的成功資料
 
 if (res.status === 401) {
   console.warn("登入失敗，401 未授權", data);
@@ -428,8 +424,56 @@ const validatePassword = (password, email) => {
   return "";
 };
 
+// Google Sign-In 相關
+const handleGoogleLogin = async (response) => {
+console.log('Google response credential:', response.credential); // <-- 加入這行
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/Auth/google-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        IdToken: response.credential
+      }),
+      credentials: 'include'
+    });
+
+    if (!res.ok) {
+      throw new Error('登入失敗');
+    }
+
+    const data = await res.json();
+    userStore.login(data.role, data.userName, data.isLandlord);
+    toast.success("登入成功");
+    emit("close");
+  } catch (error) {
+    console.error('Google 登入失敗:', error);
+    toast.error("登入失敗，請稍後再試");
+  }
+};
+
 onMounted(() => {
   showCloseBtn.value = true;
+  // 初始化 Google Sign-In
+  google.accounts.id.initialize({
+    client_id: '835488722462-hhtddl6onev0cp4m8fvpb6v5tq59a0gu.apps.googleusercontent.com', // 請替換成您的 Google Client ID
+    callback: handleGoogleLogin,
+    auto_select: false,
+    cancel_on_tap_outside: true
+  });
+
+  // 渲染 Google 登入按鈕
+  google.accounts.id.renderButton(
+    document.querySelector('.google-btn'),
+    { 
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      width: '100%',
+      text: 'signin_with'
+    }
+  );
 });
 </script>
 
@@ -672,6 +716,16 @@ form {
   justify-content: center;
 }
 
+/* Google 登入按鈕樣式 */
+.google-btn {
+  transition: all 0.3s ease;
+}
+
+.google-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /*  註冊/登入 切換背景框 */
 .toggle-box {
   position: absolute;
@@ -760,46 +814,6 @@ form {
   border: 2px solid #4ecdc4;
   /* 邊框也改成藍綠 */
   transition: all 0.3s ease;
-}
-
-/*  Google 登入按鈕 */
-.google-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /*  垂直置中補強 */
-  height: 48px;
-  /*  統一高度為 48px */
-  gap: 10px;
-  background-color: #f0f9f8;
-  color: #db4437;
-  border: 2px solid #db4437;
-  border-radius: 6px;
-  padding: 0 16px;
-  /*  左右 padding 固定，高度由 height 控制 */
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-/*  Google 按鈕 hover 效果 */
-.google-btn:hover {
-  background-color: #db4437;
-  color: #ffffff;
-}
-
-/*  Google icon 圓形樣式 */
-.icon-circle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-  color: #db4437;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 16px;
 }
 
 /*  驗證碼欄位容器（輸入+按鈕） */
