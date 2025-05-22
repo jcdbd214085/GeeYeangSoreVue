@@ -35,19 +35,25 @@
     </div>
 
     <!-- 房東資訊 -->
-    <div class="right-section d-flex flex-column align-items-center justify-content-start">
-      <div class="landlord-info text-center mb-3">
-        <AvatarImage :src="landlord.avatar" :size="140" class="mb-1" />
-        <h5 class="mb-3">{{ landlord.name }}</h5>
-        <small class="text-muted">{{ landlord.phone }}</small>
+    <div class="right-section landlord-info">
+      <AvatarImage :src="landlord.avatar" :size="155" class="mb-4" />
+      <h5 class="mb-2">{{ landlord.name }}</h5>
+      <div class="landlord-text mb-3">
+        
+        <small class="text-muted ms-2 mb-1">
+          <i class="fa-solid fa-phone me-2"></i>{{ landlord.phone }}
+        </small><br>
+        <small class="text-muted ms-2 mb-2">
+          <i class="fa-solid fa-envelope me-2"></i>{{ landlord.email }}
+        </small>
       </div>
 
-      <button class="contact-btn w-100 mb-3" @click="openChat">
+      <button class="contact-btn w-100 " @click="openChat">
         <i class="fa-solid fa-comments me-2"></i> 聯絡房東
       </button>
-      <a href="#" class="landlord-btn p-0">
+      <!-- <a href="#" class="landlord-btn p-0">
         查看房東其他物件 <i class="fa-solid fa-chevron-right ms-1"></i>
-      </a>
+      </a> -->
     </div>
   </div>
 </template>
@@ -186,7 +192,27 @@ async function openChat() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  overflow: hidden; 
 }
+
+.right-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/image/logo2.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left -10px bottom -12px;
+  opacity: 0.1; 
+  z-index: 0;
+}
+
+.right-section > * {
+  position: relative;
+  z-index: 1;
+}
+
 
 .rent {
   color: var(--accent);
@@ -241,6 +267,11 @@ async function openChat() {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.landlord-text {
+  align-self: flex-start; 
+  text-align: left;
 }
 
 .landlord-extra {

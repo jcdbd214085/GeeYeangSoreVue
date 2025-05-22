@@ -40,6 +40,7 @@ const defaultList = [
             id: 101,
             name: '張先生',
             phone: '0912-345-678',
+            email: 'example1@mail.com',
             avatar: avatarImg,
         },
         property: {
@@ -60,6 +61,7 @@ const defaultList = [
             id: 102,
             name: '李小姐',
             phone: '0987-654-321',
+            email: 'example2@mail.com',
             avatar: '',
         },
         property: {
@@ -80,6 +82,7 @@ const defaultList = [
             id: 103,
             name: '張先生',
             phone: '0912-345-678',
+            email: 'example3@mail.com',
             avatar: avatarImg,
         },
         property: {
