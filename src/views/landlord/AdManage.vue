@@ -51,7 +51,7 @@
               </div>
             </div>
             <div class="ad-list-actions">
-              <button class="upgrade-btn" @click="onUpgrade(ad)">選擇方案</button>
+              <button class="upgrade-btn" @click="goToPlanSelect(ad)">選擇方案</button>
             </div>
           </div>
         </div>
@@ -74,6 +74,7 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import Pagination from '@/components/Pagination/Pagination.vue';
+import { useRouter } from 'vue-router';
 
 const ads = ref([]);
 const currentPage = ref(1);
@@ -81,6 +82,7 @@ const itemsPerPage = 10;
 const search = ref('');
 const filterStatus = ref('');
 const sort = ref('title');
+const router = useRouter();
 
 const planPriceMap = {
   VIP1: 100,
@@ -184,6 +186,7 @@ async function loadAds() {
     // 轉換資料格式以符合前端需求
     ads.value = data.map(ad => ({
       id: ad.id,
+      propertyId: ad.propertyId,
       title: ad.propertyTitle,
       address: ad.address || '',
       propertyType: ad.propertyType || '',
@@ -205,9 +208,20 @@ async function loadAds() {
   }
 }
 
-function onUpgrade(ad) {
-  // TODO: 實作升級方案的功能
-  alert('購買廣告功能（待串接）');
+function goToPlanSelect(ad) {
+  console.log('[DEBUG] ad:', ad); // 👈 確認有 propertyId
+  if (!ad.propertyId) {
+    alert('無效的物件，無法升級廣告');
+    return;
+  }
+
+  router.push({
+    path: `/landlord/property-plan-select`,
+    query: {
+      id: ad.id,
+      propertyId: ad.propertyId
+    }
+  });
 }
 
 onMounted(() => {

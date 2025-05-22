@@ -435,14 +435,13 @@ async function handleAlertConfirm() {
         successMessage = '草稿刪除成功';
         break;
         //這邊有問題要問念靜 
-      case 'activate':
-        await axios.put(`/api/landlord/property/${propertyId}/activate`, {
-          hAdName: '',
-          hCategory: '',
-          hPlanId: 0
-        }, { withCredentials: true });
-        successMessage = '物件上架成功';
-        break;
+        case 'activate':
+          await axios.put(`/api/landlord/property/${propertyId}/status`, {
+            status: '已驗證'
+          }, { withCredentials: true });
+          successMessage = '物件上架成功';
+          break;
+
     }
     
     await loadProperties();
