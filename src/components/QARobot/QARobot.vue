@@ -123,9 +123,6 @@ function resetChat() {
   background: transparent;
   border: none;
   cursor: pointer;
-  z-index: 1100;
-  padding: 0;
-  transition: transform 0.2s;
 }
 .robot-btn:hover {
   transform: scale(1.1);

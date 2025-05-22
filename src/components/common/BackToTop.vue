@@ -1,13 +1,19 @@
 <template>
-  <transition name="fade">
+
+  <div>
+    <QARobot></QARobot>
+
     <button v-if="visible" class="back-to-top" @click="scrollToTop">
       <i class="fa-solid fa-chevron-up"></i>
     </button>
-  </transition>
+
+  </div>
+
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import {ref, onMounted, onUnmounted} from 'vue'
+import QARobot from "@/components/QARobot/QARobot.vue";
 
 const visible = ref(false)
 
@@ -16,7 +22,7 @@ function handleScroll() {
 }
 
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({top: 0, behavior: 'smooth'})
 }
 
 onMounted(() => {
