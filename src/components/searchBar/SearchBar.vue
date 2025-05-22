@@ -99,9 +99,13 @@
 
         <!-- 操作按鈕 -->
         <div class="d-flex justify-content-end mt-3">
-          <button type="submit" class="btn custom-search-btn me-2">搜尋</button>
+          <button type="button" class="btn btn-secondary me-2" @click="showFilter = false">
+          關閉
+          </button>
           <button type="button" class="btn btn-outline-secondary me-2" @click="resetFilter">清空</button>
-          <button type="button" class="btn btn-secondary" @click="showFilter = false">關閉</button>
+          <button type="submit" class="btn custom-search-btn">
+            <i class="fa-solid fa-magnifying-glass me-1"></i>搜尋
+          </button>
         </div>
       </form>
     </div>
@@ -210,7 +214,7 @@ function emitSearch() {
   nextTick(() => {
     const section = document.getElementById('property-list-section')
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   })
 }

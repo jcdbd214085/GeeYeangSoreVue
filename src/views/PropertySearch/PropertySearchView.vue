@@ -81,7 +81,7 @@ const emit = defineEmits(['open-login'])
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const propertyList = ref([])
 const currentPage = ref(1)
-const itemsPerPage = 8
+const itemsPerPage = 12
 const previousPage = ref(1)
 const pageDirection = ref('next')
 
