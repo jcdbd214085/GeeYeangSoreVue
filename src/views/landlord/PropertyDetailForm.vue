@@ -31,7 +31,12 @@
           </div>
           <div class="form-group full-width">
             <label>簡介</label>
-            <textarea v-model="form.HDescription" placeholder="可在此填寫關於出租物件的描述"></textarea>
+            <div class="description-container">
+              <textarea v-model="form.HDescription" placeholder="可在此填寫關於出租物件的描述  - 請先填寫縣市、區域與標題才能使用AI生成文案"></textarea>
+              <button type="button" class="generate-btn" @click="generateDescription" :disabled="!canGenerate">
+                <i class="fas fa-magic"></i> AI生成文案
+              </button>
+            </div>
           </div>
           <div class="form-group full-width">
             <label>照片上傳</label>
@@ -134,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import Button from '@/components/buttons/button.vue';
 import Alert from '@/components/alert/Alert.vue';
 import draggable from 'vuedraggable';
@@ -511,6 +516,45 @@ async function onAlertConfirm() {
   showAlert.value = false;
   alertMode.value = '';
 }
+
+// 新增計算屬性來判斷是否可以生成文案
+const canGenerate = computed(() => {
+  return form.value.HPropertyTitle && form.value.HCity && form.value.HDistrict;
+});
+
+// 新增生成文案的方法
+async function generateDescription() {
+  try {
+    const response = await axios.post('https://localhost:7022/api/landlord/property/generate-description', {
+      title: form.value.HPropertyTitle,
+      city: form.value.HCity,
+      district: form.value.HDistrict
+    });
+
+    if (response.data.success) {
+      form.value.HDescription = response.data.description;
+    } else {
+      alertConfig.title = '錯誤';
+      alertConfig.message = response.data.message || '生成文案失敗';
+      alertConfig.type = 'error';
+      alertConfig.confirmText = '確認';
+      alertConfig.cancelText = '';
+      alertConfig.singleButton = true;
+      alertConfig.singleButtonText = '確認';
+      showAlert.value = true;
+    }
+  } catch (error) {
+    console.error('生成文案失敗:', error);
+    alertConfig.title = '錯誤';
+    alertConfig.message = '生成文案失敗，請稍後再試';
+    alertConfig.type = 'error';
+    alertConfig.confirmText = '確認';
+    alertConfig.cancelText = '';
+    alertConfig.singleButton = true;
+    alertConfig.singleButtonText = '確認';
+    showAlert.value = true;
+  }
+}
 </script>
 
 <style scoped>
@@ -736,5 +780,48 @@ textarea {
     gap: 0.7rem;
     margin-top: 1.2rem;
   }
+}
+
+.description-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+}
+
+.description-container textarea {
+  min-height: 160px;
+  resize: vertical;
+  font-size: 1.1rem;
+  width: 100%;
+}
+
+.generate-btn {
+  align-self: flex-end;
+  margin-top: 12px;
+  background: var(--main-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(60,221,210,0.08);
+  transition: background 0.2s;
+}
+.generate-btn:hover {
+  background: #1a9c92;
+}
+.generate-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.generate-btn i {
+  font-size: 1.2rem;
 }
 </style>
