@@ -276,6 +276,13 @@ if (data.success) {
     data.userName || data.user || "",
     data.isLandlord || false
   );
+  
+  await favoriteStore.fetchFavorites();
+  if (favoriteStore.pendingFavoriteId) {
+    await favoriteStore.addFavorite(favoriteStore.pendingFavoriteId);
+    favoriteStore.pendingFavoriteId = null;
+  }
+
   toast.success("登入成功！歡迎回來");
   emit("close");
 } else {
