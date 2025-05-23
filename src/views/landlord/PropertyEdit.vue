@@ -75,7 +75,7 @@
             <div class="layout-row">
               <input v-model.number="form.HRoomCount" type="number" min="0" placeholder="房" />
               <input v-model.number="form.HBathroomCount" type="number" min="0" placeholder="衛浴" />
-              
+
             </div>
           </div>
           <div class="form-group">
@@ -89,25 +89,20 @@
             <label>租金</label>
             <input v-model.number="form.HRentPrice" type="number" min="0" placeholder="元/月" />
           </div>
-          <div class="form-group">
-            <label>出租狀態</label>
-            <select v-model="form.HAvailabilityStatus">
-              <option value="未出租">未出租</option>
-              <option value="已出租">已出租</option>
-            </select>
-          </div>
-          <div class="form-group " >
+          <div class="form-group ">
             <label>坪數</label>
             <input v-model.number="form.HArea" type="number" min="0" placeholder="坪" />
           </div>
-          
+
         </div>
       </section>
       <!-- 房源特色區塊 -->
       <section class="section-block">
         <div class="form-title">房源特色</div>
         <div class="feature-grid">
-          <div v-for="feature in features" :key="feature.value" :class="['feature-item', {selected: form.features.includes(feature.value)}]" @click="toggleFeature(feature.value)">
+          <div v-for="feature in features" :key="feature.value"
+            :class="['feature-item', { selected: form.features.includes(feature.value) }]"
+            @click="toggleFeature(feature.value)">
             <img v-if="feature.img" :src="feature.img" alt="" class="feature-img" />
             <span>{{ feature.label }}</span>
           </div>
@@ -119,17 +114,10 @@
         <button type="submit" class="btn-outline" @click="onSubmit">儲存退出</button>
       </div>
     </form>
-    <Alert
-      v-model:show="showAlert"
-      :title="alertConfig.title"
-      :type="alertConfig.type"
-      :confirmText="alertConfig.confirmText"
-      :cancelText="alertConfig.cancelText"
-      :singleButton="alertConfig.singleButton"
-      :singleButtonText="alertConfig.singleButtonText"
-      @confirm="handleAlertConfirm"
-      @cancel="handleAlertCancel"
-    >
+    <Alert v-model:show="showAlert" :title="alertConfig.title" :type="alertConfig.type"
+      :confirmText="alertConfig.confirmText" :cancelText="alertConfig.cancelText"
+      :singleButton="alertConfig.singleButton" :singleButtonText="alertConfig.singleButtonText"
+      @confirm="handleAlertConfirm" @cancel="handleAlertCancel">
       {{ alertConfig.message }}
     </Alert>
   </div>
@@ -152,27 +140,27 @@ const cities = [
 const features = [
   { label: '可養貓', value: 'AllowsCats', img: 'https://img.icons8.com/stickers/100/cat.png' },
   { label: '可養狗', value: 'AllowsDogs', img: 'https://img.icons8.com/stickers/100/corgi.png' },
-  { label: '可養其他寵物', value: 'AllowsAnimals', img: 'https://img.icons8.com/stickers/100/chicken.png'},
-  { label: '可開伙', value: 'AllowsCooking',  img: 'https://img.icons8.com/stickers/100/gas-burner.png'},
-  { label: '附其他家具', value: 'HasFurniture',  img: 'https://img.icons8.com/stickers/100/furniture.png'},
-  { label: '附網路', value: 'Internet',  img: 'https://img.icons8.com/stickers/100/wifi-router.png'},
-  { label: '附冷氣', value: 'AirConditioning',  img: 'https://img.icons8.com/stickers/100/air-conditioner.png'},
-  { label: '附電視', value: 'Tv',  img: 'https://img.icons8.com/stickers/100/retro-tv.png'},
-  { label: '附冰箱', value: 'Refrigerator',  img: 'https://img.icons8.com/stickers/100/fridge.png'},
-  { label: '附洗衣機', value: 'WashingMachine',  img: 'https://img.icons8.com/stickers/100/washing-machine.png'},
-  { label: '附床', value: 'Bed',  img: 'https://img.icons8.com/stickers/100/single-bed.png'},
-  { label: '附熱水器', value: 'WaterHeater',  img: 'https://img.icons8.com/stickers/100/water-heater.png'},
-  { label: '附瓦斯爐', value: 'GasStove',  img: 'https://img.icons8.com/stickers/100/gas-industry.png'},
-  { label: '附第四台', value: 'CableTv',  img: 'https://img.icons8.com/stickers/100/tv-antenna.png'},
-  { label: '附飲水機', value: 'WaterDispenser',  img: 'https://img.icons8.com/stickers/100/water-cooler.png'},
-  { label: '附停車位', value: 'Parking',  img: 'https://img.icons8.com/stickers/100/garage.png'},
-  { label: '社會住宅', value: 'SocialHousing',  img: 'https://img.icons8.com/stickers/100/residence.png'},
-  { label: '可短租', value: 'ShortTermRent',  img: 'https://img.icons8.com/stickers/100/rental-house-contract.png'},
-  { label: '公共電費', value: 'PublicElectricity',  img: 'https://img.icons8.com/stickers/100/quick-mode-on.png'},
-  { label: '公共水費', value: 'PublicWatercharges',  img: 'https://img.icons8.com/stickers/100/water.png'},
-  { label: '房東同住', value: 'LandlordShared',  img: 'https://img.icons8.com/stickers/100/caretaker.png'},
-  { label: '有陽台', value: 'Balcony',  img: 'https://img.icons8.com/stickers/100/balcony.png'},
-  { label: '有公設', value: 'PublicEquipment',  img: 'https://img.icons8.com/stickers/100/outdoor-swimming-pool.png'},
+  { label: '可養其他寵物', value: 'AllowsAnimals', img: 'https://img.icons8.com/stickers/100/chicken.png' },
+  { label: '可開伙', value: 'AllowsCooking', img: 'https://img.icons8.com/stickers/100/gas-burner.png' },
+  { label: '附其他家具', value: 'HasFurniture', img: 'https://img.icons8.com/stickers/100/furniture.png' },
+  { label: '附網路', value: 'Internet', img: 'https://img.icons8.com/stickers/100/wifi-router.png' },
+  { label: '附冷氣', value: 'AirConditioning', img: 'https://img.icons8.com/stickers/100/air-conditioner.png' },
+  { label: '附電視', value: 'Tv', img: 'https://img.icons8.com/stickers/100/retro-tv.png' },
+  { label: '附冰箱', value: 'Refrigerator', img: 'https://img.icons8.com/stickers/100/fridge.png' },
+  { label: '附洗衣機', value: 'WashingMachine', img: 'https://img.icons8.com/stickers/100/washing-machine.png' },
+  { label: '附床', value: 'Bed', img: 'https://img.icons8.com/stickers/100/single-bed.png' },
+  { label: '附熱水器', value: 'WaterHeater', img: 'https://img.icons8.com/stickers/100/water-heater.png' },
+  { label: '附瓦斯爐', value: 'GasStove', img: 'https://img.icons8.com/stickers/100/gas-industry.png' },
+  { label: '附第四台', value: 'CableTv', img: 'https://img.icons8.com/stickers/100/tv-antenna.png' },
+  { label: '附飲水機', value: 'WaterDispenser', img: 'https://img.icons8.com/stickers/100/water-cooler.png' },
+  { label: '附停車位', value: 'Parking', img: 'https://img.icons8.com/stickers/100/garage.png' },
+  { label: '社會住宅', value: 'SocialHousing', img: 'https://img.icons8.com/stickers/100/residence.png' },
+  { label: '可短租', value: 'ShortTermRent', img: 'https://img.icons8.com/stickers/100/rental-house-contract.png' },
+  { label: '公共電費', value: 'PublicElectricity', img: 'https://img.icons8.com/stickers/100/quick-mode-on.png' },
+  { label: '公共水費', value: 'PublicWatercharges', img: 'https://img.icons8.com/stickers/100/water.png' },
+  { label: '房東同住', value: 'LandlordShared', img: 'https://img.icons8.com/stickers/100/caretaker.png' },
+  { label: '有陽台', value: 'Balcony', img: 'https://img.icons8.com/stickers/100/balcony.png' },
+  { label: '有公設', value: 'PublicEquipment', img: 'https://img.icons8.com/stickers/100/outdoor-swimming-pool.png' },
 ];
 
 const form = reactive({
@@ -297,7 +285,7 @@ async function fetchPropertyData(id) {
     loading.value = false;
   }
 }
-  // 在 PropertyEdit.vue 中
+// 在 PropertyEdit.vue 中
 const deletedImageUrls = ref([]); // 確保這行在 setup 中
 
 function removeImage(index) {
@@ -493,12 +481,14 @@ function onImageChange(event) {
   box-shadow: 0 6px 32px rgba(60, 221, 210, 0.08);
   padding: 2.5rem;
 }
+
 h2 {
   color: var(--main-color);
   margin-bottom: 2rem;
   font-weight: bold;
   text-align: center;
 }
+
 .form-title {
   color: var(--main-color);
   font-size: 1.4rem;
@@ -506,6 +496,7 @@ h2 {
   margin-bottom: 1.2rem;
   letter-spacing: 1px;
 }
+
 .section-block {
   background: #f8fcfc;
   border-radius: 15px;
@@ -513,6 +504,7 @@ h2 {
   padding: 2rem;
   box-shadow: 0 2px 12px rgba(60, 221, 210, 0.04);
 }
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -707,24 +699,24 @@ h2 {
     margin: 0;
     border-radius: 0;
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .feature-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .form-actions {
     flex-direction: column;
     gap: 0.8rem;
   }
-  
+
   .btn-outline,
   .btn-main {
     width: 100%;
   }
 }
-</style> 
+</style>
