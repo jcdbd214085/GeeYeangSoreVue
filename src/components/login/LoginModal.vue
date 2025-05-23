@@ -496,7 +496,7 @@ body {
   max-width: 850px;
   height: 550px;
   background: #f0f9f8;
-  margin: 20px auto; 
+  margin: 20px auto;
   border-radius: 30px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
