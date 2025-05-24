@@ -148,15 +148,18 @@
 
 
 <script setup>
-import { ref, reactive } from 'vue'
-// 預設頭像圖檔
+import { ref, reactive, onMounted } from 'vue'
+import axios from 'axios'
 import defaultAvatar from '@/assets/images/avatar/default.png'
 
-// 檔案選擇輸入參照用
+// 檔案輸入引用
 const fileInput = ref(null)
 
-// 控制是否顯示密碼欄位
+// 是否顯示密碼輸入區塊
 const showPassword = ref(false)
+
+// 刪除帳號彈窗控制
+const showDeleteModal = ref(false)
 
 // 使用者資料模型
 const userData = reactive({
@@ -169,60 +172,116 @@ const userData = reactive({
   phone: '',
   email: '',
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
+  isGoogleLogin: false
 })
 
-// 點擊按鈕後觸發檔案輸入
+// 觸發圖片選擇
 const triggerFileInput = () => {
   fileInput.value.click()
 }
 
-// 處理圖片上傳，轉為 base64 儲存暫存頭像
-const handleFileUpload = (event) => {
+// 上傳頭像並更新 userData.avatar
+const handleFileUpload = async (event) => {
   const file = event.target.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      userData.avatar = e.target.result
-    }
-    reader.readAsDataURL(file)
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('file', file)
+
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/UserProfile/upload-avatar`,
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true
+      }
+    )
+    userData.avatar = res.data.avatarUrl
+  } catch (err) {
+    console.error('上傳圖片失敗', err)
+    alert('頭像上傳失敗')
   }
 }
 
-// 儲存使用者資料，包含密碼驗證
-const saveProfile = () => {
+// 載入個人資料
+const loadProfile = async () => {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/UserProfile/profile`,
+      { withCredentials: true }
+    )
+
+    Object.assign(userData, {
+      name: res.data.hUserName,
+      birthday: res.data.hBirthday,
+      gender: res.data.gender,
+      city: res.data.address?.split(' ')[0] || '',
+      address: res.data.address?.split(' ').slice(1).join(' ') || '',
+      phone: res.data.hPhoneNumber,
+      email: res.data.hEmail,
+      avatar: res.data.avatar,
+      isGoogleLogin: res.data.isGoogleLogin
+    })
+  } catch (err) {
+    console.error('載入個人資料失敗', err)
+    alert('載入失敗，請重新整理或重新登入')
+  }
+}
+
+// 儲存更新個資
+const saveProfile = async () => {
   if (userData.password && userData.password !== userData.confirmPassword) {
     alert('兩次輸入的密碼不一致')
     return
   }
 
-  // TODO: 呼叫 API 實際儲存資料
-  console.log('儲存資料:', userData)
-  alert('資料已更新')
+  const dto = {
+    name: userData.name,
+    birthday: userData.birthday,
+    gender: userData.gender,
+    city: userData.city,
+    address: userData.address,
+    phone: userData.phone,
+    avatar: userData.avatar,
+    password: userData.password,
+    confirmPassword: userData.confirmPassword
+  }
+
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/UserProfile/save-profile`,
+      dto,
+      { withCredentials: true }
+    )
+    alert('資料已成功更新')
+  } catch (err) {
+    console.error('儲存失敗', err)
+    alert('儲存失敗，請稍後再試')
+  }
 }
 
-// 重設表單，清除所有欄位
+// 重設整份表單
 const resetForm = () => {
-  Object.keys(userData).forEach(key => {
-    userData[key] = ''
+  Object.keys(userData).forEach((key) => {
+    if (key !== 'email' && key !== 'isGoogleLogin') userData[key] = ''
   })
+  showPassword.value = false
 }
 
-
-// 控制刪除帳號彈窗顯示
-const showDeleteModal = ref(false)
-
-// 刪除帳號邏輯
+// 模擬刪除帳號（尚未實作）
 const deleteAccount = () => {
   showDeleteModal.value = false
-  // TODO: 呼叫後端 API 刪除帳號
-  alert('帳號已刪除')
-  // 可以導向登出或首頁
-  // window.location.href = '/'
+  alert('帳號已刪除（尚未串接後端）')
 }
 
-
+// 元件掛載時自動載入個人資料
+onMounted(() => {
+  loadProfile()
+})
 </script>
+
 
 <style scoped>
 /*  外層容器：設定寬度與內距 */
