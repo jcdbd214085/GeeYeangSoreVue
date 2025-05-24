@@ -167,6 +167,9 @@ function goToDetail() {
   margin-bottom: 0.5rem;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .room-info {

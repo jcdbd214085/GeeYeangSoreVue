@@ -238,6 +238,9 @@ async function openChat() {
   margin-bottom: 0.5rem;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .room-info {
@@ -272,6 +275,10 @@ async function openChat() {
 .landlord-text {
   align-self: flex-start; 
   text-align: left;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .landlord-extra {
