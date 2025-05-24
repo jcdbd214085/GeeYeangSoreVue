@@ -1,7 +1,7 @@
-import { defineConfig, loadEnv } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, URL } from "node:url";
+import { defineConfig, loadEnv } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueDevTools from "vite-plugin-vue-devtools";
 
 export default defineConfig(({ mode }) => {
   // ⬇️ 載入 .env 變數
@@ -15,9 +15,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: "0.0.0.0",
-      port: 3000,
-      allowedHosts: ["vue.jayceeswlrorobot.win", "localhost"],
       proxy: {
         "/api": {
           target: env.VITE_API_BASE_URL,
@@ -32,5 +29,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-  }
-})
+  };
+});
