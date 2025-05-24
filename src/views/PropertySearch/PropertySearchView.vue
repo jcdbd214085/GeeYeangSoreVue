@@ -70,7 +70,7 @@ import PropertyCard from '@/components/cards/PropertyCard.vue';
 import propertyImg from '@/assets/images/property/property.jpg';
 import LandlordCarousel from '@/components/carousel/LandlordCarousel.vue';
 import Pagination from '@/components/Pagination/Pagination.vue';
-import { ref, onMounted, computed, reactive, watch } from 'vue'
+import { ref, onMounted, computed, reactive, watch, nextTick } from 'vue'
 import axios from 'axios'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 import ChatPopup from '@/components/chat/ChatPopup.vue'
@@ -96,6 +96,13 @@ const pagedList = computed(() => {
 watch(currentPage, (newVal, oldVal) => {
     pageDirection.value = newVal > oldVal ? 'next' : 'prev'
     previousPage.value = newVal
+
+    nextTick(() => {
+        const section = document.getElementById('property-list-section')
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+    })
 })
 
 const featuredProperties = ref([])
