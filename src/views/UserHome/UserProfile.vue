@@ -148,6 +148,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 import defaultAvatar from '@/assets/images/avatar/default.png'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+
+// 引入 router 和 userStore
+const router = useRouter()
+const userStore = useUserStore()
 
 // 檔案輸入引用
 const fileInput = ref(null)
@@ -297,8 +303,10 @@ const deleteAccount = async () => {
     )
     
     alert('帳號已成功刪除')
-    // 登出並導向登入頁
-    window.location.href = '/login'
+    // 清除用戶狀態
+    userStore.logout()
+    // 使用 router 進行導航
+    router.push('/')
   } catch (err) {
     console.error('刪除帳號失敗', err)
     if (err.response?.data?.message) {
@@ -321,7 +329,13 @@ const resetForm = () => {
 
 // 頁面載入時獲取資料
 onMounted(() => {
-  loadProfile()
+  // 檢查使用者是否已登入才載入個人資料
+  if (userStore.isLogin) {
+    loadProfile()
+  } else {
+    // 如果未登入，導向登入頁面 (這應該不會發生，因為刪除帳號後已經導向，但作為一個安全措施)
+    router.push('/login')
+  }
 })
 </script>
 
