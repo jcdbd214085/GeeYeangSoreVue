@@ -155,6 +155,10 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
+import { useToast } from 'vue-toastification' // 引入 Toast 套件
+const toast = useToast() // 初始化 Toast
+
+
 // 引入 router 和 userStore
 const router = useRouter()
 const userStore = useUserStore()
@@ -256,7 +260,7 @@ const loadProfile = async () => {
 
   } catch (err) {
     console.error('載入個人資料失敗', err)
-    alert('載入失敗，請重新整理或重新登入')
+    toast.error('載入失敗，請重新整理或重新登入')
   }
 }
 
@@ -266,14 +270,14 @@ const saveProfile = async () => {
     // 密碼驗證
     if (userData.password) {
       if (userData.password !== userData.confirmPassword) {
-        alert('兩次輸入的密碼不一致')
+        toast.error('兩次輸入的密碼不一致')
         return
       }
     }
 
     // 驗證手機號碼格式（如果有填寫）
     if (userData.phone && !/^09\d{8}$/.test(userData.phone)) {
-      alert('手機號碼格式不正確，請輸入正確的手機號碼')
+      toast.error('手機號碼格式不正確，請輸入正確的手機號碼')
       return
     }
 
@@ -295,7 +299,7 @@ const saveProfile = async () => {
         userData.avatar = uploadRes.data.fileName
       } catch (err) {
         console.error('上傳圖片失敗', err)
-        alert('頭像上傳失敗')
+        toast.error('頭像上傳失敗')
         return
       }
     }
@@ -323,7 +327,7 @@ const saveProfile = async () => {
     previewImage.value = null
     userData.newAvatarFile = null
 
-    alert('更新成功')
+    toast.success('更新成功')
     // 重置密碼相關欄位
     userData.password = ''
     userData.confirmPassword = ''
@@ -331,9 +335,9 @@ const saveProfile = async () => {
   } catch (err) {
     console.error('更新個人資料失敗', err)
     if (err.response?.data?.message) {
-      alert(err.response.data.message)
+      toast.error(err.response.data.message)
     } else {
-      alert('更新失敗，請稍後再試')
+      toast.error('更新失敗，請稍後再試')
     }
   }
 }
@@ -346,7 +350,7 @@ const deleteAccount = async () => {
       { withCredentials: true }
     )
     
-    alert('帳號已成功刪除')
+    toast.success('帳號已成功刪除')
     // 清除用戶狀態
     userStore.logout()
     // 使用 router 進行導航
@@ -354,9 +358,9 @@ const deleteAccount = async () => {
   } catch (err) {
     console.error('刪除帳號失敗', err)
     if (err.response?.data?.message) {
-      alert(err.response.data.message)
+      toast.error(err.response.data.message)
     } else {
-      alert('刪除失敗，請稍後再試')
+      toast.error('刪除失敗，請稍後再試')
     }
   } finally {
     showDeleteModal.value = false
