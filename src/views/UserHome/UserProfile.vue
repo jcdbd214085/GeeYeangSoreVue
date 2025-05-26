@@ -7,7 +7,7 @@
       <div class="profile-avatar-section">
         <div class="avatar-container">
           <!-- 顯示使用者頭像，若無則使用預設圖 -->
-          <img :src="getAvatarUrl(userData.avatar)" alt="" class="avatar-image">
+          <img :src="previewImage || getAvatarUrl(userData.avatar)" alt="" class="avatar-image">
           
           <!-- 遮罩層：滑鼠移入時顯示更換按鈕 -->
           <div class="avatar-overlay">
@@ -170,6 +170,9 @@ const showConfirmPassword = ref(false)
 // 刪除帳號彈窗控制
 const showDeleteModal = ref(false)
 
+// 新增預覽圖片狀態
+const previewImage = ref(null)
+
 // 使用者資料模型
 const userData = reactive({
   avatar: '',
@@ -181,12 +184,14 @@ const userData = reactive({
   email: '',
   password: '',
   confirmPassword: '',
-  isGoogleLogin: false
+  isGoogleLogin: false,
+  newAvatarFile: null
 })
 
 // 計算頭像URL
 const getAvatarUrl = (avatarPath) => {
   if (!avatarPath) return defaultAvatar
+  // 確保只使用檔名來組合完整路徑
   return `${import.meta.env.VITE_API_BASE_URL}/images/User/${avatarPath}`
 }
 
@@ -200,23 +205,15 @@ const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  const formData = new FormData()
-  formData.append('file', file)
-
-  try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/api/UserProfile/upload-avatar`,
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        withCredentials: true
-      }
-    )
-    userData.avatar = res.data.avatarUrl
-  } catch (err) {
-    console.error('上傳圖片失敗', err)
-    alert('頭像上傳失敗')
+  // 建立預覽
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    previewImage.value = e.target.result
   }
+  reader.readAsDataURL(file)
+
+  // 先不上傳，等待使用者點擊儲存
+  userData.newAvatarFile = file
 }
 
 // 載入個人資料
@@ -270,6 +267,29 @@ const saveProfile = async () => {
       return
     }
 
+    // 如果有新上傳的頭像，先上傳頭像
+    if (userData.newAvatarFile) {
+      const formData = new FormData()
+      formData.append('file', userData.newAvatarFile)
+
+      try {
+        const uploadRes = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/api/UserProfile/upload-avatar`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            withCredentials: true
+          }
+        )
+        // 只儲存檔名到 userData.avatar
+        userData.avatar = uploadRes.data.fileName
+      } catch (err) {
+        console.error('上傳圖片失敗', err)
+        alert('頭像上傳失敗')
+        return
+      }
+    }
+
     const updateData = {
       name: userData.name,
       birthday: userData.birthday,
@@ -278,7 +298,7 @@ const saveProfile = async () => {
       phone: userData.phone,
       password: userData.password,
       confirmPassword: userData.confirmPassword,
-      avatar: userData.avatar
+      avatar: userData.avatar // 這裡只傳送檔名
     }
 
     console.log('要傳送給後端的資料：', updateData)
@@ -288,6 +308,10 @@ const saveProfile = async () => {
       updateData,
       { withCredentials: true }
     )
+
+    // 清除預覽和新上傳的檔案
+    previewImage.value = null
+    userData.newAvatarFile = null
 
     alert('更新成功')
     // 重置密碼相關欄位
@@ -335,6 +359,9 @@ const resetForm = () => {
   userData.password = ''
   userData.confirmPassword = ''
   showPassword.value = false
+  // 清除預覽和新上傳的檔案
+  previewImage.value = null
+  userData.newAvatarFile = null
 }
 
 // 頁面載入時獲取資料
