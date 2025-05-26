@@ -7,7 +7,7 @@
       <div class="profile-avatar-section">
         <div class="avatar-container">
           <!-- 顯示使用者頭像，若無則使用預設圖 -->
-          <img :src="userData.avatar || defaultAvatar" alt="個人照片" class="avatar-image">
+          <img :src="userData.avatar || defaultAvatar" alt="" class="avatar-image">
           
           <!-- 遮罩層：滑鼠移入時顯示更換按鈕 -->
           <div class="avatar-overlay">
