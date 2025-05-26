@@ -177,7 +177,7 @@ const previewImage = ref(null)
 const userData = reactive({
   avatar: '',
   name: '',
-  birthday: '',
+  birthday: null,
   gender: '',
   address: '',
   phone: '',
@@ -226,8 +226,8 @@ const loadProfile = async () => {
 
     console.log('原始後端生日資料:', res.data.hBirthday);
 
-    // 處理日期格式：直接截取字串前10個字元
-    const birthday = res.data.hBirthday ? res.data.hBirthday.substring(0, 10) : '';
+    // 處理日期格式：若後端傳回 null 或空字串，則設定為 null，否則截取字串前10個字元
+    const birthday = res.data.hBirthday ? res.data.hBirthday.substring(0, 10) : null;
 
     console.log('處理後的前端生日資料:', birthday);
 
