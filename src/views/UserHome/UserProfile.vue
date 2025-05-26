@@ -7,7 +7,7 @@
       <div class="profile-avatar-section">
         <div class="avatar-container">
           <!-- 顯示使用者頭像，若無則使用預設圖 -->
-          <img :src="userData.avatar || defaultAvatar" alt="" class="avatar-image">
+          <img :src="getAvatarUrl(userData.avatar)" alt="" class="avatar-image">
           
           <!-- 遮罩層：滑鼠移入時顯示更換按鈕 -->
           <div class="avatar-overlay">
@@ -147,13 +147,15 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
-import defaultAvatar from '@/assets/images/avatar/default.png'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
 // 引入 router 和 userStore
 const router = useRouter()
 const userStore = useUserStore()
+
+// 設定預設頭像路徑
+const defaultAvatar = `${import.meta.env.VITE_API_BASE_URL}/images/User/default.png`
 
 // 檔案輸入引用
 const fileInput = ref(null)
@@ -181,6 +183,12 @@ const userData = reactive({
   confirmPassword: '',
   isGoogleLogin: false
 })
+
+// 計算頭像URL
+const getAvatarUrl = (avatarPath) => {
+  if (!avatarPath) return defaultAvatar
+  return `${import.meta.env.VITE_API_BASE_URL}/images/User/${avatarPath}`
+}
 
 // 觸發圖片選擇
 const triggerFileInput = () => {
