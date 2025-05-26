@@ -359,9 +359,13 @@ const resetForm = () => {
   userData.password = ''
   userData.confirmPassword = ''
   showPassword.value = false
-  // 清除預覽和新上傳的檔案
+  // 清除預覽圖片和新上傳的檔案
   previewImage.value = null
   userData.newAvatarFile = null
+  // 重置檔案輸入欄位，確保可以重新選擇相同的檔案
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
 }
 
 // 頁面載入時獲取資料
