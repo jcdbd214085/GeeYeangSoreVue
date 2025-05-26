@@ -273,6 +273,8 @@ const saveProfile = async () => {
       avatar: userData.avatar
     }
 
+    console.log('要傳送給後端的資料：', updateData)
+
     const res = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/api/UserProfile/save-profile`,
       updateData,
