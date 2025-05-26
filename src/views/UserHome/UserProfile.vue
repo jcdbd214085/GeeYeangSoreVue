@@ -7,7 +7,12 @@
       <div class="profile-avatar-section">
         <div class="avatar-container">
           <!-- 顯示使用者頭像，若無則使用預設圖 -->
-          <img :src="previewImage || getAvatarUrl(userData.avatar)" alt="" class="avatar-image">
+          <img 
+            :src="previewImage || getAvatarUrl(userData.avatar)" 
+            @error="handleImageError" 
+            alt="" 
+            class="avatar-image"
+          >
           
           <!-- 遮罩層：滑鼠移入時顯示更換按鈕 -->
           <div class="avatar-overlay">
@@ -193,6 +198,11 @@ const getAvatarUrl = (avatarPath) => {
   if (!avatarPath) return defaultAvatar
   // 確保只使用檔名來組合完整路徑
   return `${import.meta.env.VITE_API_BASE_URL}/images/User/${avatarPath}`
+}
+
+// 處理圖片載入失敗
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
 }
 
 // 觸發圖片選擇
