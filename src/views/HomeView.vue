@@ -29,7 +29,7 @@
         <div class="col-md-4" v-for="(item, i) in recommendList" :key="'rec' + i">
           <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
-            :roomCount="item.roomCount" :bathroomCount="item.bathroomCount">
+            :roomCount="item.roomCount" :bathroomCount="item.bathroomCount" @open-login="handleOpenLogin">
             <template #badge>
               <BadgeList type="推薦" />
             </template>
@@ -45,7 +45,7 @@
         <div class="col-md-4" v-for="(item, i) in newList" :key="'new' + i">
           <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
-            :roomCount="item.roomCount" :bathroomCount="item.bathroomCount">
+            :roomCount="item.roomCount" :bathroomCount="item.bathroomCount" @open-login="handleOpenLogin">
             <template #badge>
               <BadgeList type="New" />
             </template>
@@ -105,6 +105,12 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const recommendList = ref([]);
 const newList = ref([]);
+
+const emit = defineEmits(['open-login']);
+
+function handleOpenLogin() {
+  emit('open-login');
+}
 
 onMounted(async () => {
   try {
