@@ -35,7 +35,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import Button from '@/components/buttons/button.vue';
 import { useRouter } from 'vue-router';
 
@@ -51,7 +51,15 @@ function onSearch() {
       city: city.value,
       keyword: keyword.value
     }
-  });
+  }).then(() => {
+    // 等待路由跳轉完成後，定位到搜尋結果區域
+    nextTick(() => {
+      const section = document.getElementById('property-list-section')
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    })
+  })
 }
 </script>
 <style scoped>
