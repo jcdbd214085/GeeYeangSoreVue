@@ -30,6 +30,7 @@
   import ChatWindow from '@/components/chat/ChatWindow.vue';
   import ChatInput from '@/components/chat/ChatInput.vue';
   import defaultAvatar from '@/assets/images/avatar/default.png';
+  import { useMessageLabel } from '@/components/chat/useMessageLabel';
   
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
   const SIGNALR_URL = `${API_BASE_URL}/hub`;
@@ -41,6 +42,7 @@
   const activeReceiverRole = ref('tenant');
   const messages = ref([]);
   let connection = null;
+  const { filterBadWords } = useMessageLabel();
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -61,6 +63,14 @@
           content: msg.content,
           time: msg.time
         });
+      }
+
+      const contactId = msg.from == user.value.id ? msg.to : msg.from;
+      const contact = contacts.value.find(c => c.id == contactId);
+      if (contact) {
+        contact.lastMsg = (msg.type === 'image' || msg.type === '圖片' || (msg.content && msg.content.startsWith('/images/chat/')))
+          ? '[圖片]'
+          : (msg.content || '');
       }
     });
   
@@ -146,12 +156,13 @@
     }
     const { type, content } = payload;
     if (type !== 'text' && type !== '文字') return;
+    const filteredContent = filterBadWords(content);
     connection
       .invoke(
         'SendMessage',
         String(user.value.id),
         String(activeContactId.value),
-        content
+        filteredContent
       )
       .catch((err) => {
         console.error('送出失敗：', err);

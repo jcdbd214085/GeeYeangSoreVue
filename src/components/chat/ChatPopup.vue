@@ -210,7 +210,7 @@
     position: fixed;
     bottom: 24px;
     right: 24px;
-    width: 350px;
+    width: 360px;
     max-width: 95vw;
     height: 500px;
     background: #fff;
