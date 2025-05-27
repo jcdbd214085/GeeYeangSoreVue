@@ -5,7 +5,7 @@
       <div class="announcement-carousel">
         <div class="announcement-list" ref="announcementList">
           <div v-for="(item, index) in visibleNews" :key="index" class="announcement-item">
-            <span class="date">{{ formatDate(item.hDate) }}</span>
+            <span class="date">{{ formatDate(item.hCreatedAt) }}</span>
             <span class="content">{{ item.hTitle }}</span>
           </div>
         </div>
@@ -24,7 +24,18 @@ const currentIndex = ref(0);
 let scrollInterval = null;
 
 const formatDate = (dateString) => {
+  if (!dateString) return '';
+  
+  // 處理 DateTime 格式
   const date = new Date(dateString);
+  
+  // 檢查日期是否有效
+  if (isNaN(date.getTime())) {
+    console.error('無效的日期格式:', dateString);
+    return '';
+  }
+
+  // 使用台灣地區的日期格式
   return date.toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: '2-digit',
