@@ -43,8 +43,8 @@
                 <li><strong>格局：</strong>{{ property.roomCount }} 房 {{ property.bathroomCount }} 衛</li>
                 <li><strong>坪數：</strong>{{ property.area }} 坪</li>
                 <li><strong>樓層：</strong>{{ property.floor }} / {{ property.totalFloors }} 樓</li>
-                <li><strong>類型：</strong>{{ property.propertyType }}</li>
-                <li><strong>建物：</strong>{{ property.buildingType }}</li>
+                <li><strong>物件類型：</strong>{{ property.propertyType }}</li>
+                <li><strong>建築型態：</strong>{{ property.buildingType }}</li>
                 <li><strong>刊登日期：</strong>{{ formatDate(property.publishedDate) }}</li>
             </ul>
         </div>

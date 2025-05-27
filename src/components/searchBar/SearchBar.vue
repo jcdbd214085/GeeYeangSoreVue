@@ -29,7 +29,7 @@
         <!-- 類型與型態 -->
         <div class="mb-3 d-flex">
           <div class="w-50 me-2">
-            <label class="fw-bold mb-1">類型</label>
+            <label class="fw-bold mb-1">物件類型</label>
             <select class="form-select" v-model="type">
               <option>不限</option>
               <option>整層住家</option>
@@ -40,7 +40,7 @@
             </select>
           </div>
           <div class="w-50">
-            <label class="fw-bold mb-1">型態</label>
+            <label class="fw-bold mb-1">建築型態</label>
             <select class="form-select" v-model="buildingType">
               <option>不限</option>
               <option>公寓</option>

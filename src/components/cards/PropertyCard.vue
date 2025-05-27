@@ -59,7 +59,7 @@ const props = defineProps({
 
 const favoriteStore = useFavoriteStore()
 const isFavorited = computed(() => {
-  return favoriteStore.list.some(item => item.propertyId === props.propertyId)
+  return userStore.isLogin && favoriteStore.list.some(item => item.propertyId === props.propertyId)
 })
 const tenantId = localStorage.getItem('tenantId')
 console.log("image url", props.image)
