@@ -4,12 +4,28 @@
     <form class="search-form" @submit.prevent="onSearch">
       <select class="form-select city-select" v-model="city">
         <option value="">選擇地區</option>
-        <option>台北市</option>
-        <option>新北市</option>
-        <option>桃園市</option>
-        <option>台中市</option>
-        <option>台南市</option>
-        <option>高雄市</option>
+<option>台北市</option>
+<option>新北市</option>
+<option>基隆市</option>
+<option>桃園市</option>
+<option>新竹市</option>
+<option>新竹縣</option>
+<option>苗栗縣</option>
+<option>台中市</option>
+<option>彰化縣</option>
+<option>南投縣</option>
+<option>雲林縣</option>
+<option>嘉義市</option>
+<option>嘉義縣</option>
+<option>台南市</option>
+<option>高雄市</option>
+<option>屏東縣</option>
+<option>宜蘭縣</option>
+<option>花蓮縣</option>
+<option>台東縣</option>
+<option>澎湖縣</option>
+<option>金門縣</option>
+<option>連江縣</option>
       </select>
       <input type="text" class="form-input" v-model="keyword" placeholder="請輸入關鍵字（社區名，街道名，捷運名稱等）" />
       <Button type="submit" color="primary" class="search-btn">
@@ -19,13 +35,31 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import Button from '@/components/buttons/button.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const city = ref('');
 const keyword = ref('');
+
 function onSearch() {
-  // 這裡可以加上 emit 或 API 請求
-  console.log('搜尋', city.value, keyword.value);
+  // 跳轉到搜尋結果頁面，並帶上搜尋參數
+  router.push({
+    path: '/PropertySearch',
+    query: {
+      city: city.value,
+      keyword: keyword.value
+    }
+  }).then(() => {
+    // 等待路由跳轉完成後，定位到搜尋結果區域
+    nextTick(() => {
+      const section = document.getElementById('property-list-section')
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    })
+  })
 }
 </script>
 <style scoped>
