@@ -27,7 +27,7 @@
       <h2 class="section-title">推薦房源</h2>
       <div class="row">
         <div class="col-md-4" v-for="(item, i) in recommendList" :key="'rec' + i">
-          <PropertyCard :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
+          <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount">
             <template #badge>
@@ -43,7 +43,7 @@
       <h2 class="section-title">最新上架</h2>
       <div class="row">
         <div class="col-md-4" v-for="(item, i) in newList" :key="'new' + i">
-          <PropertyCard :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
+          <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount">
             <template #badge>

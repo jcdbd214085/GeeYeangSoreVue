@@ -80,7 +80,9 @@ async function toggleFavorite() {
 
 function goToDetail() {
   if (props.propertyId) {
-    router.push(`/property/${props.propertyId}`)
+    router.push(`/property/${props.propertyId}`).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   } else {
     console.warn('propertyId 未定義')
   }
