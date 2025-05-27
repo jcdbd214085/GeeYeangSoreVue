@@ -10,6 +10,7 @@
                 <Avatar :src="c.avatar" :alt="c.name" :size="40" class="avatar" />
                 <div class="contact-info">
                     <div class="contact-name">{{ c.name }}</div>
+                    <div v-if="getLabelFromMessage(c.lastMsg)" class="contact-label">{{ getLabelFromMessage(c.lastMsg) }}</div>
                     <div class="contact-last">{{ c.lastMsg }}</div>
                 </div>
                 <span v-if="c.unread" class="unread">{{ c.unread }}</span>
@@ -20,11 +21,13 @@
 <script setup>
 import { ref, computed } from 'vue';
 import Avatar from '@/components/Avatar.vue';
+import { useMessageLabel } from './useMessageLabel';
 const props = defineProps(['contacts', 'activeContactId']);
 const search = ref('');
 const filteredContacts = computed(() =>
     props.contacts.filter(c => c.name.includes(search.value))
 );
+const { getLabelFromMessage } = useMessageLabel();
 </script>
 <style scoped>
 .contacts-list {
@@ -99,6 +102,13 @@ const filteredContacts = computed(() =>
     padding: 0.1rem 0.7rem;
     font-size: 0.9rem;
     margin-left: 0.5rem;
+}
+
+.contact-label {
+    color: #32a49c;
+    font-size: 0.92rem;
+    margin: 2px 0 2px 0;
+    font-weight: 500;
 }
 
 @media (max-width: 768px) {

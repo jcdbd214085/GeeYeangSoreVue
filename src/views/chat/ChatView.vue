@@ -62,6 +62,14 @@
           time: msg.time
         });
       }
+
+      const contactId = msg.from == user.value.id ? msg.to : msg.from;
+      const contact = contacts.value.find(c => c.id == contactId);
+      if (contact) {
+        contact.lastMsg = (msg.type === 'image' || msg.type === '圖片' || (msg.content && msg.content.startsWith('/images/chat/')))
+          ? '[圖片]'
+          : (msg.content || '');
+      }
     });
   
     connection.on('ReceiveError', (errMsg) => {
