@@ -4,7 +4,12 @@
       <h2 class="section-title">最新公告</h2>
       <div class="announcement-carousel">
         <div class="announcement-list" ref="announcementList">
-          <div v-for="(item, index) in visibleNews" :key="index" class="announcement-item">
+          <div v-for="(item, index) in visibleNews" :key="index" 
+               class="announcement-item" 
+               @click="navigateToNotice"
+               role="button"
+               tabindex="0"
+               @keyup.enter="navigateToNotice">
             <span class="date">{{ formatDate(item.hCreatedAt) }}</span>
             <span class="content">{{ item.hTitle }}</span>
           </div>
@@ -16,12 +21,18 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 
+const router = useRouter();
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const news = ref([]);
 const currentIndex = ref(0);
 let scrollInterval = null;
+
+const navigateToNotice = () => {
+  router.push('/notice');
+};
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -107,6 +118,16 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   transition: all 0.5s ease-in-out;
+  cursor: pointer;
+}
+
+.announcement-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.announcement-item:focus {
+  outline: 2px solid var(--main-color);
+  outline-offset: -2px;
 }
 
 .announcement-item:last-child {
