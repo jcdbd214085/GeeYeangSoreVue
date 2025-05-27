@@ -102,7 +102,7 @@ const filteredAds = computed(() => {
     if (filterStatus.value === 'active') {
       filtered = filtered.filter(ad => ad.status === '進行中');
     } else if (filterStatus.value === 'expired') {
-      filtered = filtered.filter(ad => ad.status !== '進行中');
+      filtered = filtered.filter(ad => ad.status == '結束');
     } else if (filterStatus.value === 'pending') {
       filtered = filtered.filter(ad => ad.status === '稍後付款');
     }

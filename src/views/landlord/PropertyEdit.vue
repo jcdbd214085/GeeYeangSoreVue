@@ -33,9 +33,13 @@
             <label>簡介</label>
             <div class="description-container">
               <textarea v-model="form.HDescription" placeholder="可在此填寫物件的特色描述，請先填寫縣市、區域與標題才能使用AI生成"></textarea>
-              <button type="button" class="generate-btn" @click="generateDescription" :disabled="!canGenerate">
-                <i class="fas fa-magic"></i> AI生成文案
-              </button>
+              <div class="button-container">
+                <button type="button" class="generate-btn" @click="generateDescription" :disabled="!canGenerate || isGenerating">
+                  <span v-if="isGenerating" class="loading-spinner"></span>
+                  <i v-else class="fas fa-magic"></i>
+                  {{ isGenerating ? '生成中...' : 'AI生成文案' }}
+                </button>
+              </div>
             </div>
           </div>
           <div class="form-group full-width">
@@ -98,7 +102,16 @@
             <label>坪數</label>
             <input v-model.number="form.HArea" type="number" min="0" placeholder="坪" />
           </div>
-
+          <div class="ai-analysis-tip">
+            填寫空間型態、坪數、格局等資訊再點擊分析系統將產生區域市場趨勢報告。
+          </div>
+          <div class="form-group analysis-btn-group single-btn">
+            <button type="button" class="generate-btn" @click="generateMarketAnalysis" :disabled="!canAnalyze || isAnalyzing">
+              <span v-if="isAnalyzing" class="loading-spinner"></span>
+              <i v-else class="fas fa-chart-line"></i>
+              {{ isAnalyzing ? '分析中...' : 'AI市場分析' }}
+            </button>
+          </div>
         </div>
       </section>
       <!-- 房源特色區塊 -->
@@ -123,7 +136,7 @@
       :confirmText="alertConfig.confirmText" :cancelText="alertConfig.cancelText"
       :singleButton="alertConfig.singleButton" :singleButtonText="alertConfig.singleButtonText"
       @confirm="handleAlertConfirm" @cancel="handleAlertCancel">
-      {{ alertConfig.message }}
+      <div class="market-analysis-content">{{ alertConfig.message }}</div>
     </Alert>
   </div>
 </template>
@@ -205,10 +218,22 @@ const alertConfig = reactive({
   singleButtonText: '確認'
 });
 const alertMode = ref('');
+const isGenerating = ref(false);
+const isAnalyzing = ref(false);
 
 // 新增計算屬性來判斷是否可以生成文案
 const canGenerate = computed(() => {
   return form.HPropertyTitle && form.HCity && form.HDistrict;
+});
+
+// 新增計算屬性來判斷是否可以進行市場分析
+const canAnalyze = computed(() => {
+  return form.HCity && 
+         form.HDistrict && 
+         form.HPropertyType && 
+         form.HArea > 0 && 
+         form.HRoomCount > 0 &&
+         form.HRentPrice > 0;
 });
 
 onMounted(async () => {
@@ -483,7 +508,8 @@ function onImageChange(event) {
 // 新增生成文案的方法
 async function generateDescription() {
   try {
-    const response = await axios.post('https://localhost:7022/api/landlord/property/generate-description', {
+    isGenerating.value = true;
+    const response = await axios.post('/api/landlord/property/generate-description', {
       title: form.HPropertyTitle,
       city: form.HCity,
       district: form.HDistrict
@@ -504,13 +530,51 @@ async function generateDescription() {
   } catch (error) {
     console.error('生成文案失敗:', error);
     alertConfig.title = '錯誤';
-    alertConfig.message = '生成文案失敗，請稍後再試';
+    alertConfig.message = error.response?.data?.message || '生成文案失敗';
     alertConfig.type = 'error';
     alertConfig.confirmText = '確認';
     alertConfig.cancelText = '';
     alertConfig.singleButton = true;
     alertConfig.singleButtonText = '確認';
     showAlert.value = true;
+  } finally {
+    isGenerating.value = false;
+  }
+}
+
+// 新增市場分析方法
+async function generateMarketAnalysis() {
+  try {
+    isAnalyzing.value = true;
+    const response = await axios.post('/api/landlord/property/market-analysis', {
+      city: form.HCity,
+      district: form.HDistrict,
+      propertyType: form.HPropertyType,
+      area: form.HArea,
+      roomCount: form.HRoomCount,
+      rentPrice: form.HRentPrice
+    });
+
+    if (response.data.success) {
+      alertConfig.title = '市場趨勢分析';
+      alertConfig.message = response.data.analysis;
+      alertConfig.type = 'info';
+      alertConfig.singleButton = true;
+      alertConfig.singleButtonText = '確認';
+      showAlert.value = true;
+    } else {
+      throw new Error(response.data.message);
+    }
+  } catch (error) {
+    console.error('市場分析失敗:', error);
+    alertConfig.title = '錯誤';
+    alertConfig.message = error.response?.data?.message || '市場分析失敗';
+    alertConfig.type = 'error';
+    alertConfig.singleButton = true;
+    alertConfig.singleButtonText = '確認';
+    showAlert.value = true;
+  } finally {
+    isAnalyzing.value = false;
   }
 }
 
@@ -749,6 +813,12 @@ h2 {
     gap: 1rem;
   }
 
+  .section-block {
+    padding: 1rem 0.5rem;
+    margin-bottom: 1.2rem;
+    border-radius: 0;
+  }
+
   .feature-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -779,9 +849,29 @@ h2 {
   width: 100%;
 }
 
-.generate-btn {
-  align-self: flex-end;
+.button-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--main-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.generate-btn {
   background: var(--main-color);
   color: white;
   border: none;
@@ -796,14 +886,57 @@ h2 {
   box-shadow: 0 2px 8px rgba(60,221,210,0.08);
   transition: background 0.2s;
 }
+
 .generate-btn:hover {
   background: #1a9c92;
 }
+
 .generate-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
+
 .generate-btn i {
   font-size: 1.2rem;
+}
+
+.market-analysis-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 16px 32px;
+  white-space: pre-line;
+  word-break: break-all;
+  font-size: 1.12rem;
+  line-height: 1.8;
+}
+
+:deep(.alert-modal), :deep(.alert-root), :deep(.alert-container) {
+  max-width: 600px !important;
+  width: 95vw !important;
+}
+
+.analysis-btn-group.single-btn {
+  grid-column: 2 / 3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-top: auto;
+  margin-bottom: 0;
+  height: 100%;
+}
+@media (max-width: 900px) {
+  .analysis-btn-group.single-btn {
+    grid-column: 1 / 2;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+}
+
+.ai-analysis-tip {
+  color: #888;
+  font-size: 0.98rem;
+  margin-bottom: 2px;
+  margin-top: 8px;
+  text-align: right;
 }
 </style>
