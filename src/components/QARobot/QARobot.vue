@@ -1,5 +1,6 @@
 ﻿<script setup>
-import { ref } from 'vue'
+import {ref} from 'vue'
+import axios from "axios";
 
 const showChat = ref(false)
 const userInput = ref('')
@@ -18,22 +19,23 @@ async function sendMessage() {
   const question = userInput.value.trim()
   if (!question) return
 
-  messages.value.push({ type: 'user', text: question })
+  messages.value.push({type: 'user', text: question})
   userInput.value = ''
   isTyping.value = true
 
   const answer = await getBotAnswer(question)
-  messages.value.push({ type: 'bot', text: answer })
+  messages.value.push({type: 'bot', text: answer})
   isTyping.value = false
 }
 
 async function getBotAnswer(question) {
-  const response = await fetch('http://localhost:11434/api/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'llama3.2',
-      prompt: `
+  try {
+    const response = await axios.post('https://llm.jayceeswlrorobot.win/v1/chat/completions', {
+      model: 'gemma3:4b',
+      messages: [
+        {
+          role: 'user',
+          content: `
 你是一個專業的客服機器人，租屋網站名稱為「居研所」，請用親切且清楚的繁體中文回答使用者的問題。
 
 ---
@@ -80,14 +82,29 @@ A: 可以。房東可以在方案期間內隨時手動下架物件，例如物�
 
 ---
 使用者問題：${question}
-`,
-      stream: false
-    })
-  })
+`
 
-  const data = await response.json()
-  return data.response || '抱歉，我目前無法回答這個問題，建議您聯繫真人客服。'
+        }
+      ],
+      max_tokens: 500
+    });
+
+    const reply = response.data.choices[0].message.content;
+    return reply;
+
+  } catch (error) {
+    if (error.response) {
+      console.error('⚠️ 錯誤狀態碼：', error.response.status);
+      console.error('📦 錯誤資料：', error.response.data);
+    } else if (error.request) {
+      console.error('❌ 無回應，請求物件：', error.request);
+    } else {
+      console.error('❗ 錯誤訊息：', error.message);
+    }
+    return '❌ 發生錯誤，請稍後再試';
+  }
 }
+
 
 </script>
 
@@ -135,7 +152,7 @@ A: 可以。房東可以在方案期間內隨時手動下架物件，例如物�
   height: 56px;
   font-size: 28px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 999;
 }
 
@@ -147,7 +164,7 @@ A: 可以。房東可以在方案期間內隨時手動下架物件，例如物�
   height: 460px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -187,7 +204,7 @@ A: 可以。房東可以在方案期間內隨時手動下架物件，例如物�
   max-width: 85%;
   line-height: 1.5;
   word-wrap: break-word;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .msg.user {
