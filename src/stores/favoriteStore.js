@@ -45,6 +45,9 @@ export const useFavoriteStore = defineStore('favorite', {
             } catch (err) {
                 console.error('取消收藏失敗', err)
             }
+        },
+        clearFavorites() {
+            this.list = []
         }
     }
 })

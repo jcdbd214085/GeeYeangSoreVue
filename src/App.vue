@@ -61,11 +61,15 @@ onMounted(async () => {
     if (res.ok) {
       const data = await res.json();
       userStore.login(data.role, data.userName, data.isLandlord);
+      await favoriteStore.fetchFavorites(); 
     } else {
       userStore.logout(); // Session 無效 → 登出前端狀態
+      favoriteStore.clearFavorites();
     }
   } catch (err) {
     console.error('Session 驗證失敗', err);
+    userStore.logout();
+    favoriteStore.clearFavorites();
   } finally {
     isUserReady.value = true; //無論成功或失敗都表示初始化完成
   }
