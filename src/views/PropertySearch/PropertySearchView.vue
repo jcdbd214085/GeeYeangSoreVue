@@ -75,7 +75,9 @@ import axios from 'axios'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 import ChatPopup from '@/components/chat/ChatPopup.vue'
 import BadgeList from '@/components/BadgeList.vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const favoriteStore = useFavoriteStore()
 const emit = defineEmits(['open-login'])
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -85,9 +87,40 @@ const itemsPerPage = 12
 const previousPage = ref(1)
 const pageDirection = ref('next')
 
+// 過濾房源列表的函數
+const filterProperties = (properties, city, keyword) => {
+  return properties.filter(property => {
+    const matchesCity = !city || property.city === city
+    const matchesKeyword = !keyword || 
+      property.title.toLowerCase().includes(keyword.toLowerCase()) ||
+      property.address.toLowerCase().includes(keyword.toLowerCase()) ||
+      property.district.toLowerCase().includes(keyword.toLowerCase())
+    return matchesCity && matchesKeyword
+  })
+}
+
 onMounted(async () => {
-  await favoriteStore.fetchFavorites() 
+  await favoriteStore.fetchFavorites()
+  
+  // 獲取所有房源
+  try {
+    const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/propertyList`)
+    let properties = res.data
+
+    // 從 URL 獲取搜尋參數
+    const { city, keyword } = route.query
+
+    // 如果有搜尋參數，進行過濾
+    if (city || keyword) {
+      properties = filterProperties(properties, city, keyword)
+    }
+
+    propertyList.value = properties
+  } catch (error) {
+    console.error('載入房源列表失敗:', error)
+  }
 })
+
 const pagedList = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     return propertyList.value.slice(start, start + itemsPerPage)
@@ -114,15 +147,6 @@ onMounted(async () => {
         console.log("精選房源圖片列表：", featuredProperties.value.map(p => p.image))
     } catch (err) {
         console.error('載入精選房源失敗：', err)
-    }
-})
-
-onMounted(async () => {
-    try {
-        const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/propertyList`)
-        propertyList.value = res.data
-    } catch (error) {
-        console.error('載入房源列表失敗:', error)
     }
 })
 

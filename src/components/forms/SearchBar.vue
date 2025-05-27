@@ -37,11 +37,21 @@
 <script setup>
 import { ref } from 'vue';
 import Button from '@/components/buttons/button.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const city = ref('');
 const keyword = ref('');
+
 function onSearch() {
-  // 這裡可以加上 emit 或 API 請求
-  console.log('搜尋', city.value, keyword.value);
+  // 跳轉到搜尋結果頁面，並帶上搜尋參數
+  router.push({
+    path: '/PropertySearch',
+    query: {
+      city: city.value,
+      keyword: keyword.value
+    }
+  });
 }
 </script>
 <style scoped>
