@@ -55,14 +55,7 @@
     </div>
   </section>
   <section class="announcement-section">
-    <div class="container">
-      <h2 class="section-title">最新公告</h2>
-      <ul class="announcement-list">
-        <li><span class="date">2024/06/01</span>網站全新上線，歡迎體驗！</li>
-        <li><span class="date">2024/06/02</span>新增多元搜尋條件，找房更方便！</li>
-        <li><span class="date">2024/06/03</span>平台支援手機版瀏覽，行動找屋更輕鬆！</li>
-      </ul>
-    </div>
+    <NewsAnnouncement />
   </section>
   <section class="how-it-works-section">
     <div class="container">
@@ -99,6 +92,7 @@ import SearchBar from '@/components/forms/SearchBar.vue';
 import PropertyCard from '@/components/cards/PropertyCard.vue';
 import StepItem from '@/components/StepItem.vue';
 import BadgeList from '@/components/BadgeList.vue';
+import NewsAnnouncement from '@/components/common/NewsAnnouncement.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
