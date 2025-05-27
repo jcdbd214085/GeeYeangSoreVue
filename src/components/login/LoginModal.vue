@@ -995,4 +995,12 @@ form {
     font-size: 30px;
   }
 }
+
+/* 隱藏 Chrome/Edge 的密碼顯示按鈕 */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-input-password-toggle-button {
+  display: none !important;
+}
 </style>
