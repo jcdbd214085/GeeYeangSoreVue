@@ -30,9 +30,9 @@
           <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount" @open-login="handleOpenLogin">
-            <template #badge>
-              <BadgeList type="推薦" />
-            </template>
+            <template #badge v-if="item.badgeType">
+                            <BadgeList :type="item.badgeType" />
+                        </template>
           </PropertyCard>
         </div>
       </div>
@@ -46,9 +46,9 @@
           <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount" @open-login="handleOpenLogin">
-            <template #badge>
-              <BadgeList type="New" />
-            </template>
+            <template #badge v-if="item.badgeType">
+                            <BadgeList :type="item.badgeType" />
+                        </template>
           </PropertyCard>
         </div>
       </div>
