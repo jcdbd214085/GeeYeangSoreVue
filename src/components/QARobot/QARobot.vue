@@ -109,9 +109,11 @@ A: 可以。房東可以在方案期間內隨時手動下架物件，例如物�
 </script>
 
 <template>
-  <button class="chat-toggle" @click="toggleChat">🤖</button>
+  <button class="chat-toggle" @click="toggleChat">
+    <img src="https://cdn-icons-png.flaticon.com/512/6134/6134346.png" alt="客服機器人" />
+  </button>
 
-  <div class="chat-window" v-if="showChat">
+  <div v-if="showChat">
     <div class="chat-header">
       <span>客服機器人 - 居研所</span>
       <button class="close-btn" @click="toggleChat">×</button>
@@ -140,37 +142,13 @@ A: 可以。房東可以在方案期間內隨時手動下架物件，例如物�
   --main-color: #007bff;
 }
 
-.chat-toggle {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background-color: var(--main-color);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 56px;
+.chat-toggle img {
+  width: 56px; /* 或其他你想要的大小 */
   height: 56px;
-  font-size: 28px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  z-index: 999;
+  object-fit: contain;
 }
 
-.chat-window {
-  position: fixed;
-  bottom: 90px;
-  left: 20px;
-  width: 340px;
-  height: 460px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 999;
-  border: 2px solid var(--main-color);
-}
+
 
 .chat-header {
   background-color: var(--main-color);

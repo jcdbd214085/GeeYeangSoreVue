@@ -98,7 +98,7 @@ watch(
     v-if="showChatPopup && isUserReady"
     @close="closeChatPopup"
   />
-  <QARobot></QARobot> 
+  
 <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />
