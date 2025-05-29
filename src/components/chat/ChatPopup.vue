@@ -26,6 +26,8 @@
         :receiver-id="activeContactId"
         :receiver-role="'tenant'"
         :chat-id="null"
+        :is-landlord="userStore.isLandlord"
+        :quick-reply-default-open="false"
         @send="sendMessage"
       />
     </div>
@@ -54,6 +56,8 @@
   let connection = null;
   
   const emit = defineEmits(['close']);
+  
+  const userStore = useUserStore();
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -194,6 +198,10 @@
         scrollToBottom();
       }
     }
+  });
+  
+  onMounted(async () => {
+    await userStore.checkAuth();
   });
   
   onUnmounted(() => {
