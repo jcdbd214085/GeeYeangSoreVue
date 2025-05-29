@@ -2,7 +2,7 @@
   <div class="user-favorite container py-4">
     <h2 class="mb-4 section-title"><i class="fa-solid fa-heart"></i> 我的收藏</h2>
     <div class="row g-4">
-      <div class="col-md-3" v-for="item in favorites" :key="item.propertyId">
+      <div class="col-md-3" v-for="item in pagedFavorites" :key="item.propertyId">
         <PropertyCard :propertyId="item.propertyId" :image="item.image" :title="item.title" :city="item.city"
           :district="item.district" :address="item.address" :rentPrice="item.rentPrice"
           :propertyType="item.propertyType" :roomCount="item.roomCount" :bathroomCount="item.bathroomCount"
@@ -15,15 +15,18 @@
         </router-link>
       </div>
       <div class="col-md-12 d-flex justify-content-center mt-4">
-        <Pagination :totalItems="favorites.length" :itemsPerPage="8" :currentPage="1" :showFirstLastButtons="true"
-          :showPageInfo="true" />
+        <Pagination v-model="currentPage"
+              :totalItems="favorites.length"
+              :itemsPerPage="itemsPerPage"
+              :showFirstLastButtons="true"
+              :showPageInfo="true" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import axios from 'axios'
 import PropertyCard from '@/components/cards/PropertyCard.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
@@ -33,12 +36,25 @@ import { useFavoriteStore } from '@/stores/favoriteStore.js';
 
 const favoriteStore = useFavoriteStore()
 const favorites = computed(() => favoriteStore.list)
-onMounted(() => {
-  favoriteStore.fetchFavorites()
+
+const currentPage = ref(1)
+const itemsPerPage = 8
+
+const pagedFavorites = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  return favorites.value.slice(start, start + itemsPerPage)
 })
+
+
 onMounted(() => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
   favoriteStore.fetchFavorites()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
+
+watch(currentPage, () => {
+  nextTick(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
 })
 </script>
 
