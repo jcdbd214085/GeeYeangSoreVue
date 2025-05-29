@@ -36,7 +36,11 @@
 
     <!-- 房東資訊 -->
     <div class="right-section landlord-info">
-      <AvatarImage :src="landlord.avatar" :size="155" class="mb-4" />
+      <img
+        :src="getAvatarUrl(landlord.avatar)"
+        class="avatar-img mb-4"
+        :style="{ width: '155px', height: '155px', borderRadius: '50%', objectFit: 'cover' }"
+      />
       <h5 class="mb-2">{{ landlord.name }}</h5>
       <div class="landlord-text mb-3">
         
@@ -128,6 +132,14 @@ async function openChat() {
   } catch (e) {
     emit('open-login')
   }
+}
+
+function getAvatarUrl(filename) {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL
+  if (!filename || !/^[\w\-.]+\.(jpg|jpeg|png|gif)$/i.test(filename)) {
+    return `${baseUrl}/images/User/default.png`
+  }
+  return `${baseUrl}/images/User/${filename}`
 }
 </script>
 

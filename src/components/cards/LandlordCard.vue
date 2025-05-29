@@ -4,8 +4,12 @@
 
         <!-- 橫向排列 -->
         <div class="landlord-info mb-3">
-            <AvatarImage :src="landlord.avatar" :size="100" class="me-3" />
-
+            <img
+                :src="getAvatarUrl(landlord.avatar)"
+                :alt="landlord.name"
+                class="avatar-img me-3"
+                :style="{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }"
+            />
             <!-- 名字與電話包一層 -->
             <div class="landlord-text">
                 <h5 class="mb-2">{{ landlord.name }}</h5>
@@ -58,6 +62,14 @@ async function openChat() {
     } catch (e) {
         alert('請先登入');
     }
+}
+
+function getAvatarUrl(filename) {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!filename || !/^[\w\-.]+\.(jpg|jpeg|png|gif)$/i.test(filename)) {
+    return `${baseUrl}/images/User/default.png`;
+  }
+  return `${baseUrl}/images/User/${filename}`;
 }
 </script>
 
