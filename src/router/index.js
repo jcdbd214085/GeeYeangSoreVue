@@ -133,11 +133,6 @@ const router = createRouter({
     },
     // 金流 API 測試開始
     {
-      path: "/payment-test",
-      name: "payment-test",
-      component: () => import("@/views/PaymentTest.vue"),
-    },
-    {
       path: '/landlord/payment-result/:orderId',
       name: 'PaymentResult',
       component: () => import('@/views/landlord/PaymentResultView.vue'),

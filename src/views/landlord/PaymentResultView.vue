@@ -31,7 +31,7 @@
           <span class="value">{{ orderInfo.paymentDate || '-' }}</span>
         </div>
       </div>
-      <router-link to="/" class="back-btn">返回首頁</router-link>
+      <router-link to="/landlord/ad-manage" class="back-btn">返回刊登管理</router-link>
     </div>
   </div>
 </template>
