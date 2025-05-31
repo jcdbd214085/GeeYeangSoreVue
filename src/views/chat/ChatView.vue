@@ -11,15 +11,22 @@
   
       <!-- 右側聊天區域 -->
       <div class="chat-main">
-        <ChatWindow :messages="messages" :user="user" />
-        <ChatInput
-          :receiver-id="activeContactId"
-          :receiver-role="activeReceiverRole"
-          :chat-id="activeChatId"
-          :is-landlord="userStore.isLandlord"
-          :quick-reply-default-open="true"
-          @send="sendMessage"
-        />
+        <template v-if="contacts.length === 0">
+          <div class="no-chat-tip">
+            尚無聊天紀錄，快去找人聊天吧！
+          </div>
+        </template>
+        <template v-else>
+          <ChatWindow :messages="messages" :user="user" />
+          <ChatInput
+            :receiver-id="activeContactId"
+            :receiver-role="activeReceiverRole"
+            :chat-id="activeChatId"
+            :is-landlord="userStore.isLandlord"
+            :quick-reply-default-open="true"
+            @send="sendMessage"
+          />
+        </template>
       </div>
     </div>
   </template>
@@ -207,5 +214,16 @@
     flex-direction: column;
     background: #f7f8fa;
     min-height: 0;
+  }
+  
+  .no-chat-tip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #888;
+    background: #f7f8fa;
+    min-height: 300px;
   }
   </style>

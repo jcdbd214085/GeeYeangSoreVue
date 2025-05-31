@@ -34,7 +34,7 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, onUnmounted, nextTick, watch, watchEffect, defineEmits } from 'vue';
+  import { ref, onMounted, onUnmounted, nextTick, watch, watchEffect, defineEmits, watchEffect as vueWatchEffect } from 'vue';
   import axios from 'axios';
   import * as signalR from '@microsoft/signalr';
   import { useUserStore } from '@/stores/user';
@@ -59,6 +59,12 @@
   const userStore = useUserStore();
   
   const defaultAvatar = '/images/User/default.png';
+  
+  const props = defineProps({
+    contactId: Number,
+    contactName: String,
+    contactAvatar: String
+  });
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -189,14 +195,28 @@
       errorMsg.value = '請先登入';
     }
   }
-  
-  watchEffect(async () => {
+  // ChatPopup 開啟時，根據是否有指定聯絡人，決定顯示單一對象或聯絡人列表，並初始化聊天內容與連線
+  vueWatchEffect(async () => {
     if (isOpen.value) {
       await fetchUserInfo();
       if (user.value.id) {
-        await fetchChatList();
-        setupSignalR();
-        scrollToBottom();
+        if (props.contactId) {
+          contacts.value = [{
+            id: props.contactId,
+            name: props.contactName || `聯絡人${props.contactId}`,
+            avatar: props.contactAvatar || defaultAvatar,
+            lastMsg: '',
+            time: ''
+          }];
+          activeContactId.value = props.contactId;
+          fetchMessages(props.contactId);
+          setupSignalR();
+          scrollToBottom();
+        } else {
+          await fetchChatList();
+          setupSignalR();
+          scrollToBottom();
+        }
       }
     }
   });

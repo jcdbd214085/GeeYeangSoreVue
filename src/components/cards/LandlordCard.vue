@@ -58,7 +58,11 @@ async function openChat() {
             alert('無法與自己對話');
             return;
         }
-        emit('open-chat', landlordTenantId)
+        emit('open-chat', {
+            id: props.landlord.id,
+            name: props.landlord.name,
+            avatar: props.landlord.avatar
+        })
     } catch (e) {
         alert('請先登入');
     }
