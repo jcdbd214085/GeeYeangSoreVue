@@ -6,6 +6,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 const props = defineProps({
   type: {
     type: String,
@@ -13,11 +14,11 @@ const props = defineProps({
   }
 })
 
-const badgeClass = {
+const badgeClass = computed(() => ({
   'badge-recommend': props.type === '推薦',
   'badge-featured': props.type === '精選',
   'badge-new': props.type === 'New'
-}
+}))
 
 const iconClass = props.type === '推薦'
   ? 'fa-solid fa-star'
