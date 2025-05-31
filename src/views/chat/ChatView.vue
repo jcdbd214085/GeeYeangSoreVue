@@ -11,15 +11,22 @@
   
       <!-- 右側聊天區域 -->
       <div class="chat-main">
-        <ChatWindow :messages="messages" :user="user" />
-        <ChatInput
-          :receiver-id="activeContactId"
-          :receiver-role="activeReceiverRole"
-          :chat-id="activeChatId"
-          :is-landlord="userStore.isLandlord"
-          :quick-reply-default-open="true"
-          @send="sendMessage"
-        />
+        <template v-if="contacts.length === 0">
+          <div class="no-chat-tip">
+            尚無聊天紀錄，快去找人聊天吧！
+          </div>
+        </template>
+        <template v-else>
+          <ChatWindow :messages="messages" :user="user" />
+          <ChatInput
+            :receiver-id="activeContactId"
+            :receiver-role="activeReceiverRole"
+            :chat-id="activeChatId"
+            :is-landlord="userStore.isLandlord"
+            :quick-reply-default-open="true"
+            @send="sendMessage"
+          />
+        </template>
       </div>
     </div>
   </template>
@@ -31,7 +38,7 @@
   import ContactsList from '@/components/chat/ContactsList.vue';
   import ChatWindow from '@/components/chat/ChatWindow.vue';
   import ChatInput from '@/components/chat/ChatInput.vue';
-  import defaultAvatar from '@/assets/images/avatar/default.png';
+  const defaultAvatar = '/images/User/default.png';
   import { useMessageLabel } from '@/components/chat/useMessageLabel';
   import { useUserStore } from '@/stores/user';
   
@@ -100,7 +107,7 @@
           id: msg.hSenderId,
           name: msg.senderName || `聯絡人${msg.hSenderId}`,
           lastMsg: (msg.hMessageType === 'image' || msg.hMessageType === '圖片' || (msg.hContent && msg.hContent.startsWith('/images/chat/'))) ? '[圖片]' : (msg.hContent || ''),
-          avatar: defaultAvatar,
+          avatar: msg.avatar,
           time: msg.hTimestamp
             ? new Date(msg.hTimestamp).toLocaleTimeString()
             : '',
@@ -207,5 +214,16 @@
     flex-direction: column;
     background: #f7f8fa;
     min-height: 0;
+  }
+  
+  .no-chat-tip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #888;
+    background: #f7f8fa;
+    min-height: 300px;
   }
   </style>

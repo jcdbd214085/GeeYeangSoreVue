@@ -32,7 +32,8 @@
                 </div>
             </div>
         </div>
-        <ChatPopup v-if="isChatOpen" :key="currentChatTenantId" @close="isChatOpen = false" />
+        <!-- 當新註冊房客時點選房東，會有聊天視窗 -->
+        <ChatPopup v-if="isChatOpen" :contact-id="chatContact.id" :contact-name="chatContact.name" :contact-avatar="chatContact.avatar" @close="isChatOpen = false" />
     </div>
 
 </template>
@@ -65,7 +66,7 @@ const images = ref([])
 const landlord = ref(null)
 const featuredProperties = ref([])
 const isChatOpen = ref(false)
-const currentChatTenantId = ref(null)
+const chatContact = ref({})
 
 const allFeatures = [
     { key: 'dog', label: '可養狗', icon: 'fa-solid fa-dog' },
@@ -202,8 +203,8 @@ function handleOpenLogin() {
     emit('open-login')
 }
 
-function handleOpenChat(landlordTenantId) {
-    currentChatTenantId.value = landlordTenantId
+function handleOpenChat(contact) {
+    chatContact.value = contact
     isChatOpen.value = true
 }
 </script>

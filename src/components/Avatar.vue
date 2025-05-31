@@ -49,6 +49,10 @@ const computedSrc = computed(() => {
     console.log('使用預設頭像，原因：', errorFlag.value ? '載入失敗' : '無來源圖片')
     return defaultAvatar
   }
+  // 如果已經是完整網址，直接回傳
+  if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
+    return fileName
+  }
   const finalUrl = `${baseUrl}/images/User/${fileName}`
   console.log('嘗試載入圖片：', finalUrl)
   return finalUrl

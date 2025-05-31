@@ -33,6 +33,26 @@
         </div>
       </div>
     </div>
+    <!-- 自訂錯誤訊息彈窗 -->
+    <div v-if="showErrorDialog" class="custom-modal">
+      <div class="modal-content">
+        <div class="modal-title">操作失敗</div>
+        <div class="modal-body">{{ errorDialogMessage }}</div>
+        <div class="modal-actions">
+          <button class="modal-confirm" @click="closeErrorDialog">確定</button>
+        </div>
+      </div>
+    </div>
+    <!-- 自訂成功訊息彈窗 -->
+    <div v-if="showSuccessDialog" class="custom-modal">
+      <div class="modal-content">
+        <div class="modal-title">操作成功</div>
+        <div class="modal-body">{{ successDialogMessage }}</div>
+        <div class="modal-actions">
+          <button class="modal-confirm" @click="closeSuccessDialog">確定</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -64,14 +84,38 @@ function requestDeleteMessage(messageId) {
   pendingDeleteId.value = messageId;
 }
 
+// 錯誤彈窗狀態
+const showErrorDialog = ref(false);
+const errorDialogMessage = ref('');
+function showError(message) {
+  errorDialogMessage.value = message;
+  showErrorDialog.value = true;
+}
+function closeErrorDialog() {
+  showErrorDialog.value = false;
+  errorDialogMessage.value = '';
+}
+
+// 成功彈窗狀態
+const showSuccessDialog = ref(false);
+const successDialogMessage = ref('');
+function showSuccess(message) {
+  successDialogMessage.value = message;
+  showSuccessDialog.value = true;
+}
+function closeSuccessDialog() {
+  showSuccessDialog.value = false;
+  successDialogMessage.value = '';
+}
+
 async function confirmDeleteMessage() {
   try {
     await axios.post(`/api/chat/delete-message/${pendingDeleteId.value}`);
     const idx = props.messages.findIndex(m => m.id === pendingDeleteId.value || m.hMessageId === pendingDeleteId.value);
     if (idx !== -1) props.messages.splice(idx, 1);
-    alert('刪除成功！');
+    showSuccess('刪除成功！');
   } catch (e) {
-    alert('刪除失敗，請稍後再試');
+    showError('刪除失敗，請稍後再試');
   }
   showDeleteDialog.value = false;
   pendingDeleteId.value = null;
@@ -94,9 +138,9 @@ function requestReportMessage({ messageId, reason }) {
 async function confirmReportMessage() {
   try {
     await axios.post('/api/chat/report-message', { messageId: pendingReport.value.messageId, reason: pendingReport.value.reason });
-    alert('檢舉成功！');
+    showSuccess('檢舉成功！');
   } catch (e) {
-    alert('檢舉失敗，請稍後再試');
+    showError('檢舉失敗，請稍後再試');
   }
   showReportDialog.value = false;
   pendingReport.value = { messageId: null, reason: '' };

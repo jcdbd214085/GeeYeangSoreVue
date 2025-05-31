@@ -56,7 +56,8 @@
                 <LandlordCarousel :list="landlordProperties" @open-login="handleOpenLogin" @open-chat="handleOpenChat" />
             </div>
         </div>
-        <ChatPopup v-if="isChatOpen" :key="currentChatTenantId" @close="isChatOpen = false" />
+        <!-- 當新註冊房客時點選房東，會有聊天視窗 -->
+        <ChatPopup v-if="isChatOpen" :contact-id="chatContact.id" :contact-name="chatContact.name" :contact-avatar="chatContact.avatar" @close="isChatOpen = false" />
     </section>
 
 
@@ -174,9 +175,9 @@ function handleOpenLogin() {
 }
 
 const isChatOpen = ref(false)
-const currentChatTenantId = ref(null)
-function handleOpenChat(landlordTenantId) {
-    currentChatTenantId.value = landlordTenantId
+const chatContact = ref({})
+function handleOpenChat(contact) {
+    chatContact.value = contact
     isChatOpen.value = true
 }
 </script>
