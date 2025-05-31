@@ -20,7 +20,7 @@
                     <MapView v-if="fullAddress" :address="fullAddress" :key="fullAddress" />
                 </div>
                 <div class="row mt-4 mb-5">
-                    <h5 class="component-title">推薦房源</h5>
+                    <h5 class="component-title">探索更多房源</h5>
                     <div>
                         <PropertyCarouselSmall :list="featuredProperties" @open-login="handleOpenLogin" />
                     </div>
@@ -154,7 +154,7 @@ async function loadPropertyDetail(id) {
         console.log("房源 ID:", id);
         console.log("API 呼叫 URL:", `${API_BASE_URL}/api/PropertySearch/${id}`);
         const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/${id}`)
-        
+
         property.value = res.data.property
         images.value = res.data.images
         landlord.value = res.data.landlord
