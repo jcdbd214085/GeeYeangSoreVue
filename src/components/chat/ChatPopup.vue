@@ -9,7 +9,7 @@
             :class="['chat-tab', { active: c.id === activeContactId }]"
             @click="switchChat(c.id)"
           >
-            <Avatar :src="c.avatar || defaultAvatar" :alt="c.name" :size="32" />
+            <Avatar :src="c.avatar" :alt="c.name" :size="32" />
           </div>
         </div>
         <button class="close-btn" @click="closePopup">✖</button>
@@ -41,7 +41,6 @@
   import ChatWindow from './ChatWindow.vue';
   import ChatInput from './ChatInput.vue';
   import Avatar from '@/components/Avatar.vue';
-  import defaultAvatar from '@/assets/images/avatar/default.png';
   
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
   const SIGNALR_URL = `${API_BASE_URL}/hub`;
@@ -58,6 +57,8 @@
   const emit = defineEmits(['close']);
   
   const userStore = useUserStore();
+  
+  const defaultAvatar = '/images/User/default.png';
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -98,7 +99,7 @@
           id: msg.hSenderId,
           name: msg.senderName || `聯絡人${msg.hSenderId}`,
           lastMsg: msg.hContent || '',
-          avatar: defaultAvatar,
+          avatar: msg.avatar || defaultAvatar,
           time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : '',
         }));
         if (contacts.value.length > 0) {

@@ -31,7 +31,7 @@
   import ContactsList from '@/components/chat/ContactsList.vue';
   import ChatWindow from '@/components/chat/ChatWindow.vue';
   import ChatInput from '@/components/chat/ChatInput.vue';
-  import defaultAvatar from '@/assets/images/avatar/default.png';
+  const defaultAvatar = '/images/User/default.png';
   import { useMessageLabel } from '@/components/chat/useMessageLabel';
   import { useUserStore } from '@/stores/user';
   
@@ -100,7 +100,7 @@
           id: msg.hSenderId,
           name: msg.senderName || `聯絡人${msg.hSenderId}`,
           lastMsg: (msg.hMessageType === 'image' || msg.hMessageType === '圖片' || (msg.hContent && msg.hContent.startsWith('/images/chat/'))) ? '[圖片]' : (msg.hContent || ''),
-          avatar: defaultAvatar,
+          avatar: msg.avatar,
           time: msg.hTimestamp
             ? new Date(msg.hTimestamp).toLocaleTimeString()
             : '',

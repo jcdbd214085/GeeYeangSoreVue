@@ -22,6 +22,7 @@
 import { ref, computed } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import { useMessageLabel } from './useMessageLabel';
+
 const props = defineProps(['contacts', 'activeContactId']);
 const search = ref('');
 const filteredContacts = computed(() =>
